@@ -203,11 +203,11 @@ export default function Footer() {
         <div className={`max-w-sm  p-2`}>
           <h3 className="text-lg font-semibold">Sign up for Updates</h3>
 
-          <form class="mx-auto max-w-sm">
-            <div class="relative py-4">
-              <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
+          <form className="mx-auto max-w-sm">
+            <div className="relative py-4">
+              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
                 <svg
-                  class="h-4 w-4 text-gray-500 dark:text-gray-400"
+                  className="h-4 w-4 text-gray-500 dark:text-gray-400"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -220,7 +220,7 @@ export default function Footer() {
               <input
                 type="text"
                 id="email-address-icon"
-                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 placeholder="email address"
               />
             </div>
