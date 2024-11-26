@@ -81,7 +81,7 @@ export default function MobileValidation({
         body: payload.toString(), // Convert the payload to URL-encoded format
       });
 
-      console.log("after otp response", response);
+      // console.log("after otp response", response);
 
       if (response.ok) {
         console.log("OTP sent successfully");

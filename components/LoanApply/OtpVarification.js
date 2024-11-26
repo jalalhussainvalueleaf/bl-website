@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import CryptoJS from "crypto-js";
 import { useUserContext } from "../../utils/UserContext";
 import { useRouter } from "next/navigation";
+import { encryptData, decryptData } from "../../utils/cryptoUtils"; // Import the functions
 
 export default function OtpVarification({
   utmSource,
@@ -30,13 +31,6 @@ export default function OtpVarification({
   const [userToken, setUserToken] = useState();
   const [encryptedData, setEncyptionData] = useState("");
   const [userFinalData, setUserFinalData] = useState({});
-  // const [userId, setUserId] = useState("");
-  // const [startUserNewJourney, setStartUserNewJourney] = useState(false);
-  // const [showOfferPage, setShowOfferPage] = useState(false);
-
-  const encryptedDataBase64 = encryptedData; // Encrypted data
-  const secretKey = "1234567890123456"; // Secret key
-  const secretIv = "abcdefghijklmnop"; // Initialization vector (IV)
 
   const otpVerifyUrl = "https://prod.utils.buddyloan.in/verifynewotp.php";
   const resendOtpUrl = "https://prod.utils.buddyloan.in/Resend_otp.php";
@@ -129,7 +123,6 @@ export default function OtpVarification({
       const enteredOtp = inputRefs.current.map((input) => input.value).join("");
       verifyOtp(enteredOtp, mobileNumber);
       setVerifyOtp(enteredOtp);
-      // console.log("jion otp", enteredOtp);
     } else {
       setMessage(""); // Clear message if OTP is incomplete
     }
@@ -152,8 +145,8 @@ export default function OtpVarification({
     setLoading(true);
 
     // Log values to debug
-    console.log("Entered OTP:", enteredOtp);
-    console.log("Mobile Number:", mobileNumber);
+    // console.log("Entered OTP:", enteredOtp);
+    // console.log("Mobile Number:", mobileNumber);
 
     // Construct the payload
     const payload = new URLSearchParams({
@@ -176,29 +169,33 @@ export default function OtpVarification({
       });
       // console.log(body);
       const responseData = await response.json(); // Parse response as JSON
+      // console.log("otp encypted", responseData);
+      console.log("hurray data here", decryptData(responseData.encryptData));
+      // console.log("status", decryptData(responseData.encryptData));
+      const decrptResponseData = decryptData(responseData.encryptData);
 
       if (
-        responseData.status === "success" &&
-        responseData.message === "OTP Match"
+        decrptResponseData.status === "success" &&
+        decrptResponseData.message === "OTP Match"
       ) {
         // const responseData = await response.json(); // Parse response as JSON
-        console.log("API Response:", responseData); // Log the full response
-        sessionStorage.setItem(
-          "verificationData",
-          JSON.stringify(responseData),
-        );
-        console.log("user_token", responseData.user_token);
-        setUserToken(responseData.user_token);
+        // console.log("API Response:", responseData); // Log the full response
+        // sessionStorage.setItem(
+        //   "verificationData",
+        //   JSON.stringify(responseData),
+        // );
+        // console.log("user_token", decrptResponseData.user_token);
+        setUserToken(decrptResponseData.user_token);
         setMessage("✅ OTP verified successfully!");
-        verifyUsers(responseData.user_token);
+        verifyUsers(decrptResponseData.user_token);
       } else {
-        // console.error("Error Response:", responseData.message);
-        setMessage("❌ " + responseData.message + ". Please try again.");
+        console.error("Error Response:", decrptResponseData.message);
+        setMessage("❌ " + decrptResponseData.message + ". Please try again.");
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
       setMessage(
-        "❌ Error " + responseData.message + ". Please try again later.",
+        "❌ Error " + decrptResponseData.message + ". Please try again later.",
       );
     } finally {
       setLoading(false); // Set loading to false after API call
@@ -229,7 +226,7 @@ export default function OtpVarification({
       user_token: userToken, // Use userToken from state
     });
 
-    console.log("Payload being Verification:", payload.toString());
+    // console.log("Payload being Verification:", payload.toString());
 
     try {
       const response = await fetch(checkUsers, {
@@ -241,42 +238,15 @@ export default function OtpVarification({
       });
       // console.log(body);
       const responseData = await response.json(); // Parse response as JSON
-      console.log("user search", responseData);
-      setEncyptionData(responseData.encryptData);
-      decryptData(responseData.encryptData, secretKey, secretIv);
+      // console.log("user search", responseData);
+      // const user_data = decryptData(responseData.encryptData);
+      sessionStorage.setItem("ud_token", responseData.encryptData);
+      console.log("new user serach", decryptData(responseData.encryptData));
+      setUserFinalData(decryptData(responseData.encryptData));
+      // setEncyptionData(decryptData(responseData.encryptData));
     } catch (error) {
       console.error("Error verifying user:", error);
       setMessage("❌ Error verifying user. Please try again later.");
-    }
-  };
-
-  const decryptData = (encryptedData, key, iv) => {
-    try {
-      if (!encryptedData || !key || !iv) {
-        console.warn("Missing required parameters for decryption.");
-        return null;
-      }
-
-      const parsedKey = CryptoJS.enc.Utf8.parse(key);
-      const parsedIv = CryptoJS.enc.Utf8.parse(iv);
-
-      const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, parsedKey, {
-        iv: parsedIv,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7,
-      });
-
-      const decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
-
-      if (!decryptedData) {
-        throw new Error("Decryption resulted in an empty string");
-      }
-
-      setUserFinalData(JSON.parse(decryptedData));
-      return JSON.parse(decryptedData);
-    } catch (error) {
-      console.error("Decryption error:", error.message);
-      return null;
     }
   };
 
@@ -288,15 +258,25 @@ export default function OtpVarification({
       Array.isArray(userFinalData.user) &&
       userFinalData.user.length > 0
     ) {
-      setUserId(userFinalData.user[0].id);
-      setStartUserNewJourney(false);
-      setShowOfferPage(true);
-      router.push("/apply-loan-online/user-status");
-    } else {
-      setStartUserNewJourney(true);
-      setShowOfferPage(false);
-      // router.push("/apply-loan-online/user-journey");
+      console.log(userFinalData.user.id);
+      if (userFinalData.user.id) {
+        console.log(userFinalData.user.id);
+      } else {
+        setUserId(userFinalData.user[0].id);
+        setStartUserNewJourney(false);
+        setShowOfferPage(true);
+        router.push("/apply-loan-online/user-status");
+      }
     }
+
+    console.log("user journey ", startUserNewJourney);
+    console.log("user id", userId);
+    console.log("offer page", showOfferPage);
+    // } else {
+    //   setStartUserNewJourney(true);
+    //   setShowOfferPage(false);
+    //   // router.push("/apply-loan-online/user-journey");
+    // }
   }, [
     userFinalData,
     setUserId,
@@ -323,7 +303,7 @@ export default function OtpVarification({
                 ref={(el) => (inputRefs.current[index] = el)}
                 onChange={(e) => handleInputChange(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="block h-12 w-12 rounded-lg border border-gray-300 text-center text-sm font-extrabold"
+                className="block size-12 rounded-lg border border-gray-300 text-center text-sm font-extrabold"
                 required
               />
             </div>
@@ -357,7 +337,7 @@ export default function OtpVarification({
         {loading ? (
           <div className="mt-4 flex justify-center">
             <svg
-              className="h-6 w-6 animate-spin text-blue-500"
+              className="size-6 animate-spin text-blue-500"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -386,9 +366,7 @@ export default function OtpVarification({
         )}
       </form>
       {/* if user doesnot exists in the table then start a new journey for testing */}
-      {startUserNewJourney && userId && userId.trim() !== "" && (
-        <>Journey Started for New User</>
-      )}
+      {startUserNewJourney && <>Journey Started for New User</>}
 
       {/* if user is already registered then show the offer page for testing */}
       {showOfferPage && userId && userId.trim() !== "" && (
