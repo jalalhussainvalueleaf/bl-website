@@ -1,28 +1,18 @@
 import Image from "next/image";
-import React, { useState, useRef, useEffect, FC } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
-interface CalendarInputProps {
-  label?: string;
-  selectedDate?: Date | null;
-  onDateChange?: (date: Date | null) => void;
-  value: any;
-  error: any;
-}
-
-const CalendarInput: FC<CalendarInputProps> = ({
+const CalendarInput = ({
   label,
   selectedDate: initialSelectedDate = null,
   onDateChange,
   error,
   value,
 }) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(
-    initialSelectedDate,
-  );
+  const [selectedDate, setSelectedDate] = useState(initialSelectedDate);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [isOpen, setIsOpen] = useState(false);
-  const calendarRef = useRef<HTMLDivElement>(null);
+  const calendarRef = useRef(null);
 
   const months = [
     "January",
@@ -42,14 +32,11 @@ const CalendarInput: FC<CalendarInputProps> = ({
   const years = Array.from(
     { length: 101 },
     (_, i) => i + (new Date().getFullYear() - 50),
-  ); // Range of 50 years back and forward
+  );
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        calendarRef.current &&
-        !calendarRef.current.contains(event.target as Node)
-      ) {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
@@ -58,10 +45,10 @@ const CalendarInput: FC<CalendarInputProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const getDaysInMonth = (month: number, year: number) =>
+  const getDaysInMonth = (month, year) =>
     new Date(year, month + 1, 0).getDate();
-  const getFirstDayOfMonth = (month: number, year: number) =>
-    new Date(year, month, 1).getDay();
+
+  const getFirstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
 
   const generateDates = () => {
     const daysInMonth = getDaysInMonth(currentMonth, currentYear);
@@ -74,7 +61,7 @@ const CalendarInput: FC<CalendarInputProps> = ({
     return dates;
   };
 
-  const handleDateSelect = (day: number | null) => {
+  const handleDateSelect = (day) => {
     if (day) {
       const newDate = new Date(currentYear, currentMonth, day);
       setSelectedDate(newDate);
@@ -83,15 +70,15 @@ const CalendarInput: FC<CalendarInputProps> = ({
     }
   };
 
-  const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleMonthChange = (event) => {
     setCurrentMonth(parseInt(event.target.value));
   };
 
-  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleYearChange = (event) => {
     setCurrentYear(parseInt(event.target.value));
   };
 
-  const formatDate = (date: Date | null) => {
+  const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -186,7 +173,6 @@ const CalendarInput: FC<CalendarInputProps> = ({
         </div>
       )}
 
-      {/* Error Message */}
       {error && <p className="mt-1 text-end text-sm text-red-500">{error}</p>}
     </div>
   );

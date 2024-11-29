@@ -1,22 +1,13 @@
 import React, { useState } from "react";
 
-interface FAQItem {
-  question: string;
-  answer: string;
-}
+const FaqSection = ({ faqData }) => {
+  const [openIndex, setOpenIndex] = useState(null);
 
-interface FaqSectionProps {
-  faqData: FAQItem[];
-}
-
-const FaqSection: React.FC<FaqSectionProps> = ({ faqData }) => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const toggleFAQ = (index: number) => {
+  const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const renderIcon = (index: any) => {
+  const renderIcon = (index) => {
     return (
       <>
         {openIndex !== index ? (
@@ -30,12 +21,12 @@ const FaqSection: React.FC<FaqSectionProps> = ({ faqData }) => {
               id="galaAdd0"
               fill="none"
               stroke="currentColor"
-              stroke-dasharray="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-miterlimit="4"
-              stroke-opacity="1"
-              stroke-width="16"
+              strokeDasharray="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeMiterlimit="4"
+              strokeOpacity="1"
+              strokeWidth="16"
             >
               <circle id="galaAdd1" cx="128" cy="128" r="112" />
               <path id="galaAdd2" d="M 79.999992,128 H 176.0001" />
@@ -53,12 +44,12 @@ const FaqSection: React.FC<FaqSectionProps> = ({ faqData }) => {
               id="galaRemove0"
               fill="none"
               stroke="currentColor"
-              stroke-dasharray="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-miterlimit="4"
-              stroke-opacity="1"
-              stroke-width="16"
+              strokeDasharray="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeMiterlimit="4"
+              strokeOpacity="1"
+              strokeWidth="16"
             >
               <circle id="galaRemove1" cx="128" cy="128" r="112" />
               <path id="galaRemove2" d="M 80.000004,128 H 176.00001" />
@@ -75,7 +66,11 @@ const FaqSection: React.FC<FaqSectionProps> = ({ faqData }) => {
         {faqData.map((item, index) => (
           <div
             key={index}
-            className={` ${index === faqData?.length - 1 ? "border-none" : "border-b border-gray-300 "} transition-all duration-300`}
+            className={`${
+              index === faqData.length - 1
+                ? "border-none"
+                : "border-b border-gray-300"
+            } transition-all duration-300`}
           >
             <button
               onClick={() => toggleFAQ(index)}

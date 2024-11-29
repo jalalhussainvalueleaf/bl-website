@@ -1,24 +1,10 @@
-"use-client";
+"use client";
 import React, { useState } from "react";
 
-interface DropdownProps {
-  label: string;
-  options: string[];
-  selected: string | null;
-  onChange: (value: string) => void;
-  error?: any;
-}
-
-const Dropdown: React.FC<DropdownProps> = ({
-  label,
-  options,
-  selected,
-  onChange,
-  error,
-}) => {
+const Dropdown = ({ label, options, selected, onChange, error }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelect = (option: string) => {
+  const handleSelect = (option) => {
     onChange(option); // Propagate the selected value back to the parent
     setIsOpen(false);
   };
