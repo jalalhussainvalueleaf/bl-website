@@ -1,13 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import Input from "../../components/Common/Input";
-import { FieldName, useFormValidation } from "@/hooks/useValidation";
+import { useFormValidation } from "@/hooks/useValidation";
 import CalendarInput from "@/components/Common/CalendarInput";
 import Dropdown from "@/components/Common/Dropdown";
 import Image from "next/image";
 import Link from "next/link";
 import FaqSection from "@/components/Common/FaqSection";
+import TermsConditions from "@/components/Common/TermsConditions";
 import CreditScoreFAQ from "../../mock/CreditScoreFAQ";
+
 const CreditScore = () => {
   // State to manage the visibility of extra text
   const [isTextExpanded, setIsTextExpanded] = useState(false);
@@ -23,7 +25,7 @@ const CreditScore = () => {
     "pincode",
     "mobileNumber",
     "terms",
-  ] as any;
+  ];
 
   const {
     handleSubmit,
@@ -36,47 +38,46 @@ const CreditScore = () => {
   const formData = watch();
 
   // Handle form field change
-  const handleChange =
-    (field: FieldName) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(field as any, e.target.value);
-      trigger(field as any);
-    };
+  const handleChange = (field) => (e) => {
+    setValue(field, e.target.value);
+    trigger(field);
+  };
 
   // Callback to handle date change
-  const handleDateChange = (field: FieldName, date: Date | null) => {
-    setValue(field as any, date);
-    trigger(field as any);
+  const handleDateChange = (field, date) => {
+    setValue(field, date);
+    trigger(field);
     console.log("date", date);
   };
 
-  const handleDropdownChange = (field: FieldName, value: string) => {
-    setValue(field as any, value);
-    trigger(field as any);
+  const handleDropdownChange = (field, value) => {
+    setValue(field, value);
+    trigger(field);
   };
 
   // Handle form checkbox field change by updating only the specific field in formData
-  const handleCheck =
-    (field: FieldName) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(field as any, e.target.checked);
-      trigger(field as any);
-    };
+  const handleCheck = (field) => (e) => {
+    setValue(field, e.target.checked);
+    trigger(field);
+  };
 
   // Toggle the expanded/collapsed state
   const toggleText = () => setIsTextExpanded((prev) => !prev);
 
   // Handle form submission
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data) => {
     try {
       console.log("Form submitted successfully:", data);
     } catch (error) {
       console.error("Form submission error:", error);
     }
   };
+
   return (
     <div className="bg-white">
       <div className="mt-[80px] flex w-full items-start justify-between space-x-4">
         {/* Left */}
-        <div className="flex w-2/5  grow flex-col items-center justify-center bg-[#47b6f2] p-4 py-10 text-center">
+        <div className="flex w-2/5 grow flex-col items-center justify-center bg-[#47b6f2] p-4 py-10 text-center">
           <Image
             src="https://www.buddyloan.com/buddy-score/assets/image/bl_logo.png"
             height={100}
@@ -192,9 +193,7 @@ const CreditScore = () => {
               <CalendarInput
                 label="Select Date"
                 value={watch("dob") || null}
-                onDateChange={(date) => {
-                  handleDateChange("dob", date);
-                }}
+                onDateChange={(date) => handleDateChange("dob", date)}
                 error={errors.dob?.message}
               />
 
@@ -214,7 +213,7 @@ const CreditScore = () => {
                 placeholder="Residential PIN Code"
                 value={watch("pincode") || ""}
                 onChange={handleChange("pincode")}
-                maxLength={6} // Allow only 10 characters
+                maxLength={6} // Allow only 6 characters
                 error={errors.pincode?.message}
               />
 
@@ -224,62 +223,18 @@ const CreditScore = () => {
                 placeholder="Mobile Numbers"
                 value={watch("mobileNumber") || ""}
                 onChange={handleChange("mobileNumber")}
-                maxLength={10} // Allow only 6 characters
+                maxLength={10} // Allow only 10 characters
                 error={errors.mobileNumber?.message}
               />
             </div>
 
             {/* Terms & Conditions */}
-            <div className="flex flex-col items-start justify-center py-4">
-              <div className="flex items-start justify-center gap-4">
-                <input
-                  type="checkbox"
-                  id="accept"
-                  checked={watch("terms") || false}
-                  className="size-4 rounded border-bl-blue checked:border-bl-blue checked:bg-bl-blue focus:ring-0"
-                  onChange={handleCheck("terms")}
-                />
-                <label
-                  htmlFor="accept"
-                  className="mt-[-6px] text-lg text-black"
-                >
-                  I hereby appoint Buddy Loan as my authorised representative to
-                  receive my credit information from{" "}
-                  <a className=" cursor-pointer text-bl-blue"> Experian </a>
-                  (bureau)
-                  {isTextExpanded && (
-                    <>
-                      on an ongoing basis until the purpose of Pulling the
-                      Bureau Score to push the lead to the lending partner
-                      associated with Buddy Loan (End Use Purpose) is satisfied
-                      or expiry of 6 months from the date the consent is
-                      collected; whichever is earlier. I hereby declare that I
-                      have read, understood, and agree to the{" "}
-                      <a className=" cursor-pointer text-bl-blue">
-                        Terms & Conditions{" "}
-                      </a>{" "}
-                      and the{" "}
-                      <a className=" cursor-pointer text-bl-blue">
-                        Privacy Policy
-                      </a>
-                      . I allow Buddy Loans, its Lending Partners, and
-                      subsidiaries to contact me via Phone/email or any other
-                      mode of communication in loan, credit card, or any other
-                      related matters/Information/promotion.
-                    </>
-                  )}
-                  <button
-                    onClick={toggleText}
-                    className="ms-2 rounded-lg bg-gray-200 px-3"
-                    type="button"
-                  >
-                    {" "}
-                    {isTextExpanded ? "-Showless" : "+More"}{" "}
-                  </button>
-                  {/* ==================== {errors.terms?.message}  Need To do ========================*/}
-                </label>
-              </div>
-            </div>
+            <TermsConditions
+              termsText={`I hereby appoint Buddy Loan as my authorised representative to receive my credit information from Experian (bureau) on an ongoing basis until the purpose of pulling the Bureau Score to push the lead to the lending partner associated with Buddy Loan (End Use Purpose) is satisfied or expiry of 6 months from the date the consent is collected; whichever is earlier.`}
+              isChecked={watch("terms") || false}
+              onCheckChange={handleCheck("terms")}
+              error={errors?.terms?.message}
+            />
 
             {/* Submit Button */}
             <div className="mt-5 flex justify-center py-3">

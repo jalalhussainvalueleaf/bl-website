@@ -136,7 +136,7 @@ export default function Footer() {
 
   return (
     <div className="z-50 h-[90vh] border-t-2 bg-[#E3F2FD] pt-4">
-      <div className="grid grid-cols-6">
+      <div className="grid lg:grid-cols-6">
         <div className="p-2">
           <div className="flex flex-col items-center justify-center">
             <img src="/images/buddyloanlogo.png" className="h-20" />
@@ -149,31 +149,31 @@ export default function Footer() {
               <Link href="https://twitter.com/Buddyloan_">
                 <RiTwitterXLine
                   size={30}
-                  className="bg-bl-blue rounded-sm fill-white p-1"
+                  className="rounded-sm bg-bl-blue fill-white p-1"
                 />
               </Link>
               <Link href="https://www.linkedin.com/company/buddyloan">
                 <FaLinkedinIn
                   size={30}
-                  className="bg-bl-blue rounded-sm fill-white p-1"
+                  className="rounded-sm bg-bl-blue fill-white p-1"
                 />
               </Link>
               <Link href="https://www.facebook.com/buddyloan">
                 <FaFacebookF
                   size={30}
-                  className="bg-bl-blue rounded-sm fill-white p-1"
+                  className="rounded-sm bg-bl-blue fill-white p-1"
                 />
               </Link>
               <Link href="https://www.instagram.com/buddyloanofficial/">
                 <IoLogoInstagram
                   size={30}
-                  className="bg-bl-blue rounded-sm fill-white p-1"
+                  className="rounded-sm bg-bl-blue fill-white p-1"
                 />
               </Link>
               <Link href="https://www.youtube.com/channel/UCzDF0mUNoPV5Sx7IIL0ATTQ">
                 <AiOutlineYoutube
                   size={30}
-                  className="bg-bl-blue rounded-sm fill-white p-1"
+                  className="rounded-sm bg-bl-blue fill-white p-1"
                 />
               </Link>
             </div>
@@ -207,7 +207,7 @@ export default function Footer() {
             <div className="relative py-4">
               <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
                 <svg
-                  className="h-4 w-4 text-gray-500 dark:text-gray-400"
+                  className="size-4 text-gray-500 dark:text-gray-400"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -220,11 +220,11 @@ export default function Footer() {
               <input
                 type="text"
                 id="email-address-icon"
-                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 placeholder="email address"
               />
             </div>
-            <button className="bg-bl-blue rounded-full p-2 px-8 text-white">
+            <button className="rounded-full bg-bl-blue p-2 px-8 text-white">
               Submit
             </button>
           </form>
@@ -236,7 +236,7 @@ export default function Footer() {
           Rights Reserved.
         </p>
       </div>
-      <div className="bg-bl-blue flex h-20 items-center justify-center gap-4 text-center">
+      <div className="text-centerflex h-20 items-center justify-center gap-4 bg-bl-blue">
         <div className="flex items-center justify-center gap-4">
           <img src="/images/playstore.png" className="h-8" />
           <p className="font-semibold text-white">Rated 4.5 on Google Play</p>
@@ -257,7 +257,7 @@ export default function Footer() {
         </div>
       </div>
       <div
-        className={`shadow-lg transition-transform duration-500 ${
+        className={`hidden shadow-lg transition-transform duration-500 ${
           isVisible ? "translate-y-0" : "translate-y-full"
         } fixed bottom-0 left-0 w-full`}
       >
@@ -287,7 +287,7 @@ export default function Footer() {
           <div className="">
             <Link
               href="/"
-              className="bg-bl-blue rounded-full px-8 py-4 font-semibold text-white"
+              className="rounded-full bg-bl-blue px-8 py-4 font-semibold text-white"
             >
               Apply Now
             </Link>

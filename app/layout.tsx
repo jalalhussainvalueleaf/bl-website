@@ -22,9 +22,9 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body>
-        <Header />
+        {/* <Header /> */}
         {children}
-        <Footer />
+        {/* <Footer /> */}
       </body>
     </html>
   );

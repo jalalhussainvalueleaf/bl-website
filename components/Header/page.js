@@ -48,7 +48,10 @@ export default function Header() {
               />
             </svg>
           </button>
-          <div className="flex w-9/12 justify-between" id="navbar-multi-level ">
+          <div
+            className="hidden w-9/12 justify-between lg:flex"
+            id="navbar-multi-level "
+          >
             <ul className=" mt-0 flex flex-col space-x-2 font-medium  md:flex-row rtl:space-x-reverse">
               {menuItems.map((item, index) => (
                 <li
