@@ -36,7 +36,9 @@ const FirstStep = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log("Form submitted successfully:", data);
+      console.log("Form submitted successfully:", finalData);
+      console.log("Step 35 submitted:", data);
+      onNext();
     } catch (error) {
       console.error("Form submission error:", error);
     }
@@ -81,11 +83,16 @@ BY CLICKING “ACCEPT” YOU AGREE AND ACCEPT THE DISCLAIMERS AND TERMS AND COND
 Powered By Experian
   `;
 
+  const moreData = `
+I hereby appoint Buddy Loan as my authorized representative to receive my Credit Information from Experian, on an ongoing basis until the purpose of Pulling the Bureau Score to push the lead to the lending partner associated with Buddy Loan ("End Use Purpose") is satisfied or expiry of 6 months from the date the consent collected; whichever is earlier.`;
+
   return (
     <div className="bg-white">
       <div className="mt-10 bg-white py-12">
         <div className="mx-auto max-w-md px-5">
-          <h2 className="py-8 text-2xl font-bold">Income & Bank Details</h2>
+          <h2 className="py-8 text-2xl font-bold">
+            Income & Bank Details step-34
+          </h2>
         </div>
         <div className="mx-auto max-w-md rounded-lg border px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -187,17 +194,17 @@ Powered By Experian
                   data={data}
                   btnName="close"
                   link="Experian"
-                />
+                />{" "}
                 <Modal
                   title="Consent"
-                  data={data}
+                  data={moreData}
                   btnName="close"
                   link="more+"
                 />
               </p>
             </div>
 
-            <Button btnName="Proceed" />
+            <Button btnName="Submit" />
           </form>
         </div>
       </div>

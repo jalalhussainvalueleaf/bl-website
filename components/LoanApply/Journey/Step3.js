@@ -6,9 +6,9 @@ import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Radio from "@/components/Common/Radio";
 
-const SecondStep = () => {
+const SecondStep = ({ onNext }) => {
   const [employmentType, setEmploymentType] = useState("");
-
+  const [error, setError] = useState("");
   const fields = ["Salaried", "Self-Employed", "Student"];
 
   const {
@@ -27,16 +27,27 @@ const SecondStep = () => {
   };
 
   const onSubmit = async (data) => {
-    try {
-      const finalData = { ...data, employmentType: employmentType };
-      console.log("Form submitted successfully:", finalData);
-    } catch (error) {
-      console.error("Form submission error:", error);
+    if (!employmentType) {
+      setError("Please select a employment type.");
+      return; // Prevent form submission
+    } else {
+      setError(""); // Clear error if selection is valid
+      try {
+        const finalData = { ...data, employmentType: employmentType };
+        // console.log("Form submitted successfully:", finalData);
+        console.log("Step 2 submitted:", finalData);
+        sessionStorage.setItem("journey", 35);
+        onNext(); // Call onNext to move to the next step
+      } catch (error) {
+        console.error("Form submission error:", error);
+      }
     }
   };
 
   const handleRadioChange = (value) => {
     setEmploymentType(value);
+    setError(""); // Clear the error when a selection is made
+    console.log(value);
   };
 
   return (
@@ -71,6 +82,7 @@ const SecondStep = () => {
                 onChange={handleRadioChange}
                 label="Student"
               />
+              {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             </div>
 
             <Button btnName="Proceed" />

@@ -183,6 +183,7 @@ const fieldSchemas = {
   lname: z.string().min(1, "Please select a your company type"),
   residenceType: z.string().min(1, "Please select a your company type"),
   currentAddress: z.string().min(1, "Please select a your company type"),
+  LoanAmount: z.string().min(1, "Please select a your company type"),
 };
 
 // Create dynamic schema based on required fields and form state

@@ -1,43 +1,95 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Input from "@/components/Common/Input";
+import { useFormValidation } from "@/hooks/useValidation";
+import Button from "@/components/Common/Button";
+import { useUserContext } from "../../../utils/UserContext";
 
-export default function App() {
-  const [isValid, setIsValid] = useState(true);
+const SecondStep = ({ onClick }) => {
+  const router = useRouter();
+  const [selectedLoanType, setSelectedLoanType] = useState("");
+  const { steps, setSteps } = useUserContext();
+
+  const fields = ["loanAmount", "email"];
+  const {
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+    trigger,
+  } = useFormValidation(fields);
+
+  const formData = watch();
+
+  // Load saved data on mount
+  useEffect(() => {
+    const savedData = JSON.parse(sessionStorage.getItem("step1Data")) || {};
+    Object.keys(savedData).forEach((field) => {
+      setValue(field, savedData[field]);
+    });
+  }, [setValue]);
+
+  // Save form data to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem("step1Data", JSON.stringify(formData));
+  }, [formData]);
+
+  const handleChange = (field) => (e) => {
+    setValue(field, e.target.value);
+    trigger(field);
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      const finalData = { ...data, loanType: selectedLoanType };
+      // console.log("Form submitted successfully:", finalData);
+      console.log("Step 1 submitted:", data);
+      sessionStorage.setItem("journey", 2);
+      onClick();
+    } catch (error) {
+      console.error("Form submission error:", error);
+    }
+  };
+
+  const handleRadioChange = (value) => {
+    setSelectedLoanType(value);
+  };
+
   return (
-    <>
-      <div>
-        <h2>What is Your Email?</h2>
-        <div className="relative mb-4 flex w-full items-center">
-          <input
-            type="text"
-            className={`poppins h-[53px] w-full rounded-[12px] border-[1px] ${
-              isValid ? "border-[#47B6F2]" : "border-red-500"
-            } px-3 text-black outline-none focus:ring-0`}
-            placeholder=""
-            value=""
-            maxLength="10"
-          />
-
-          <label className="pointer-events-none absolute left-3 top-0 -translate-y-1/2 transform rounded-full bg-white px-1 text-[#47B6F2]">
-            Loan Amount
-          </label>
+    <div className="bg-white">
+      <div className="mt-10 bg-white py-12">
+        <div className="mx-auto max-w-md px-5">
+          <h2 className="py-8 text-2xl font-bold">What Is Your Email?</h2>
         </div>
-        <div className="relative mb-4 flex w-full items-center">
-          <input
-            type="text"
-            className={`poppins h-[53px] w-full rounded-[12px] border-[1px] ${
-              isValid ? "border-[#47B6F2]" : "border-red-500"
-            } px-3 text-black outline-none focus:ring-0`}
-            placeholder=""
-            value=""
-            maxLength="10"
-          />
 
-          <label className="pointer-events-none absolute left-3 top-0 -translate-y-1/2 transform rounded-full bg-white px-1 text-[#47B6F2]">
-            Personal Email Address
-          </label>
+        <div className="mx-auto max-w-md rounded-lg border px-5">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex items-center justify-between gap-5 py-4">
+              <Input
+                type="text"
+                placeholder="Loan Amount"
+                value={watch("loanAmount") || ""}
+                onChange={handleChange("loanAmount")}
+                error={errors.loanAmount?.message}
+              />
+            </div>
+            <div className="flex items-center justify-between gap-5 py-4">
+              <Input
+                type="text"
+                placeholder="Personal Email Address"
+                value={watch("email") || ""}
+                onChange={handleChange("email")}
+                error={errors.email?.message}
+              />
+            </div>
+            {/* <button>back</button> */}
+            <Button btnName="Proceed" isLoading={isSubmitting} />
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
-}
+};
+
+export default SecondStep;

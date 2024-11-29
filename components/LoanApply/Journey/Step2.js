@@ -6,8 +6,9 @@ import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Radio from "@/components/Common/Radio";
 
-const SecondStep = () => {
+const SecondStep = ({ onNext }) => {
   const [selectedLoanType, setSelectedLoanType] = useState("");
+  const [error, setError] = useState("");
 
   const fields = ["personalLoan", "homeLoan"];
 
@@ -21,22 +22,28 @@ const SecondStep = () => {
 
   const formData = watch();
 
-  const handleChange = (field) => (e) => {
-    setValue(field, e.target.value);
-    trigger(field);
-  };
-
   const onSubmit = async (data) => {
-    try {
-      const finalData = { ...data, loanType: selectedLoanType };
-      console.log("Form submitted successfully:", finalData);
-    } catch (error) {
-      console.error("Form submission error:", error);
+    if (!selectedLoanType) {
+      setError("Please select a loan type.");
+      return; // Prevent form submission
+    } else {
+      setError(""); // Clear error if selection is valid
+      try {
+        const finalData = { ...data, loanType: selectedLoanType };
+        console.log("Form submitted successfully:", finalData);
+        console.log("Step 2 submitted:", data);
+        onNext(); // Call onNext to move to the next step
+      } catch (error) {
+        console.error("Form submission error:", error);
+      }
     }
   };
 
   const handleRadioChange = (value) => {
     setSelectedLoanType(value);
+    sessionStorage.setItem("journey", 3);
+    setError(""); // Clear the error when a selection is made
+    console.log(value);
   };
 
   return (
@@ -54,6 +61,7 @@ const SecondStep = () => {
                 isSelected={selectedLoanType === "personalLoan"}
                 onChange={handleRadioChange}
                 label="Personal Loan"
+                error={errors.personalLoan?.message}
               />
               <Radio
                 name="homeLoan"
@@ -61,10 +69,11 @@ const SecondStep = () => {
                 isSelected={selectedLoanType === "homeLoan"}
                 onChange={handleRadioChange}
                 label="Home Loan"
+                error={errors.homeLoan?.message}
               />
             </div>
-
-            <Button btnName="Proceed" />
+            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+            <Button btnName="Proceed" isLoading={isSubmitting} />
           </form>
         </div>
       </div>

@@ -43,7 +43,7 @@ const SecondStep = () => {
     <div className="bg-white">
       <div className="mt-10 bg-white py-12">
         <div className="mx-auto max-w-md px-5">
-          <h2 className="py-8 text-2xl font-bold">Choose Salary Mode</h2>
+          <h2 className="py-8 text-2xl font-bold">Choose Salary Mode 31</h2>
         </div>
         <div className="mx-auto max-w-md rounded-lg border px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
