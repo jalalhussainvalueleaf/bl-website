@@ -56,20 +56,15 @@ const fieldSchemas = {
     .min(2, "City name is required")
     .max(30, "City name is too long"),
 
-  // email: z.string().email("Invalid email address").min(5, "Email is required"),
   email: z
     .string()
     .email("Invalid email address")
     .min(5, "Email is required")
     .refine(
       (email) => {
-        // Define blocked domains
-        const blockedDomains = ["test.com", "testing.com", "example.com"]; // Add blocked domains
-
-        // Check against blocked domains
-        const domain = email.split("@")[1]; // Extract domain from email
+        const blockedDomains = ["test.com", "testing.com", "example.com"];
+        const domain = email.split("@")[1];
         const isBlockedDomain = blockedDomains.includes(domain);
-
         return !isBlockedDomain;
       },
       {
@@ -79,11 +74,11 @@ const fieldSchemas = {
 
   companyName: z
     .string()
-    .min(2, "First name must be at least 2 characters")
-    .max(50, "First name must not exceed 50 characters")
+    .min(2, "Company name must be at least 2 characters")
+    .max(50, "Company name must not exceed 50 characters")
     .regex(
       /^[a-zA-Z\s]*$/,
-      "First name should only contain letters and spaces",
+      "Company name should only contain letters and spaces",
     ),
 
   monthlyIncome: z
@@ -116,15 +111,14 @@ const fieldSchemas = {
 
   accountNumber: z
     .string()
-    .length(16, "Account number must be exactly 16 digits") // Assumes account number is 16 digits
+    .length(16, "Account number must be exactly 16 digits")
     .regex(/^[0-9]+$/, "Account number should only contain numbers"),
 
   ifscNumber: z
     .string()
-    .length(11, "IFSC code must be exactly 11 characters") // IFSC codes are typically 11 characters long
+    .length(11, "IFSC code must be exactly 11 characters")
     .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code format"),
 
-  // Terms & Conditions
   terms: z.literal(true, {
     errorMap: () => ({
       message: "You must accept the terms and conditions",
@@ -139,7 +133,7 @@ const fieldSchemas = {
       /^[a-zA-Z0-9]+$/,
       "Registration ID should only contain alphanumeric characters",
     )
-    .optional(), // Made optional
+    .optional(),
 
   annualTurnover: z
     .string()
@@ -152,30 +146,26 @@ const fieldSchemas = {
       /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/,
       "Invalid GST number format",
     )
-    .optional(), // Made optional
+    .optional(),
 
   hasBusinessProof: z.string().optional(),
 
   hasGst: z.string().optional(),
 
-  // Dropdown Fields
   gender: z.string().min(1, "Please select a gender"),
 
   tenure: z.string().min(1, "Please select a tenure option"),
 
-  marritalSatus: z.string().min(1, "Please select a marrital status option"),
+  maritalStatus: z.string().min(1, "Please select your marital status"),
 
-  experience: z.string().min(1, "Please select a your experience"),
+  experience: z.string().min(1, "Please select your experience"),
 
-  companyType: z.string().min(1, "Please select a your company type"),
+  companyType: z.string().min(1, "Please select your company type"),
 };
 
 // Create dynamic schema based on required fields and form state
-export const createSchema = (
-  fields: (keyof typeof fieldSchemas)[],
-  formData?: any,
-) => {
-  const schemaObject: { [key: string]: any } = {};
+export const createSchema = (fields, formData) => {
+  const schemaObject = {};
 
   fields.forEach((field) => {
     if (fieldSchemas[field]) {
@@ -204,12 +194,8 @@ export const createSchema = (
   return z.object(schemaObject);
 };
 
-export type FieldName = keyof typeof fieldSchemas;
-
-export const useFormValidation = <T extends FieldName[]>(fields: T) => {
-  type FormData = z.infer<ReturnType<typeof createSchema>>;
-
-  const form = useForm<FormData>({
+export const useFormValidation = (fields) => {
+  const form = useForm({
     resolver: (values, context, options) => {
       const schema = createSchema(fields, values);
       return zodResolver(schema)(values, context, options);

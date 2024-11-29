@@ -39,7 +39,7 @@ export const menuItems = [
   { label: "Loans", type: "dropdown", data: menuData },
   {
     label: "Free Credit Score",
-    href: "#",
+    href: "/credit-score",
     badge: (
       <span className="me-2 rounded bg-green-100 px-2.5 py-0.5 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
         NEW
