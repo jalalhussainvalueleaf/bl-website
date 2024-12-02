@@ -24,49 +24,55 @@ export default function OtpVarification({
 
   const inputRefs = useRef([]);
   const [message, setMessage] = useState("");
-  const [timer, setTimer] = useState(3);
+  const [timer, setTimer] = useState(30);
   const [loading, setLoading] = useState(false);
   const mobileNumber = sessionStorage.getItem("mobileNumber");
-  const [newVerifyOtp, setVerifyOtp] = useState("");
+  const [newVerifyOtp, setVerifyOtp] = useState(true);
   const [userToken, setUserToken] = useState();
   const [encryptedData, setEncyptionData] = useState("");
   const [userFinalData, setUserFinalData] = useState({});
+  const [resendEnabled, setResendEnabled] = useState(false);
 
   const otpVerifyUrl = "https://prod.utils.buddyloan.in/verifynewotp.php";
   const resendOtpUrl = "https://prod.utils.buddyloan.in/Resend_otp.php";
   const checkUsers = "https://prod.utils.buddyloan.in/user_search.php";
 
-  // Initialize timer from localStorage or set to 30 seconds
+  // Initialize timer from sessionStorage or set to 30 seconds
   useEffect(() => {
-    const storedTime = localStorage.getItem("otpTimer");
-    const now = Date.now();
-    if (storedTime) {
-      const remainingTime =
-        30 - Math.floor((now - parseInt(storedTime, 10)) / 1000);
-      if (remainingTime > 0) {
-        setTimer(remainingTime);
-      }
-    }
-  }, []);
+    if (mobileNumber) {
+      const storedTime = sessionStorage.getItem("otpTimer");
+      const now = Date.now();
 
-  // Start or resume the countdown
+      if (storedTime) {
+        const remainingTime =
+          30 - Math.floor((now - parseInt(storedTime, 10)) / 1000);
+        if (remainingTime > 0) {
+          setTimer(remainingTime);
+        }
+      }
+    } else {
+      setTimer(0); // Ensure timer is reset if mobile number is not found
+    }
+  }, [mobileNumber]);
+
+  // Start or resume the countdown only if mobileNumber exists
   useEffect(() => {
-    if (timer > 0) {
+    if (mobileNumber && timer > 0) {
       const interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [timer]);
+  }, [mobileNumber, timer]);
 
-  // Update localStorage whenever the timer changes
+  // Update sessionStorage whenever the timer changes
   useEffect(() => {
-    if (timer > 0) {
-      localStorage.setItem("otpTimer", Date.now().toString());
+    if (mobileNumber && timer > 0) {
+      sessionStorage.setItem("otpTimer", Date.now().toString());
     } else {
-      localStorage.removeItem("otpTimer");
+      sessionStorage.removeItem("otpTimer");
     }
-  }, [timer]);
+  }, [mobileNumber, timer]);
 
   // Function to resend the OTP
   const sendOtp = async () => {
@@ -84,6 +90,7 @@ export default function OtpVarification({
     try {
       const response = await fetch(resendOtpUrl, {
         method: "POST",
+
         headers: {
           "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         },
@@ -92,7 +99,7 @@ export default function OtpVarification({
 
       if (response.ok) {
         setMessage("✅ OTP sent successfully!");
-        setTimer(3); // Reset the timer
+        setTimer(30); // Reset the timer
       } else {
         setMessage("❌ Failed to resend OTP. Please try again.");
       }
@@ -122,7 +129,7 @@ export default function OtpVarification({
     if (inputRefs.current.every((input) => input?.value)) {
       const enteredOtp = inputRefs.current.map((input) => input.value).join("");
       verifyOtp(enteredOtp, mobileNumber);
-      setVerifyOtp(enteredOtp);
+      // setVerifyOtp(enteredOtp);
     } else {
       setMessage(""); // Clear message if OTP is incomplete
     }
@@ -162,6 +169,7 @@ export default function OtpVarification({
     try {
       const response = await fetch(otpVerifyUrl, {
         method: "POST",
+
         headers: {
           "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         },
@@ -169,11 +177,19 @@ export default function OtpVarification({
       });
       // console.log(body);
       const responseData = await response.json(); // Parse response as JSON
-      // console.log("otp encypted", responseData);
+      console.log("otp encypted", responseData);
       console.log("hurray data here", decryptData(responseData.encryptData));
       // console.log("status", decryptData(responseData.encryptData));
       const decrptResponseData = decryptData(responseData.encryptData);
-
+      // const decrptResponseData = responseData;
+      // console.log("encyptedCustomData", decryptData(hUjVgE0Pn25MxHkifRepPugQCuPK4AGEEVigXPrFQ6ciWViVeeDUYf\/ZsulvT4Qs));
+      if (
+        decrptResponseData.status === "failure" &&
+        decrptResponseData.HTTPStatus === 405
+      ) {
+        setMessage("❌ OTP limit exceed,try after 10 mins");
+        setVerifyOtp(false);
+      }
       if (
         decrptResponseData.status === "success" &&
         decrptResponseData.message === "OTP Match"
@@ -258,32 +274,29 @@ export default function OtpVarification({
       Array.isArray(userFinalData.user) &&
       userFinalData.user.length > 0
     ) {
-      console.log(userFinalData.user.id);
-      if (userFinalData.user.id) {
-        console.log(userFinalData.user.id);
-      } else {
+      if (userFinalData.user[0].uj_status > 0) {
+        // offer page
+        console.log("Repeated journey", userFinalData.user[0].uj_status);
         setUserId(userFinalData.user[0].id);
         setStartUserNewJourney(false);
         setShowOfferPage(true);
         router.push("/apply-loan-online/user-status");
+      } else {
+        // new new for journey
+        console.log("user journey", userFinalData.user[0].uj_status);
+        setUserId(userFinalData.user[0].id);
+        setStartUserNewJourney(true);
+        setShowOfferPage(false);
+        router.push("/apply-loan-online/user-journey");
       }
     }
-
-    console.log("user journey ", startUserNewJourney);
-    console.log("user id", userId);
-    console.log("offer page", showOfferPage);
-    // } else {
-    //   setStartUserNewJourney(true);
-    //   setShowOfferPage(false);
-    //   // router.push("/apply-loan-online/user-journey");
-    // }
-  }, [
-    userFinalData,
-    setUserId,
-    setStartUserNewJourney,
-    setShowOfferPage,
-    router,
-  ]);
+  }, [userFinalData]);
+  // console.log(
+  //   "encyptedCustomData",
+  //   decryptData(
+  //     "N3SI6wQvA5I3Mg5gyn1B27WpB/da3+tq1hpm+rTsD+S/THvj/VX0Z8cOvHsQhilsHskvB4ijj+uMtqVndv+1l7Xgj9agp5gGRLvyQMWI5HvFsvMbBm2huU2y4/s3slYNzz/bt64Pvi/VM1OoOiWT8dj4Dgt4SBvBzAcHifUIu9Cn5q/vZ5wD2+Nfs/wYDJ9oVRHFB60UBueTr2Vr4A/nFQoaS3hefyulcA6q2zfzVnM=",
+  //   ),
+  // );
 
   return (
     <div>
@@ -334,44 +347,52 @@ export default function OtpVarification({
           </button>
         )} */}
 
-        {loading ? (
-          <div className="mt-4 flex justify-center">
-            <svg
-              className="size-6 animate-spin text-blue-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 4v1m0 14v1m8-7h1m-14 0H3m14.071 7.071a9.042 9.042 0 001.424-1.424M4.929 6.929A9.042 9.042 0 006.353 5.5m13.838 0a9.042 9.042 0 01-1.424 1.429m-13.838 0a9.042 9.042 0 011.424-1.429"
-              ></path>
-            </svg>
-          </div>
-        ) : timer > 0 ? (
-          <p className="mt-4 text-center text-sm text-gray-500">
-            Resend OTP in {timer} seconds
-          </p>
-        ) : (
-          <button
-            type="button"
-            onClick={sendOtp}
-            className="w-full rounded-lg px-4 text-sm text-blue-500"
-          >
-            Resend OTP
-          </button>
-        )}
+        {mobileNumber ? (
+          newVerifyOtp ? (
+            <>
+              {loading ? (
+                <div className="mt-4 flex justify-center">
+                  <svg
+                    className="size-6 animate-spin text-blue-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 4v1m0 14v1m8-7h1m-14 0H3m14.071 7.071a9.042 9.042 0 001.424-1.424M4.929 6.929A9.042 9.042 0 006.353 5.5m13.838 0a9.042 9.042 0 01-1.424 1.429m-13.838 0a9.042 9.042 0 011.424-1.429"
+                    ></path>
+                  </svg>
+                </div>
+              ) : timer > 0 ? (
+                <p className="mt-4 text-center text-sm text-gray-500">
+                  Resend OTP in {timer} seconds
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={sendOtp}
+                  className="w-full rounded-lg px-4 text-sm text-blue-500"
+                >
+                  Resend OTP
+                </button>
+              )}
+            </>
+          ) : (
+            ""
+          )
+        ) : null}
       </form>
       {/* if user doesnot exists in the table then start a new journey for testing */}
-      {startUserNewJourney && <>Journey Started for New User</>}
+      {/* {startUserNewJourney && <>Journey Started for New User</>} */}
 
       {/* if user is already registered then show the offer page for testing */}
-      {showOfferPage && userId && userId.trim() !== "" && (
+      {/* {showOfferPage && userId && userId.trim() !== "" && (
         <>Showing Offer Page</>
-      )}
+      )} */}
     </div>
   );
 }

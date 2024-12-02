@@ -11,6 +11,7 @@ export const useUserContext = () => {
 // Create a provider component
 export const UserProvider = ({ children }) => {
   const [userId, setUserId] = useState("");
+  const [steps, setSteps] = useState("");
   const [startUserNewJourney, setStartUserNewJourney] = useState(false);
   const [showOfferPage, setShowOfferPage] = useState(false);
 
@@ -19,6 +20,8 @@ export const UserProvider = ({ children }) => {
       value={{
         userId,
         setUserId,
+        steps,
+        setSteps,
         startUserNewJourney,
         setStartUserNewJourney,
         showOfferPage,

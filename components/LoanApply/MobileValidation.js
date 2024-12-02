@@ -101,10 +101,10 @@ export default function MobileValidation({
   };
 
   return (
-    <div className="h-[90vh]">
+    <div className="h-screen">
       <div className="grid lg:grid-cols-2">
-        <div className="bg-gray-200">hello</div>
-        <div className="flex h-[90vh] flex-col items-center justify-center">
+        <div className="bg-gray-200"></div>
+        <div className="flex h-screen flex-col items-center justify-center">
           <h1 className="py-12 text-3xl">
             Apply & Get Loan Approved Instantly
           </h1>
@@ -112,7 +112,7 @@ export default function MobileValidation({
             <div className="relative mb-4 flex w-full items-center">
               <input
                 type="text"
-                className={`poppins h-[53px] w-full rounded-[12px] border-[1px] ${
+                className={`poppins h-[53px] w-full rounded-[12px] border-DEFAULT ${
                   isValid ? "border-[#47B6F2]" : "border-red-500"
                 } px-3 text-black ${
                   !isEditable ? "cursor-not-allowed bg-gray-200" : ""
@@ -131,7 +131,7 @@ export default function MobileValidation({
                   <FaPencilAlt />
                 </button>
               )}
-              <label className="pointer-events-none absolute left-3 top-0 -translate-y-1/2 transform rounded-full bg-white px-1 text-[#47B6F2]">
+              <label className="pointer-events-none absolute left-3 top-0 -translate-y-1/2 rounded-full bg-white px-1 text-[#47B6F2]">
                 Mobile Number
               </label>
             </div>
