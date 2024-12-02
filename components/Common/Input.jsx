@@ -1,27 +1,15 @@
-interface InputProps {
-  placeholder: string;
-  value: string;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-  type?: string;
-  error?: any;
-  maxLength?: number;
-}
+"use client";
+import React from "react";
 
-const Input: React.FC<InputProps> = ({
-  placeholder,
-  value,
-  onChange,
-  type,
-  error,
-  maxLength,
-}) => {
-  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+const Input = ({ placeholder, value, onChange, type, error, maxLength }) => {
+  const handleInputChange = (e) => {
     const inputValue = e.target.value;
     if (type === "number" && maxLength && inputValue.length > maxLength) {
       return; // Prevent further input if maxLength is exceeded
     }
     onChange(e);
   };
+
   return (
     <div className="relative mb-4 w-full">
       <input

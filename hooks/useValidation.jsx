@@ -161,29 +161,6 @@ const fieldSchemas = {
   experience: z.string().min(1, "Please select your experience"),
 
   companyType: z.string().min(1, "Please select your company type"),
-
-  loanAmount: z
-    .string()
-    .regex(/^\d+$/, "Loan amount must be a numeric value")
-    .refine(
-      (value) => {
-        const amount = parseInt(value, 10);
-        return amount >= 1500 && amount <= 1500000;
-      },
-      {
-        message: "Loan amount must be between ₹1,500 and ₹1,500,000.",
-      },
-    ),
-
-  years: z.string().min(1, "Please select a your company type"),
-  designation: z.string().min(1, "Please select a your company type"),
-  qualification: z.string().min(1, "Please select a your company type"),
-  panCard: z.string().min(1, "Please select a your company type"),
-  fname: z.string().min(1, "Please select a your company type"),
-  lname: z.string().min(1, "Please select a your company type"),
-  residenceType: z.string().min(1, "Please select a your company type"),
-  currentAddress: z.string().min(1, "Please select a your company type"),
-  LoanAmount: z.string().min(1, "Please select a your company type"),
 };
 
 // Create dynamic schema based on required fields and form state

@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import Input from "../../components/Common/Input";
-import { useFormValidation } from "@/hooks/useValidation";
-import CalendarInput from "@/components/Common/CalendarInput";
-import Dropdown from "@/components/Common/Dropdown";
 import Image from "next/image";
 import Link from "next/link";
+import { useFormValidation } from "@/hooks/useValidation";
+import Input from "@/components/Common/Input";
+import CalendarInput from "@/components/Common/CalendarInput";
+import Dropdown from "@/components/Common/Dropdown";
 import FaqSection from "@/components/Common/FaqSection";
 import TermsConditions from "@/components/Common/TermsConditions";
 import CreditScoreFAQ from "../../mock/CreditScoreFAQ";
