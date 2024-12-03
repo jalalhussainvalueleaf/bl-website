@@ -1,18 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useUserContext } from "../../../utils/UserContext";
 import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Dropdown from "@/components/Common/Dropdown";
-import CalendarInput from "@/components/Common/CalendarInput";
 
 const FirstStep = () => {
+  const { setSteps } = useUserContext();
+  const checkPincodeAPI =
+    "https://prod.utils.buddyloan.in/autopopulate_pincode_api.php";
+
   const fields = ["residenceType", "currentAddress", "pincode"];
 
   const {
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setValue,
     watch,
     trigger,
@@ -20,23 +24,80 @@ const FirstStep = () => {
 
   const formData = watch();
 
-  const handleChange = (field) => (e) => {
-    setValue(field, e.target.value);
-    trigger(field);
+  const [pincodeError, setPincodeError] = useState("");
+  const [isPincodeValid, setIsPincodeValid] = useState(false);
+
+  // Load saved data on mount
+  useEffect(() => {
+    const savedData =
+      JSON.parse(sessionStorage.getItem("communicationAddress")) || {};
+    Object.keys(savedData).forEach((field) => {
+      setValue(field, savedData[field]);
+    });
+  }, [setValue]);
+
+  const validatePincode = async (pincode) => {
+    if (pincode.length !== 6) {
+      setIsPincodeValid(false);
+      setPincodeError("Pincode must be 6 digits.");
+      return false;
+    }
+
+    const payload = new URLSearchParams({ pincode });
+    try {
+      const response = await fetch(checkPincodeAPI, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        },
+        body: payload.toString(),
+      });
+
+      const result = await response.json();
+      if (response.ok && result.HTTPStatus === 200) {
+        setIsPincodeValid(true);
+        setPincodeError("");
+        return true;
+      } else {
+        setIsPincodeValid(false);
+        setPincodeError(result.message || "Invalid pincode.");
+        return false;
+      }
+    } catch (error) {
+      setIsPincodeValid(false);
+      setPincodeError("Error validating pincode. Please try again.");
+      console.error("Pincode validation error:", error);
+      return false;
+    }
   };
+
+  const handleChange = (field) => async (e) => {
+    const value = e.target.value;
+    setValue(field, value);
+
+    if (field === "pincode") {
+      await validatePincode(value);
+    }
+  };
+
   const handleDropdownChange = (field, value) => {
     setValue(field, value);
     trigger(field);
   };
-  const handleDateChange = (field, date) => {
-    setValue(field, date);
-    trigger(field);
-    console.log("date", date);
-  };
 
   const onSubmit = async (data) => {
     try {
-      console.log("Form submitted successfully:", data);
+      // Ensure all validations are triggered
+      const isValid = await trigger();
+      const pincodeValid = await validatePincode(data.pincode);
+      if (!isValid || !pincodeValid) {
+        setPincodeError("Please fix the errors before proceeding.");
+        return;
+      }
+      console.log("Form data before saving to sessionStorage:", data);
+      sessionStorage.setItem("communicationAddress", JSON.stringify(data));
+      sessionStorage.setItem("journey", "finish");
+      setSteps("finish");
     } catch (error) {
       console.error("Form submission error:", error);
     }
@@ -91,11 +152,11 @@ const FirstStep = () => {
                 placeholder="Current Address Pincode"
                 value={watch("pincode") || ""}
                 onChange={handleChange("pincode")}
-                error={errors.pincode?.message}
+                error={errors.pincode?.message || pincodeError}
               />
             </div>
 
-            <Button btnName="Proceed" />
+            <Button btnName="Proceed" isDisabled={!isPincodeValid} />
           </form>
         </div>
       </div>

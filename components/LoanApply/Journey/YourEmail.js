@@ -9,7 +9,7 @@ import { useUserContext } from "../../../utils/UserContext";
 const SecondStep = ({ onClick }) => {
   const router = useRouter();
   const [selectedLoanType, setSelectedLoanType] = useState("");
-  const { steps, setSteps } = useUserContext();
+  const { setSteps } = useUserContext();
 
   const fields = ["loanAmount", "email"];
   const {
@@ -24,16 +24,14 @@ const SecondStep = ({ onClick }) => {
 
   // Load saved data on mount
   useEffect(() => {
-    const savedData = JSON.parse(sessionStorage.getItem("step1Data")) || {};
+    const savedData = JSON.parse(sessionStorage.getItem("welcome")) || {};
     Object.keys(savedData).forEach((field) => {
       setValue(field, savedData[field]);
     });
   }, [setValue]);
 
   // Save form data to sessionStorage whenever it changes
-  useEffect(() => {
-    sessionStorage.setItem("step1Data", JSON.stringify(formData));
-  }, [formData]);
+  useEffect(() => {}, [formData]);
 
   const handleChange = (field) => (e) => {
     setValue(field, e.target.value);
@@ -44,9 +42,10 @@ const SecondStep = ({ onClick }) => {
     try {
       const finalData = { ...data, loanType: selectedLoanType };
       // console.log("Form submitted successfully:", finalData);
-      console.log("Step 1 submitted:", data);
+      sessionStorage.setItem("welcome", JSON.stringify(formData));
       sessionStorage.setItem("journey", 2);
-      onClick();
+      setSteps(2);
+      // onClick();
     } catch (error) {
       console.error("Form submission error:", error);
     }

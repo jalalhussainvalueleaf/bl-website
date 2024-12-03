@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useUserContext } from "../../../utils/UserContext";
 import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Radio from "@/components/Common/Radio";
 
-const SecondStep = ({ onNext }) => {
+const SecondStep = () => {
   const [selectedLoanType, setSelectedLoanType] = useState("");
   const [error, setError] = useState("");
+  const { setSteps } = useUserContext();
 
-  const fields = ["personalLoan", "homeLoan"];
+  const fields = ["personalLoan", "businessLoan"];
 
   const {
     handleSubmit,
@@ -22,6 +24,15 @@ const SecondStep = ({ onNext }) => {
 
   const formData = watch();
 
+  // Load saved data and selected loan type on mount
+  useEffect(() => {
+    const savedLoanType = sessionStorage.getItem("selectedLoanType");
+
+    if (savedLoanType) {
+      setSelectedLoanType(savedLoanType);
+    }
+  }, [setValue]);
+
   const onSubmit = async (data) => {
     if (!selectedLoanType) {
       setError("Please select a loan type.");
@@ -30,9 +41,10 @@ const SecondStep = ({ onNext }) => {
       setError(""); // Clear error if selection is valid
       try {
         const finalData = { ...data, loanType: selectedLoanType };
-        console.log("Form submitted successfully:", finalData);
-        console.log("Step 2 submitted:", data);
-        onNext(); // Call onNext to move to the next step
+        console.log("Step 2 submitted:", finalData);
+        sessionStorage.setItem("journey", selectedLoanType);
+        setSteps(selectedLoanType);
+        // Navigate to the next step or handle redirection
       } catch (error) {
         console.error("Form submission error:", error);
       }
@@ -41,9 +53,9 @@ const SecondStep = ({ onNext }) => {
 
   const handleRadioChange = (value) => {
     setSelectedLoanType(value);
-    sessionStorage.setItem("journey", 3);
+    sessionStorage.setItem("selectedLoanType", value); // Save the selection
     setError(""); // Clear the error when a selection is made
-    console.log(value);
+    console.log("Selected Loan Type:", value);
   };
 
   return (
@@ -61,15 +73,13 @@ const SecondStep = ({ onNext }) => {
                 isSelected={selectedLoanType === "personalLoan"}
                 onChange={handleRadioChange}
                 label="Personal Loan"
-                error={errors.personalLoan?.message}
               />
               <Radio
-                name="homeLoan"
-                value="homeLoan"
-                isSelected={selectedLoanType === "homeLoan"}
+                name="businessLoan"
+                value="businessLoan"
+                isSelected={selectedLoanType === "businessLoan"}
                 onChange={handleRadioChange}
-                label="Home Loan"
-                error={errors.homeLoan?.message}
+                label="Business Loan"
               />
             </div>
             {error && <p className="mt-2 text-sm text-red-500">{error}</p>}

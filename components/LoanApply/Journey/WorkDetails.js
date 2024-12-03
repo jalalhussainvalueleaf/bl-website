@@ -1,12 +1,17 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useUserContext } from "../../../utils/UserContext";
 import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Dropdown from "@/components/Common/Dropdown";
 
 const FirstStep = () => {
+  const [workDetails, setWorkDetails] = useState("");
+  const { setSteps } = useUserContext();
+  const checkPincodeAPI =
+    "https://prod.utils.buddyloan.in/autopopulate_pincode_api.php";
+
   const fields = [
     "companyType",
     "companyName",
@@ -24,19 +29,71 @@ const FirstStep = () => {
   } = useFormValidation(fields);
 
   const formData = watch();
+  const [pincodeError, setPincodeError] = useState("");
+  const [isPincodeValid, setIsPincodeValid] = useState(false);
 
-  const handleChange = (field) => (e) => {
-    setValue(field, e.target.value);
-    trigger(field);
+  const handleChange = (field) => async (e) => {
+    const value = e.target.value;
+    setValue(field, value);
+    // trigger(field);
+    if (field === "pincode") {
+      await validatePincode(value);
+    }
   };
   const handleDropdownChange = (field, value) => {
     setValue(field, value);
     trigger(field);
   };
 
+  // Load saved data on mount
+  useEffect(() => {
+    const savedData = JSON.parse(sessionStorage.getItem("workDetails")) || {};
+    Object.keys(savedData).forEach((field) => {
+      setValue(field, savedData[field]);
+    });
+  }, [setValue]);
+
+  const validatePincode = async (pincode) => {
+    if (pincode.length !== 6) {
+      setIsPincodeValid(false);
+      setPincodeError("Pincode must be 6 digits.");
+      return false;
+    }
+
+    const payload = new URLSearchParams({ pincode });
+    try {
+      const response = await fetch(checkPincodeAPI, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        },
+        body: payload.toString(),
+      });
+
+      const result = await response.json();
+      if (response.ok && result.HTTPStatus === 200) {
+        setIsPincodeValid(true);
+        setPincodeError("");
+        return true;
+      } else {
+        setIsPincodeValid(false);
+        setPincodeError(result.message || "Invalid pincode.");
+        return false;
+      }
+    } catch (error) {
+      setIsPincodeValid(false);
+      setPincodeError("Error validating pincode. Please try again.");
+      console.error("Pincode validation error:", error);
+      return false;
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
-      console.log("Form submitted successfully:", data);
+      const finalData = { ...data, workDetails: workDetails };
+      sessionStorage.setItem("workDetails", JSON.stringify(formData));
+      sessionStorage.setItem("journey", "personalDetails");
+      setSteps("personalDetails");
     } catch (error) {
       console.error("Form submission error:", error);
     }
@@ -77,10 +134,10 @@ const FirstStep = () => {
             <div className="flex items-center justify-between gap-5 ">
               <Input
                 type="text"
-                placeholder="Company Address Pincode"
+                placeholder="Current Address Pincode"
                 value={watch("pincode") || ""}
                 onChange={handleChange("pincode")}
-                error={errors.pincode?.message}
+                error={errors.pincode?.message || pincodeError}
               />
             </div>
             <div className="flex items-center justify-between gap-5 py-4">

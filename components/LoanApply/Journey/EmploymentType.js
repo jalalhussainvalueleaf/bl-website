@@ -1,14 +1,15 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useUserContext } from "../../../utils/UserContext";
 import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Radio from "@/components/Common/Radio";
 
-const SecondStep = ({ onNext }) => {
+const SecondStep = () => {
   const [employmentType, setEmploymentType] = useState("");
   const [error, setError] = useState("");
+  const { setSteps } = useUserContext();
   const fields = ["Salaried", "Self-Employed", "Student"];
 
   const {
@@ -26,6 +27,14 @@ const SecondStep = ({ onNext }) => {
     trigger(field);
   };
 
+  // Load saved data and selected loan type on mount
+  useEffect(() => {
+    const savedEmploymenType = sessionStorage.getItem("selectedEmploymentType");
+    if (savedEmploymenType) {
+      setEmploymentType(savedEmploymenType);
+    }
+  }, [setValue]);
+
   const onSubmit = async (data) => {
     if (!employmentType) {
       setError("Please select a employment type.");
@@ -34,10 +43,9 @@ const SecondStep = ({ onNext }) => {
       setError(""); // Clear error if selection is valid
       try {
         const finalData = { ...data, employmentType: employmentType };
-        // console.log("Form submitted successfully:", finalData);
-        console.log("Step 2 submitted:", finalData);
-        sessionStorage.setItem("journey", 35);
-        onNext(); // Call onNext to move to the next step
+        console.log("Step 3 submitted:", finalData);
+        sessionStorage.setItem("journey", employmentType);
+        setSteps(employmentType);
       } catch (error) {
         console.error("Form submission error:", error);
       }
@@ -46,6 +54,7 @@ const SecondStep = ({ onNext }) => {
 
   const handleRadioChange = (value) => {
     setEmploymentType(value);
+    sessionStorage.setItem("selectedEmploymentType", value); // Save the selection
     setError(""); // Clear the error when a selection is made
     console.log(value);
   };
@@ -85,7 +94,7 @@ const SecondStep = ({ onNext }) => {
               {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             </div>
 
-            <Button btnName="Proceed" />
+            <Button btnName="Proceed" isLoading={isSubmitting} />
           </form>
         </div>
       </div>
