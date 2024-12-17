@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import CryptoJS from "crypto-js";
-import { useUserContext } from "../../utils/UserContext";
+import { useUserContext } from "@/utils/UserContext";
 import { useRouter } from "next/navigation";
-import { encryptData, decryptData } from "../../utils/cryptoUtils"; // Import the functions
+import { encryptData, decryptData } from "@/utils/cryptoUtils"; // Import the functions
+import ConfigData from "@/config";
 
 export default function OtpVarification({
   utmSource,
@@ -33,9 +34,9 @@ export default function OtpVarification({
   const [userFinalData, setUserFinalData] = useState({});
   const [resendEnabled, setResendEnabled] = useState(false);
 
-  const otpVerifyUrl = "https://prod.utils.buddyloan.in/verifynewotp.php";
-  const resendOtpUrl = "https://prod.utils.buddyloan.in/Resend_otp.php";
-  const checkUsers = "https://prod.utils.buddyloan.in/user_search.php";
+  const otpVerifyUrl = `${ConfigData.domainAPI}/verifynewotp.php`;
+  const resendOtpUrl = `${ConfigData.domainAPI}/Resend_otp.php`;
+  const checkUsers = `${ConfigData.domainAPI}/user_search.php`;
 
   // Initialize timer from sessionStorage or set to 30 seconds
   useEffect(() => {
@@ -202,6 +203,7 @@ export default function OtpVarification({
         // );
         // console.log("user_token", decrptResponseData.user_token);
         setUserToken(decrptResponseData.user_token);
+        sessionStorage.setItem("_token", decrptResponseData.user_token);
         setMessage("✅ OTP verified successfully!");
         verifyUsers(decrptResponseData.user_token);
       } else {
@@ -256,8 +258,9 @@ export default function OtpVarification({
       const responseData = await response.json(); // Parse response as JSON
       // console.log("user search", responseData);
       // const user_data = decryptData(responseData.encryptData);
+      sessionStorage.setItem("journey", 1);
       sessionStorage.setItem("ud_token", responseData.encryptData);
-      console.log("new user serach", decryptData(responseData.encryptData));
+      // console.log("new user serach", decryptData(responseData.encryptData));
       setUserFinalData(decryptData(responseData.encryptData));
       // setEncyptionData(decryptData(responseData.encryptData));
     } catch (error) {
@@ -275,28 +278,41 @@ export default function OtpVarification({
       userFinalData.user.length > 0
     ) {
       if (userFinalData.user[0].uj_status > 0) {
+        // console.log("my journey status", userFinalData.user[0].uj_status);
         // offer page
-        console.log("Repeated journey", userFinalData.user[0].uj_status);
+        // console.log("Repeated journey", userFinalData.user[0].uj_status);
         setUserId(userFinalData.user[0].id);
         setStartUserNewJourney(false);
         setShowOfferPage(true);
+        const data = {
+          userId: userFinalData.user[0].id,
+          StartUserNewJourney: startUserNewJourney,
+          ShowOfferPage: showOfferPage,
+        };
+        // Store the JSON data in sessionStorage
+        const userStat = encryptData(data);
+        sessionStorage.setItem("u_stat_bdl", userStat);
+
         router.push("/apply-loan-online/user-status");
       } else {
         // new new for journey
-        console.log("user journey", userFinalData.user[0].uj_status);
+        // console.log("user journey", userFinalData.user[0].uj_status);
         setUserId(userFinalData.user[0].id);
         setStartUserNewJourney(true);
         setShowOfferPage(false);
+        const data = {
+          userId: userFinalData.user[0].id,
+          StartUserNewJourney: startUserNewJourney,
+          ShowOfferPage: showOfferPage,
+        };
+        // Store the JSON data in sessionStorage
+        sessionStorage.setItem("u_stat_bdl", JSON.stringify(data));
+
         router.push("/apply-loan-online/user-journey");
       }
     }
   }, [userFinalData]);
-  // console.log(
-  //   "encyptedCustomData",
-  //   decryptData(
-  //     "N3SI6wQvA5I3Mg5gyn1B27WpB/da3+tq1hpm+rTsD+S/THvj/VX0Z8cOvHsQhilsHskvB4ijj+uMtqVndv+1l7Xgj9agp5gGRLvyQMWI5HvFsvMbBm2huU2y4/s3slYNzz/bt64Pvi/VM1OoOiWT8dj4Dgt4SBvBzAcHifUIu9Cn5q/vZ5wD2+Nfs/wYDJ9oVRHFB60UBueTr2Vr4A/nFQoaS3hefyulcA6q2zfzVnM=",
-  //   ),
-  // );
+  // console.log("encyptedCustomData", decryptData("MoY/qGFl+zzxtcpu5fR7wQ=="));
 
   return (
     <div>

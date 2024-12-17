@@ -18,7 +18,7 @@ export default function PersonalLoan() {
         <div>
           <Link
             href="/apply-loan-online/?utm_source=seoblog&utm_medium=blogalocta&utm_campaign=organic"
-            className="bg-bl-blue rounded-full p-4 text-white shadow"
+            className="animate-ping rounded-full bg-bl-blue p-4 text-white shadow"
           >
             Check Now
           </Link>

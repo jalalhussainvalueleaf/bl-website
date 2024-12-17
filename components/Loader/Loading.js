@@ -6,7 +6,7 @@ export default function Loading() {
       <svg
         aria-hidden="true"
         role="status"
-        class="me-3 inline size-20 animate-spin text-gray-200 dark:text-gray-600"
+        className="me-3 inline size-20 animate-spin text-gray-200 dark:text-gray-600"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

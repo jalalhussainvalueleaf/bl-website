@@ -65,9 +65,10 @@ export default function Modal({ title, data, btnName, link }) {
 
                 {/* Modal Content */}
                 <div className="space-y-4 p-4">
-                  <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    {data}
-                  </p>
+                  <div
+                    className="text-base leading-relaxed text-gray-500 dark:text-gray-400"
+                    dangerouslySetInnerHTML={{ __html: data }}
+                  />
                 </div>
 
                 {/* Modal Footer */}

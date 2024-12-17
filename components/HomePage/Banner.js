@@ -11,10 +11,10 @@ export default function Banner() {
           <h1 className="text-5xl font-bold text-black">
             Want A Personal Loan?
           </h1>
-          <h3 className="text-bl-blue text-4xl font-bold">80% Approval Rate</h3>
+          <h3 className="text-4xl font-bold text-bl-blue">80% Approval Rate</h3>
           <Link
             href="/apply-loan-online/?utm_source=seo&utm_medium=homepgbanappnowbtn&utm_campaign=organic"
-            className="bg-bl-blue w-[150px] rounded-full p-4 text-center text-white"
+            className="text-whitex` w-[150px] rounded-full bg-bl-blue p-4 text-center"
           >
             Apply Now
           </Link>
@@ -60,7 +60,7 @@ export default function Banner() {
         <div className="flex items-center justify-end">
           <Link
             href="/buddy-score/credit-score?utm_source=seo&utm_medium=homepgcsbtn&utm_campaign=organic"
-            className="bg-bl-blue flex h-20 w-[500px] items-center justify-center gap-4 rounded-full shadow"
+            className="flex h-20 w-[500px] items-center justify-center gap-4 rounded-full bg-bl-blue shadow"
           >
             <div>
               <p className="text-2xl text-white">Free Credit Score</p>
@@ -74,7 +74,7 @@ export default function Banner() {
         <div className="flex items-center justify-start">
           <Link
             href="/loan-eligibility-calculator?utm_source=seo&utm_medium=homepgelgbtn&utm_campaign=organic"
-            className="bg-bl-blue flex h-20 w-[500px] items-center justify-center gap-4 rounded-full shadow"
+            className="flex h-20 w-[500px] items-center justify-center gap-4 rounded-full bg-bl-blue shadow"
           >
             <div>
               <p className="text-2xl text-white">Check Eligibility</p>

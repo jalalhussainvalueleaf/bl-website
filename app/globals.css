@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes border-pulse {
+  0% {
+    box-shadow: 0 0 0 0 #00b5ef; /* Initial border glow */
+  }
+  50% {
+    box-shadow: 0 0 2px 5px #00b5ef; /* Pulse effect */
+  }
+  100% {
+    box-shadow: 0 0 0 0 #00b5ef; /* Fade out */
+  }
+}

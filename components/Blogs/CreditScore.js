@@ -18,7 +18,7 @@ export default function CreditScore() {
         <div>
           <Link
             href="/buddy-score/credit-score?utm_source=seoblog&utm_medium=blogcscta&utm_campaign=organic"
-            className="bg-bl-blue rounded-full p-4 text-white shadow"
+            className="rounded-full bg-bl-blue p-4 text-white shadow"
           >
             Check Now
           </Link>

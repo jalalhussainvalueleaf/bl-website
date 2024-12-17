@@ -1,28 +1,49 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
-import Step1 from "../../../components/LoanApply/Journey/Step1";
-import Step2 from "../../../components/LoanApply/Journey/Step2";
-import Step3 from "../../../components/LoanApply/Journey/Step3";
-import Step31 from "../../../components/LoanApply/Journey/Step31";
-import Step32 from "../../../components/LoanApply/Journey/Step32";
-import Step33 from "../../../components/LoanApply/Journey/Step33";
-import Step34 from "../../../components/LoanApply/Journey/Step34";
-import Step35 from "../../../components/LoanApply/Journey/Step35";
+import { useRouter } from "next/navigation";
+import { useUserContext } from "../../../utils/UserContext";
+import Step1 from "../../../components/LoanApply/Journey/YourEmail";
+import Step2 from "../../../components/LoanApply/Journey/LoanType";
+import Step3 from "../../../components/LoanApply/Journey/EmploymentType";
+import Step31 from "../../../components/LoanApply/Journey/SalaryMode";
+import Step32 from "../../../components/LoanApply/Journey/WorkDetails";
+import Step33 from "../../../components/LoanApply/Journey/PersonalDetails";
+import Step34 from "../../../components/LoanApply/Journey/CommunicationAddress";
+import Step35 from "../../../components/LoanApply/Journey/IncomeBankDetails";
+import BusinessProof from "../../../components/LoanApply/Journey/BusinessProof";
+import BusinessDetails from "../../../components/LoanApply/Journey/BusinessDetails";
+import ProfessionType from "../../../components/LoanApply/Journey/ProfessionType";
 
 export default function Page() {
-  // Initialize the journey state from sessionStorage or set to the first step
-  const [journey, setJourney] = useState(() => {
-    const savedJourney = sessionStorage.getItem("journey");
-    return savedJourney ? parseInt(savedJourney, 10) : 1; // Default to step 1 if nothing is saved
-  });
+  const router = useRouter();
+  const { steps } = useUserContext();
+  const [countSteps, setCountSteps] = useState("1"); // Default to string for consistency
 
-  // Update the journey state when sessionStorage changes
+  // Update countSteps based on sessionStorage or context steps
+  useEffect(() => {
+    const savedStep = sessionStorage.getItem("journey");
+    const checkMobile = sessionStorage.getItem("mobileNumber");
+    if (checkMobile && savedStep) {
+      setCountSteps(savedStep);
+    } else {
+      router.push("/apply-loan-online/");
+    }
+
+    if (savedStep) {
+      setCountSteps(savedStep); // Use string for consistency with `switch` cases
+    } else {
+      setCountSteps(String(steps)); // Ensure steps is converted to string
+    }
+  }, [steps]);
+
+  // Listen for sessionStorage changes (e.g., updates from other tabs)
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.storageArea === sessionStorage && event.key === "journey") {
-        const newJourney = parseInt(event.newValue, 10);
-        if (!isNaN(newJourney)) {
-          setJourney(newJourney);
+        const newStep = event.newValue;
+        if (newStep) {
+          setCountSteps(newStep); // Update `countSteps` on storage change
         }
       }
     };
@@ -33,46 +54,47 @@ export default function Page() {
     };
   }, []);
 
-  // Update sessionStorage whenever the journey changes
-  useEffect(() => {
-    if (journey !== null) {
-      sessionStorage.setItem("journey", journey);
-    }
-  }, [journey]);
-
-  // Function to go to the next step or a specific step
-  const goToStep = (step) => {
-    setJourney(step);
-  };
-
-  // Render the current step
+  // Render the correct step component based on `countSteps`
   const renderStep = () => {
-    switch (journey) {
-      case 1:
-        return <Step1 onClick={() => goToStep(2)} />;
-      case 2:
-        return <Step2 onClick={() => goToStep(journey)} />;
-      case 3:
-        return <Step3 onClick={() => goToStep(journey)} />;
-      case 31:
-        return <Step31 onClick={() => goToStep(journey)} />;
-      case 32:
-        return <Step32 onClick={() => goToStep(journey)} />;
-      case 33:
-        return <Step33 onClick={() => goToStep(journey)} />;
-      case 34:
-        return <Step34 onClick={() => goToStep(journey)} />;
-      case 35:
-        return <Step35 onClick={() => goToStep(journey)} />;
+    switch (countSteps) {
+      case "2":
+        return <Step2 />;
+      case "personalLoan":
+        return <Step3 />;
+      case "businessLoan":
+        return <BusinessProof />;
+      case "yes":
+        return <BusinessDetails />;
+      case "no":
+        return <ProfessionType />;
+      case "Salaried":
+        return <Step31 />;
+      case "Self-Employed":
+        return <ProfessionType />;
+      case "SalaryInBank":
+        return <Step32 />;
+      case "personalDetails":
+        return <Step33 />;
+      case "Student":
+        return <Step33 />;
+      case "communicationAddress":
+        return <Step34 />;
+      case "finish":
+        return <Step35 />;
       default:
-        return <div>All steps completed!</div>;
+        return <Step1 />;
     }
   };
 
   return (
-    <div>
-      {renderStep()}
-      my journey start here - {journey}
+    <div className="">
+      <div className="flex flex-col items-center">
+        <img src="/images/buddyloan-logo.png" className="w-40" />
+      </div>
+      <div>
+        {renderStep()}
+        {/* <p>My journey - {countSteps}</p> */}
+      </div>
     </div>
   );
 }

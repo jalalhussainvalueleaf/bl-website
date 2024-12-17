@@ -1,22 +1,14 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
-interface FAQItem {
-  question: string;
-  answer: string;
-}
+const FaqSection = ({ faqData }) => {
+  const [openIndex, setOpenIndex] = useState(null);
 
-interface FaqSectionProps {
-  faqData: FAQItem[];
-}
-
-const FaqSection: React.FC<FaqSectionProps> = ({ faqData }) => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const toggleFAQ = (index: number) => {
+  const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const renderIcon = (index: any) => {
+  const renderIcon = (index) => {
     return (
       <>
         {openIndex !== index ? (
@@ -27,19 +19,15 @@ const FaqSection: React.FC<FaqSectionProps> = ({ faqData }) => {
             viewBox="0 0 256 256"
           >
             <g
-              id="galaAdd0"
               fill="none"
               stroke="currentColor"
-              stroke-dasharray="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-miterlimit="4"
-              stroke-opacity="1"
-              stroke-width="16"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="16"
             >
-              <circle id="galaAdd1" cx="128" cy="128" r="112" />
-              <path id="galaAdd2" d="M 79.999992,128 H 176.0001" />
-              <path id="galaAdd3" d="m 128.00004,79.99995 v 96.0001" />
+              <circle cx="128" cy="128" r="112" />
+              <path d="M 80,128 H 176" />
+              <path d="M 128,80 v 96" />
             </g>
           </svg>
         ) : (
@@ -50,18 +38,14 @@ const FaqSection: React.FC<FaqSectionProps> = ({ faqData }) => {
             viewBox="0 0 256 256"
           >
             <g
-              id="galaRemove0"
               fill="none"
               stroke="currentColor"
-              stroke-dasharray="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-miterlimit="4"
-              stroke-opacity="1"
-              stroke-width="16"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="16"
             >
-              <circle id="galaRemove1" cx="128" cy="128" r="112" />
-              <path id="galaRemove2" d="M 80.000004,128 H 176.00001" />
+              <circle cx="128" cy="128" r="112" />
+              <path d="M 80,128 H 176" />
             </g>
           </svg>
         )}
@@ -69,13 +53,22 @@ const FaqSection: React.FC<FaqSectionProps> = ({ faqData }) => {
     );
   };
 
+  // If faqData is empty, don't render the FAQ section
+  if (!faqData || faqData.length === 0) {
+    return null;
+  }
+
   return (
     <div className="mx-auto max-w-full p-4">
       <div className="rounded-md border border-gray-200 px-4">
         {faqData.map((item, index) => (
           <div
             key={index}
-            className={` ${index === faqData?.length - 1 ? "border-none" : "border-b border-gray-300 "} transition-all duration-300`}
+            className={`${
+              index === faqData.length - 1
+                ? "border-none"
+                : "border-b border-gray-300"
+            } transition-all duration-300`}
           >
             <button
               onClick={() => toggleFAQ(index)}
@@ -91,13 +84,25 @@ const FaqSection: React.FC<FaqSectionProps> = ({ faqData }) => {
                 openIndex === index ? "max-h-[200px]" : "max-h-0"
               }`}
             >
-              <div className="p-4 text-gray-700">{item.answer}</div>
+              <div
+                className="p-4 text-gray-700"
+                dangerouslySetInnerHTML={{ __html: item.answer }}
+              ></div>
             </div>
           </div>
         ))}
       </div>
     </div>
   );
+};
+
+FaqSection.propTypes = {
+  faqData: PropTypes.arrayOf(
+    PropTypes.shape({
+      question: PropTypes.string.isRequired,
+      answer: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
 };
 
 export default FaqSection;

@@ -96,7 +96,7 @@ const FirstStep = () => {
 
   return (
     <div className="bg-white">
-      <div className="mt-10 bg-white py-12">
+      <div className=" bg-white">
         <div className="mx-auto max-w-md px-5">
           <h2 className="py-8 text-2xl font-bold">
             Enter Your Business Details

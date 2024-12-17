@@ -1,12 +1,11 @@
 import React from "react";
 import BlogContent from "../../../components/Blogs/BlogContent";
 import FreeCreditScore from "../../../components/Blogs/FreeCreditScore";
+import ConfigData from "../../../config";
 
 // Function to fetch WordPress content
 async function fetchData(slug) {
-  const res = await fetch(
-    `https://www.buddyloan.com/blog/wp-json/wp/v2/posts?slug=${slug}`,
-  );
+  const res = await fetch(`${ConfigData.blogAPI}/posts?slug=${slug}`);
   if (!res.ok) {
     throw new Error("Failed to fetch data");
   }
@@ -25,15 +24,12 @@ function replacePlaceholders(htmlContent) {
 // Function to add custom classes to specific HTML tags
 function addClassesToTags(htmlContent) {
   return htmlContent
-    .replace(/<h2>/g, '<h2 class="text-2xl font-bold mt-4 mb-2">')
-    .replace(/<ol>/g, '<ol class="list-decimal pl-6 mb-4">')
-    .replace(/<p>/g, '<p class="mb-4 text-gray-700">')
-    .replace(
-      /<table>/g,
-      '<table class="table-auto border-collapse w-full mb-4">',
-    )
-    .replace(/<thead>/g, '<thead class="bg-gray-200 text-gray-800">')
-    .replace(/<tbody>/g, '<tbody class="divide-y divide-gray-300">');
+    .replace(/<h2>/g, '<h2 text-2xl font-bold mt-4 mb-2">')
+    .replace(/<ol>/g, '<ol list-decimal pl-6 mb-4">')
+    .replace(/<p>/g, '<p mb-4 text-gray-700">')
+    .replace(/<table>/g, '<table table-auto border-collapse w-full mb-4">')
+    .replace(/<thead>/g, '<thead bg-gray-200 text-gray-800">')
+    .replace(/<tbody>/g, '<tbody divide-y divide-gray-300">');
 }
 
 export default async function Page({ params }) {
@@ -64,9 +60,9 @@ export default async function Page({ params }) {
         ></h1>
         <BlogContent content={transformedContent} />
       </div>
-      <div className="w-4/12">
+      {/* <div className="w-4/12">
         <FreeCreditScore />
-      </div>
+      </div> */}
     </div>
   );
 }

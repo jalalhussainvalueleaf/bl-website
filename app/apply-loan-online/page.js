@@ -1,10 +1,10 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import MobileValidation from "../../components/LoanApply/MobileValidation";
 
-export default function MainPage() {
+function MainPageContent() {
   const searchParams = useSearchParams();
   const [utmParams, setUtmParams] = useState({});
 
@@ -30,7 +30,6 @@ export default function MainPage() {
       platform,
     });
   }, [searchParams]);
-  // console.log("this real result", utmParams);
 
   return (
     <MobileValidation
@@ -39,5 +38,13 @@ export default function MainPage() {
       utmCampaign={utmParams.utm_campaign}
       platform={utmParams.platform}
     />
+  );
+}
+
+export default function MainPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MainPageContent />
+    </Suspense>
   );
 }

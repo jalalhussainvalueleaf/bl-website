@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Loading from "../Loader/Loading";
+import ConfigData from "@/config";
 
 function LandingPage({ searchTerm, category }) {
   const [data, setData] = useState([]);
@@ -15,7 +16,7 @@ function LandingPage({ searchTerm, category }) {
       setLoading(true);
       try {
         // Construct URL based on page and category
-        let url = `https://www.buddyloan.com/blog/wp-json/wp/v2/posts?_embed&per_page=9&page=${page}`;
+        let url = `${ConfigData.blogAPI}/posts?_embed&per_page=9&page=${page}`;
         if (category) {
           url += `&categories=${category}`;
         }
@@ -141,7 +142,7 @@ function LandingPage({ searchTerm, category }) {
         <div className="flex justify-center pb-12">
           <button
             onClick={loadMorePosts}
-            className="bg-bl-blue rounded-lg px-4 py-2 text-white"
+            className="rounded-lg bg-bl-blue px-4 py-2 text-white"
           >
             Load More
           </button>

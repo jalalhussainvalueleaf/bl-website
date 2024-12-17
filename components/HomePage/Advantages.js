@@ -43,30 +43,33 @@ function HomeBanner() {
         keyBoardControl={true}
         // customTransition="all .5"
         // transitionDuration={500}
-        // containerClass="carousel-container"
+        // containerclassName="carousel-container"
         removeArrowOnDeviceType={["tablet", "mobile"]}
         // deviceType={this.props.deviceType}
-        dotListClass="custom-dot-list-style"
-        itemClass="carousel-item-padding-40-px"
+        dotListclassName="custom-dot-list-style"
+        itemclassName="carousel-item-padding-40-px"
       >
         {Advanatages.map((items, index) => (
-          <div class=" mx-2 border border-gray-200 bg-white shadow dark:border-gray-700 dark:bg-gray-800">
-            <div className="bg-bl-blue flex h-48 items-center justify-center bg-opacity-10">
-              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <div
+            className=" mx-2 border border-gray-200 bg-white shadow dark:border-gray-700 dark:bg-gray-800"
+            key={index}
+          >
+            <div className="flex h-48 items-center justify-center bg-bl-blue bg-opacity-10">
+              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {items.loanType}
               </h5>
             </div>
-            <div class="p-5">
-              <p class="mb-3 h-20 font-normal text-gray-700 dark:text-gray-400">
+            <div className="p-5">
+              <p className="mb-3 h-20 font-normal text-gray-700 dark:text-gray-400">
                 {items.loanDesc}
               </p>
               <Link
                 href={items.btnUrl}
-                class="bg-bl-blue inline-flex items-center rounded-full px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="inline-flex items-center rounded-full bg-bl-blue px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
                 Know More
                 <svg
-                  class="ms-2 h-3.5 w-3.5 rtl:rotate-180"
+                  className="ms-2 size-3.5 rtl:rotate-180"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"

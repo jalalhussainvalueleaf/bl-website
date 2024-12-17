@@ -61,7 +61,7 @@ const SecondStep = () => {
 
   return (
     <div className="bg-white">
-      <div className="mt-10 bg-white py-12">
+      <div className=" bg-white">
         <div className="mx-auto max-w-md px-5 py-8">
           <h2 className="text-2xl font-bold">
             Do You Have Any Business Proof?

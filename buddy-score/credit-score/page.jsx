@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import Input from "../../components/Common/Input";
+import React, { useEffect, useRef, useState } from "react";
+import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import CalendarInput from "@/components/Common/CalendarInput";
 import Dropdown from "@/components/Common/Dropdown";
@@ -8,11 +8,58 @@ import Image from "next/image";
 import Link from "next/link";
 import FaqSection from "@/components/Common/FaqSection";
 import TermsConditions from "@/components/Common/TermsConditions";
-import CreditScoreFAQ from "../../mock/CreditScoreFAQ";
+import CreditScoreFAQ from "@/mock/CreditScoreFAQ";
+import CreditScores from "@/public/lottie/credit-score.json";
+import Lottie from "@/utils/Lottie";
+import ConfigData from "../../../config";
 
 const CreditScore = () => {
+  const checkPincodeAPI = `${ConfigData.domainAPI}/autopopulate_pincode_api.php`;
+
   // State to manage the visibility of extra text
   const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
+  const [otpMessage, setOtpMessage] = useState("");
+
+  const [pincodeError, setPincodeError] = useState("");
+  const [isPincodeValid, setIsPincodeValid] = useState(false);
+
+  const validatePincode = async (pincode) => {
+    if (pincode.length !== 6) {
+      console.log("pincode length check");
+      setIsPincodeValid(false);
+      setPincodeError("Pincode must be 6 digits.");
+      return false;
+    }
+
+    const payload = new URLSearchParams({ pincode });
+    try {
+      const response = await fetch(checkPincodeAPI, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        },
+        body: payload.toString(),
+      });
+
+      const result = await response.json();
+      console.log("pincode result", result);
+      if (response.ok && result.HTTPStatus === 200) {
+        setIsPincodeValid(true);
+        setPincodeError("");
+        return true;
+      } else {
+        setIsPincodeValid(false);
+        setPincodeError(result.message || "Invalid pincode.");
+        return false;
+      }
+    } catch (error) {
+      setIsPincodeValid(false);
+      setPincodeError("Error validating pincode. Please try again.");
+      console.error("Pincode validation error:", error);
+      return false;
+    }
+  };
 
   // Specify only the fields you want to validate
   const fields = [
@@ -26,7 +73,7 @@ const CreditScore = () => {
     "mobileNumber",
     "terms",
   ];
-
+  const inputRefs = useRef([]);
   const {
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -38,9 +85,14 @@ const CreditScore = () => {
   const formData = watch();
 
   // Handle form field change
-  const handleChange = (field) => (e) => {
-    setValue(field, e.target.value);
-    trigger(field);
+
+  const handleChange = (field) => async (e) => {
+    const value = e.target.value;
+    setValue(field, value);
+    // trigger(field);
+    if (field === "pincode") {
+      await validatePincode(value);
+    }
   };
 
   // Callback to handle date change
@@ -73,83 +125,71 @@ const CreditScore = () => {
     }
   };
 
+  // Handle OTP input
+  const handleInputChange = (e, index) => {
+    const value = e.target.value;
+
+    if (!/^\d*$/.test(value)) {
+      e.target.value = ""; // Clear invalid input
+      return;
+    }
+
+    if (value.length === 1 && index < inputRefs.current.length - 1) {
+      inputRefs.current[index + 1].focus();
+    }
+
+    if (value.length === 0 && index > 0) {
+      inputRefs.current[index - 1].focus();
+    }
+
+    if (inputRefs.current.every((input) => input?.value)) {
+      const enteredOtp = inputRefs.current.map((input) => input.value).join("");
+      verifyOtp(enteredOtp, mobileNumber);
+      // setVerifyOtp(enteredOtp);
+    } else {
+      // setMessage(""); // Clear message if OTP is incomplete
+    }
+  };
+
   return (
-    <div className="bg-white">
-      <div className="mt-[80px] flex w-full items-start justify-between space-x-4">
-        {/* Left */}
-        <div className="flex w-2/5 grow flex-col items-center justify-center bg-[#47b6f2] p-4 py-10 text-center">
-          <Image
-            src="https://www.buddyloan.com/buddy-score/assets/image/bl_logo.png"
-            height={100}
-            width={150}
-            alt="buddyloan"
-          />
-          {/* Box */}
-          <div className="relative my-12 flex w-full items-center justify-around rounded-lg border-[3px] border-white py-8">
-            <div className="relative flex size-1/2 items-center justify-center">
-              <Image
-                src="https://www.buddyloan.com/assets/image/scoreGood.png"
-                height={230}
-                width={230}
-                alt="credit-score"
-              />
-            </div>
-            {/* Text Div */}
-            <div className="text-start">
-              <h3 className="py-1 text-3xl font-bold text-white">CHECK YOUR</h3>
-              <h3 className="py-1 text-3xl font-bold text-[#FFF733]">
-                CREDIT SCORE
-              </h3>
-              <h3 className="py-1 text-3xl font-bold text-white">FOR FREE</h3>
-
-              <button className="mt-5 rounded-full border-none bg-[#FFF733] px-6 py-3 text-xl font-normal uppercase text-black outline-none">
-                get <b>Free</b> report
-              </button>
-
-              <div className="absolute right-5 top-5">
-                <Image
-                  src="https://www.buddyloan.com/assets/image/scoreLogo.png"
-                  alt="scoreLogo"
-                  height={60}
-                  width={60}
-                />
+    <div className="bg-gray-50">
+      <div className="mt-20 grid w-full lg:grid-cols-2 ">
+        <div className="relative flex h-screen justify-center bg-bl-blue">
+          <div className="flex flex-col items-center justify-center p-4 text-center">
+            {/* Box */}
+            <div className="relative flex flex-col items-center justify-around rounded-lg  bg-bl-blue py-8 lg:w-6/12">
+              <div>
+                <h3 className="py-1 text-3xl font-bold text-white">
+                  CHECK YOUR{" "}
+                  <span className="py-1 text-3xl font-bold text-[#FFF733]">
+                    CREDIT SCORE{" "}
+                  </span>
+                  FOR <span className="text-black">FREE!</span>
+                </h3>
+              </div>
+              <div className="relative flex items-center justify-center py-8">
+                <Lottie data={CreditScores} loop={false} />
+              </div>
+              <div className="text-start">
+                <button className="mt-5 rounded-full border-none bg-[#FFF733] px-6 py-3 text-xl font-normal uppercase text-black outline-none">
+                  get <b>Free</b> report
+                </button>
               </div>
             </div>
           </div>
-
-          {/* Download Buttons */}
-          <div className="">
-            <div className="rounded-xl bg-white px-6 py-4 text-2xl font-semibold text-[#47b6f2]">
-              Download Buddy Loan App on
-            </div>
-            <div className="my-5 flex items-center justify-center gap-4">
-              <Link href="https://apps.apple.com/in/app/buddy-loan-personal-loan/id1552911697?utm_medium=DownloadButton&amp;utm_source=SEO&amp;utm_campaign=bl2&amp;la=1">
-                <Image
-                  src="https://www.buddyloan.com/buddy-score/assets/image/app_Store.png"
-                  alt="App Store"
-                  width={150}
-                  height={150}
-                />
-              </Link>
-
-              <Link href="https://play.google.com/store/apps/details?id=com.buddyloan.vls&amp;referrer=utm_source%3DWebsite%26utm_medium%3DDownloadButton">
-                <Image
-                  src="https://www.buddyloan.com/buddy-score/assets/image/google_playstore.png"
-                  alt="Google Play Store"
-                  width={170}
-                  height={170}
-                />
-              </Link>
-            </div>
+          <div className="absolute right-5 top-5">
+            <Image
+              src="/images/scoreLogo.png"
+              alt="scoreLogo"
+              height={60}
+              width={60}
+            />
           </div>
         </div>
-
-        {/* Right */}
-        <div className="mt-10 w-3/5 grow bg-white px-5">
-          {/* Credit Score Form */}
+        <div className="flex h-screen items-center justify-center p-12">
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* Full Name */}
-            <div className="flex items-center justify-between gap-5 py-4">
+            <div className="flex items-center justify-between gap-5">
               <Input
                 type="text"
                 placeholder="First Name"
@@ -189,7 +229,7 @@ const CreditScore = () => {
             </div>
 
             {/* Date of Birth */}
-            <div className="flex items-center justify-between gap-5 py-4">
+            <div className="flex items-center justify-between gap-5">
               <CalendarInput
                 label="Select Date"
                 value={watch("dob") || null}
@@ -206,10 +246,10 @@ const CreditScore = () => {
               />
             </div>
 
-            <div className="mt-5 flex items-center justify-between gap-5 py-4">
+            <div className="mt-5 flex items-center justify-between gap-5 pt-4">
               {/* Pincode */}
               <Input
-                type="number"
+                type="text"
                 placeholder="Residential PIN Code"
                 value={watch("pincode") || ""}
                 onChange={handleChange("pincode")}
@@ -219,7 +259,7 @@ const CreditScore = () => {
 
               {/* Mobile Number */}
               <Input
-                type="number"
+                type="text"
                 placeholder="Mobile Numbers"
                 value={watch("mobileNumber") || ""}
                 onChange={handleChange("mobileNumber")}
@@ -240,7 +280,7 @@ const CreditScore = () => {
             <div className="mt-5 flex justify-center py-3">
               <button
                 type="submit"
-                className="w-[90%] rounded-xl bg-bl-blue p-3 text-2xl font-semibold text-white"
+                className="rounded-xl bg-bl-blue p-3 text-xl  text-white"
               >
                 Check Free Credit Score
               </button>
@@ -249,7 +289,7 @@ const CreditScore = () => {
         </div>
       </div>
 
-      <div className="mx-auto my-10 max-w-screen-xl p-4">
+      <div className="mx-auto my-10 max-w-screen-xl  p-4">
         <h2 className="mb-6 text-center text-3xl font-bold text-[#47B6F2]">
           Frequently Asked Questions
         </h2>

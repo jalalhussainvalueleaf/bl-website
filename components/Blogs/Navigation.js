@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import ConfigData from "@/config";
 
 export default function Navigation({ searchTerm, setSearchTerm, setCategory }) {
+  const blogURL = `${ConfigData.blogAPI}/categories?per_page=100`;
+  console.log(blogURL);
+
   const [categories, setCategories] = useState([]);
   const [categoryName, setCategoryName] = useState("");
 
@@ -15,9 +19,7 @@ export default function Navigation({ searchTerm, setSearchTerm, setCategory }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(
-          "https://www.buddyloan.com/blog/wp-json/wp/v2/categories?per_page=100",
-        );
+        const response = await fetch(blogURL);
         const data = await response.json();
         console.log("category", data);
         setCategories(data);
@@ -83,8 +85,8 @@ export default function Navigation({ searchTerm, setSearchTerm, setCategory }) {
               key={category.id}
               className={`cursor-pointer border py-2 ${
                 category.id === categoryName
-                  ? "bg-bl-blue rounded-lg p-4 text-white"
-                  : "hover:text-bl-blue rounded-lg bg-white p-4"
+                  ? "rounded-lg bg-bl-blue p-4 text-white"
+                  : "rounded-lg bg-white p-4 hover:text-bl-blue"
               }`}
               onClick={() => handleCategoryClick(category.id)}
             >

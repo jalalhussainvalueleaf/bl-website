@@ -38,8 +38,25 @@ const fieldSchemas = {
   dob: z
     .date()
     .max(new Date(), "Date of birth cannot be in the future")
-    .min(new Date(1900, 0, 1), "Invalid date of birth")
-    .transform((date) => new Date(date)),
+    .min(
+      new Date(new Date().getFullYear() - 120, 0, 1), // Optional: Oldest valid DOB (120 years ago)
+      "Invalid date of birth",
+    )
+    .refine(
+      (date) => {
+        const currentYear = new Date().getFullYear();
+        const birthYear = date.getFullYear();
+        const age = currentYear - birthYear;
+        const birthdayThisYear = new Date(
+          currentYear,
+          date.getMonth(),
+          date.getDate(),
+        );
+        return age > 18 || (age === 18 && birthdayThisYear <= new Date());
+      },
+      { message: "Age must be 18 or above" },
+    )
+    .transform((date) => new Date(date)), // Transform into a `Date` object
 
   pincode: z
     .string()
@@ -162,7 +179,7 @@ const fieldSchemas = {
 
   companyType: z.string().min(1, "Please select your company type"),
 
-  loanAmount: z
+  loan_amount: z
     .string()
     .regex(/^\d+$/, "Loan amount must be a numeric value")
     .refine(
@@ -175,15 +192,36 @@ const fieldSchemas = {
       },
     ),
 
-  years: z.string().min(1, "Please select a your company type"),
-  designation: z.string().min(1, "Please select a your company type"),
-  qualification: z.string().min(1, "Please select a your company type"),
-  panCard: z.string().min(1, "Please select a your company type"),
-  fname: z.string().min(1, "Please select a your company type"),
-  lname: z.string().min(1, "Please select a your company type"),
-  residenceType: z.string().min(1, "Please select a your company type"),
-  currentAddress: z.string().min(1, "Please select a your company type"),
-  LoanAmount: z.string().min(1, "Please select a your company type"),
+  montlyIncome: z
+    .string()
+    .regex(/^\d+$/, "Income must be a numeric value")
+    .refine(
+      (value) => {
+        const amount = parseInt(value, 10);
+        return amount >= 1500 && amount <= 1500000;
+      },
+      {
+        message: "Income must be between ₹1,500 and ₹1,500,000.",
+      },
+    ),
+
+  years: z.string().min(1, "Year is required"),
+  designation: z.string().min(1, "Designation is required"),
+  qualification: z.string().min(1, "Qualification is required"),
+  panCard: z
+    .string()
+    .min(1, "PAN card is required")
+    .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format"),
+
+  fname: z.string().min(4, "First name is required"),
+  lname: z.string().min(2, "Last name is required"),
+  residenceType: z.string().min(1, "Please select a your residence type"),
+  currentAddress: z.string().min(4, "Current address is required"),
+  bankName: z.string().min(1, "Bank name is required"),
+  creditCard: z.string().min(1, "Credit Card is required"),
+  professionType: z.string().min(1, "profession is required"),
+  // salaryBank: z.string().min(1, "Please select a your company type"),
+  // salaryCash: z.string().min(1, "Please select a your company type"),
 };
 
 // Create dynamic schema based on required fields and form state

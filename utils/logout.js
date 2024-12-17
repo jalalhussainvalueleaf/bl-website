@@ -14,7 +14,7 @@ export default function Logout() {
       {router.pathname}
       <button
         onClick={deleteSessions}
-        className="rounded-lg border px-6 py-2 hover:bg-blue-400 hover:text-blue-400"
+        className="rounded-lg border bg-white px-6 py-2 hover:bg-blue-400 hover:text-blue-400"
       >
         Logout
       </button>

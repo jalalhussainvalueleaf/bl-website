@@ -22,6 +22,22 @@ const nextConfig = {
         protocol: "https",
         hostname: "buddyloan-wordpress-blog.s3.ap-south-1.amazonaws.com",
       },
+      {
+        protocol: "https",
+        hostname: "buddy-notification-assets.s3.ap-south-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "vlfalcons.slack.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.prod.buddyloan.com",
+      },
+      {
+        protocol: "http",
+        hostname: "65.0.7.233",
+      },
     ],
   },
 };

@@ -7,9 +7,14 @@ import { menuData, menuItems } from "@/utils/data";
 export default function Header() {
   const [isMegaMenuVisible, setMegaMenuVisible] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [isMenuHovered, setMenuHovered] = useState(false);
 
   return (
-    <div>
+    <div className="relative">
+      {/* Lightbox Effect */}
+      {isMenuHovered && (
+        <div className="pointer-events-none fixed inset-0 z-10 bg-black bg-opacity-50"></div>
+      )}
       <nav className="fixed start-0 top-0 z-20 w-full border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
         <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
           <Link
@@ -52,7 +57,11 @@ export default function Header() {
             className="hidden w-9/12 justify-between lg:flex"
             id="navbar-multi-level "
           >
-            <ul className=" mt-0 flex flex-col space-x-2 font-medium  md:flex-row rtl:space-x-reverse">
+            <ul
+              className=" mt-0 flex flex-col space-x-2 font-medium  md:flex-row rtl:space-x-reverse"
+              onMouseEnter={() => setMenuHovered(true)}
+              onMouseLeave={() => setMenuHovered(false)}
+            >
               {menuItems.map((item, index) => (
                 <li
                   key={index}
@@ -95,26 +104,29 @@ export default function Header() {
                                 onMouseLeave={() => setHoveredIndex(null)}
                                 className="relative"
                               >
-                                <button className="flex w-full items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                  {loan.label}
-                                  {loan.subMenu && (
-                                    <svg
-                                      className="ms-2.5 size-2.5"
-                                      aria-hidden="true"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 10 6"
-                                    >
-                                      <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="m1 1 4 4 4-4"
-                                      />
-                                    </svg>
-                                  )}
-                                </button>
+                                <Link href={loan.href || "#"}>
+                                  <button className="flex w-full items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                    {loan.label}
+
+                                    {loan.subMenu && (
+                                      <svg
+                                        className="ms-2.5 size-2.5"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 10 6"
+                                      >
+                                        <path
+                                          stroke="currentColor"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth="2"
+                                          d="m1 1 4 4 4-4"
+                                        />
+                                      </svg>
+                                    )}
+                                  </button>
+                                </Link>
                                 {loan.subMenu && hoveredIndex === idx && (
                                   <div className="absolute left-full top-0 z-20 mt-2 w-44 divide-y divide-gray-100 bg-white shadow-lg dark:divide-gray-600 dark:bg-gray-700">
                                     <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">

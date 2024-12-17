@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import LandingPage from "../../components/Blogs/LandingPage";
 import NavigationBar from "../../components/Blogs/Navigation";
 
-export default function page() {
+export default function Page() {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("");
   return (
