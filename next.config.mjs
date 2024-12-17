@@ -4,15 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "docs.aarnalaw.com",
+        hostname: "docs.buddyloan.com",
       },
       {
-        protocol: "https",
-        hostname: "aarnalaw.com",
-      },
-      {
-        protocol: "https",
-        hostname: "www.aarnalaw.com",
+        protocol: "http",
+        hostname: "docs.buddyloan.com",
       },
       {
         protocol: "https",
