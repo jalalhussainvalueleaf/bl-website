@@ -163,6 +163,7 @@ export default function OtpVarification({
       platform: platform,
       utm: utmMedium,
       utm_source: utmSource,
+      user_consent: 2,
     });
 
     // console.log("Payload being sent:", payload.toString());
@@ -179,21 +180,21 @@ export default function OtpVarification({
       // console.log(body);
       const responseData = await response.json(); // Parse response as JSON
       console.log("otp encypted", responseData);
-      console.log("hurray data here", decryptData(responseData.encryptData));
+      // console.log("hurray data here", decryptData(responseData.encryptData));
       // console.log("status", decryptData(responseData.encryptData));
-      const decrptResponseData = decryptData(responseData.encryptData);
+      // const decrptResponseData = decryptData(responseData.encryptData);
       // const decrptResponseData = responseData;
       // console.log("encyptedCustomData", decryptData(hUjVgE0Pn25MxHkifRepPugQCuPK4AGEEVigXPrFQ6ciWViVeeDUYf\/ZsulvT4Qs));
       if (
-        decrptResponseData.status === "failure" &&
-        decrptResponseData.HTTPStatus === 405
+        responseData.status === "failure" &&
+        responseData.HTTPStatus === 405
       ) {
         setMessage("❌ OTP limit exceed,try after 10 mins");
         setVerifyOtp(false);
       }
       if (
-        decrptResponseData.status === "success" &&
-        decrptResponseData.message === "OTP Match"
+        responseData.status === "success" &&
+        responseData.message === "OTP Match"
       ) {
         // const responseData = await response.json(); // Parse response as JSON
         // console.log("API Response:", responseData); // Log the full response
@@ -202,18 +203,18 @@ export default function OtpVarification({
         //   JSON.stringify(responseData),
         // );
         // console.log("user_token", decrptResponseData.user_token);
-        setUserToken(decrptResponseData.user_token);
-        sessionStorage.setItem("_token", decrptResponseData.user_token);
+        setUserToken(responseData.user_token);
+        sessionStorage.setItem("_token", responseData.user_token);
         setMessage("✅ OTP verified successfully!");
-        verifyUsers(decrptResponseData.user_token);
+        verifyUsers(responseData.user_token);
       } else {
-        console.error("Error Response:", decrptResponseData.message);
-        setMessage("❌ " + decrptResponseData.message + ". Please try again.");
+        console.error("Error Response:", responseData.message);
+        setMessage("❌ " + responseData.message + ". Please try again.");
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
       setMessage(
-        "❌ Error " + decrptResponseData.message + ". Please try again later.",
+        "❌ Error " + responseData.message + ". Please try again later.",
       );
     } finally {
       setLoading(false); // Set loading to false after API call
