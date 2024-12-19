@@ -10,33 +10,32 @@ async function fetchData(slug) {
     throw new Error("Failed to fetch data");
   }
   const data = await res.json();
+  console.log(data);
   return data[0];
 }
 
 // Replace placeholder <creditscore></creditscore> with a React mount point
 function replacePlaceholders(htmlContent) {
-  return htmlContent.replace(
-    /<creditscore><\/creditscore>/g,
-    "<div id='creditscore-component'></div>",
-  );
+  return htmlContent;
 }
 
 // Function to add custom classes to specific HTML tags
-function addClassesToTags(htmlContent) {
-  return htmlContent
-    .replace(/<h2>/g, '<h2 text-2xl font-bold mt-4 mb-2">')
-    .replace(/<ol>/g, '<ol list-decimal pl-6 mb-4">')
-    .replace(/<p>/g, '<p mb-4 text-gray-700">')
-    .replace(/<table>/g, '<table table-auto border-collapse w-full mb-4">')
-    .replace(/<thead>/g, '<thead bg-gray-200 text-gray-800">')
-    .replace(/<tbody>/g, '<tbody divide-y divide-gray-300">');
-}
+// function addClassesToTags(htmlContent) {
+//   return htmlContent
+//     .replace(/<h2>/g, '<h2 text-2xl font-bold mt-4 mb-2">')
+//     .replace(/<ol>/g, '<ol list-decimal pl-6 mb-4">')
+//     .replace(/<p>/g, '<p mb-4 text-gray-700">')
+//     .replace(/<table>/g, '<table table-auto border-collapse w-full mb-4">')
+//     .replace(/<thead>/g, '<thead bg-gray-200 text-gray-800">')
+//     .replace(/<tbody>/g, '<tbody divide-y divide-gray-300">');
+// }
 
 export default async function Page({ params }) {
   const { slug } = params;
 
   // Fetch WordPress post content
   const post = await fetchData(slug);
+  console.log(post);
 
   if (!post) {
     return (
@@ -47,17 +46,23 @@ export default async function Page({ params }) {
   }
 
   // Replace placeholders in the content
-  const transformedContent = addClassesToTags(
-    replacePlaceholders(post.content.rendered),
-  );
+  const transformedContent = post.content.rendered;
+  console.log(post.content.rendered);
+  const featuredImage = "";
 
   return (
-    <div className="mt-28 flex gap-12 p-8">
+    <div className="mt-28 gap-12 p-8">
       <div className="w-full">
-        <h1
-          className="mb-4 text-3xl font-bold"
-          dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-        ></h1>
+        <div className="grid lg:grid-cols-2">
+          <div className="">
+            <h1
+              className="mb-4 text-3xl font-bold"
+              dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+            ></h1>
+          </div>
+          <div></div>
+        </div>
+
         <BlogContent content={transformedContent} />
       </div>
       {/* <div className="w-4/12">
