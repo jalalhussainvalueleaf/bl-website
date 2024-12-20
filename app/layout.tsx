@@ -4,6 +4,7 @@ import { ThemeModeScript } from "flowbite-react";
 import "./globals.css";
 import Header from "../components/Header/page";
 import Footer from "../components/Footer/page";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Apply For Loan Online Up to 15 Lakhs | Instant Approval | Buddy Loan",
@@ -22,6 +23,7 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body>
+        <Toaster position="top-right" reverseOrder={true} />
         {/* <Header /> */}
         {children}
         {/* <Footer /> */}
