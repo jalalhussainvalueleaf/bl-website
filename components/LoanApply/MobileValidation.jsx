@@ -251,10 +251,10 @@ const MobileValidation = ({ utmSource, utmMedium, utmCampaign, platform }) => {
 
                 <div className="leading-1">
                   <small>
-                    By clicking "Next," I confirm that this is my registered
-                    mobile number and authorize Buddy Loan to use it for
-                    communications related to my loan application, as per the
-                    Terms & Conditions and Privacy Policy.
+                    By clicking &quot;Next,&quot; I confirm that this is my
+                    registered mobile number and authorize Buddy Loan to use it
+                    for communications related to my loan application, as per
+                    the Terms & Conditions and Privacy Policy.
                   </small>
                 </div>
 
