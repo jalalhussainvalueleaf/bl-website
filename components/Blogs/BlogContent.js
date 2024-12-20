@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import CreditScore from "./CreditScore";
 import BuddyLoan from "./BuddyLoan";
 import PersonalLoan from "./PersonalLoan";
@@ -11,55 +11,41 @@ import EmiCalculator from "../Calculators/Calculator";
 import Features from "../Blogs/FeaturesBenefits";
 
 export default function BlogContent({ content, title }) {
-  // Component mapping with optional props
   const COMPONENT_MAP = {
     creditscore: { component: CreditScore },
     features: { component: Features },
     buddyloan: { component: BuddyLoan },
     personalloan: { component: PersonalLoan },
     eligibilitycheck: { component: EligibilityCheck },
-    quickloans: {
-      component: QuickLoans,
-      props: { title: title },
-    },
+    quickloans: { component: QuickLoans, props: { title } },
     emicalculator: { component: EmiCalculator },
   };
 
-  // Replace placeholders with unique IDs for each instance
-  function replacePlaceholders(htmlContent) {
-    let instanceCounter = {}; // Track instance counts for unique IDs
-    const transformedContent = htmlContent.replace(
-      /<([a-z]+)><\/\1>/gi,
-      (_, tag) => {
-        const lowerTag = tag.toLowerCase();
-        if (COMPONENT_MAP[lowerTag]) {
-          // Increment instance counter for this tag
-          instanceCounter[lowerTag] = (instanceCounter[lowerTag] || 0) + 1;
-          const uniqueId = `${lowerTag}-component-${instanceCounter[lowerTag]}`;
-          return `<div id="${uniqueId}"></div>`;
-        }
-        return `<${tag}></${tag}>`;
-      },
-    );
+  const rootInstances = new Map(); // Store root instances to manage single createRoot calls
 
-    return transformedContent;
+  function replacePlaceholders(htmlContent) {
+    let instanceCounter = {};
+    return htmlContent.replace(/<([a-z]+)><\/\1>/gi, (_, tag) => {
+      const lowerTag = tag.toLowerCase();
+      if (COMPONENT_MAP[lowerTag]) {
+        instanceCounter[lowerTag] = (instanceCounter[lowerTag] || 0) + 1;
+        return `<div id="${lowerTag}-component-${instanceCounter[lowerTag]}"></div>`;
+      }
+      return `<${tag}></${tag}>`;
+    });
   }
 
-  // Utility functions to update styles
   const updateStyles = () => {
-    // Update h2 classes
     document.querySelectorAll("h2").forEach((h2) => {
       h2.classList.remove(...h2.classList);
       h2.classList.add("mt-3", "text-xl", "font-bold");
     });
 
-    // Update h3 classes
     document.querySelectorAll("h3").forEach((h3) => {
       h3.classList.remove(...h3.classList);
       h3.classList.add("mt-3", "text-lg", "font-semibold");
     });
 
-    // Update table styles
     document.querySelectorAll("table").forEach((table) => {
       table.classList.remove(...table.classList);
       table.classList.add(
@@ -90,7 +76,6 @@ export default function BlogContent({ content, title }) {
       }
     });
 
-    // Update ul and li styles
     document.querySelectorAll(".content ul").forEach((ul) => {
       ul.classList.remove(...ul.classList);
       ul.classList.add("list-disc", "pl-5", "space-y-2");
@@ -108,30 +93,40 @@ export default function BlogContent({ content, title }) {
   };
 
   useEffect(() => {
-    // Dynamically render components mapped in COMPONENT_MAP using createRoot
     Object.entries(COMPONENT_MAP).forEach(
       ([tag, { component: Component, props = {} }]) => {
         const placeholders = document.querySelectorAll(
           `[id^="${tag}-component"]`,
         );
+
         placeholders.forEach((placeholder) => {
-          const root = ReactDOM.createRoot(placeholder);
+          if (!rootInstances.has(placeholder)) {
+            // Create a root if it doesn't already exist
+            const root = ReactDOM.createRoot(placeholder);
+            rootInstances.set(placeholder, root);
+          }
+
+          // Use existing root to render the component
+          const root = rootInstances.get(placeholder);
           root.render(<Component {...props} />);
         });
       },
     );
 
-    // Delay to allow DOM updates before applying styles
     const timeoutId = setTimeout(() => {
       updateStyles();
     }, 100);
 
-    return () => clearTimeout(timeoutId);
-  });
+    return () => {
+      clearTimeout(timeoutId);
+      rootInstances.forEach((root, placeholder) => {
+        root.unmount();
+      });
+      rootInstances.clear();
+    };
+  }, []);
 
-  // Transform the content to include component placeholders
   const transformedContent = replacePlaceholders(content);
-  console.log(transformedContent);
 
   return (
     <div
