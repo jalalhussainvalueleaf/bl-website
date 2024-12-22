@@ -31,6 +31,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
     errorMessage: "",
     isTransitioning: false,
     showNextBtn: false,
+    userConsentCheck: true,
   });
 
   const inputRef = useRef([]);
@@ -65,6 +66,9 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
     }));
 
     if (value.length === 10) {
+      if (!formState.userConsentCheck)
+        return toast.error("Please provide your consent to proceed.");
+
       if (validateMobile(value)) {
         await sendOtp(value); // Send OTP if valid
       } else {
@@ -72,8 +76,9 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
           ...prev,
           isValid: false,
           showOtpInput: false,
-          errorMessage: "Invalid mobile number.",
+          errorMessage: "❌ Invalid mobile number.",
         }));
+        toast.error("Invalid mobile number.");
       }
     } else {
       setFormState((prev) => ({
@@ -187,6 +192,21 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
     }
   }, [inputRef, formState.showOtpInput]);
 
+  // Toogle user consent
+  const toggleUserConsent = () => {
+    setFormState((prev) => ({
+      ...prev,
+      userConsentCheck: !formState.userConsentCheck,
+    }));
+  };
+
+  // Trigger OTP send when mobile is valid and user consent is given.
+  useEffect(() => {
+    if (formState.mobile.length == 10 && formState.userConsentCheck) {
+      sendOtp(formState.mobile);
+    }
+  }, [formState.userConsentCheck]);
+
   return (
     <div className="mx-auto my-auto flex max-w-[400px] flex-col items-center justify-center xl:max-w-[600px]">
       {/* Buddy loan Img  */}
@@ -250,12 +270,39 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
               </div>
 
               <div className="leading-1">
-                <small>
-                  By clicking &quot;Next,&quot; I confirm that this is my
-                  registered mobile number and authorize Buddy Loan to use it
-                  for communications related to my loan application, as per the
-                  Terms & Conditions and Privacy Policy.
-                </small>
+                <div className="flex items-start space-x-2">
+                  <input
+                    type="checkbox"
+                    id="user_consent"
+                    checked={formState.userConsentCheck}
+                    onChange={toggleUserConsent}
+                    className="h-5 w-5 rounded-md border-2 border-gray-300 transition-all duration-200 ease-in-out focus:outline-none"
+                  />
+                  <label className="text-sm" htmlFor="user_consent">
+                    By clicking &quot;Next,&quot; I confirm that this is my
+                    registered mobile number and authorize Buddy Loan to use it
+                    for communications related to my loan application, as per
+                    the
+                    <a
+                      href="https://www.buddyloan.com/terms-and-conditions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ps-1 font-semibold text-bl-blue no-underline"
+                    >
+                      Terms & Conditions
+                    </a>{" "}
+                    and
+                    <a
+                      href="https://www.buddyloan.com/privacy-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ps-1 font-semibold text-bl-blue no-underline"
+                    >
+                      Privacy Policy
+                    </a>
+                    .
+                  </label>
+                </div>
               </div>
 
               {!formState.isValid && (
