@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { resendOTP, userSearch, verifyOTP } from "../../api/user";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { resendOTP, userSearch, verifyOTP } from "@/api/user";
 import { encryptData, decryptData } from "@/utils/cryptoUtils"; // Import the functions
 import { useUserContext } from "@/utils/UserContext";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 
 // Constants for OTP and timer
 const TOTAL_OTP_DIGITS = 4;
@@ -255,7 +255,7 @@ const OtpValidation = ({
   }, [userData]);
 
   return (
-    <div className="mx-auto my-4 max-w-sm text-center">
+    <div className="mx-auto max-w-sm text-center">
       <form>
         {/* Instructions for user */}
         <p className="text-md py-3 text-center text-gray-500">
