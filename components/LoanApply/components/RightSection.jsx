@@ -230,7 +230,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
       </div>
 
       {/* Title */}
-      <h1 className="py-0 text-center text-3xl xl:py-8">
+      <h1 className="py-0 text-center text-xl xl:py-8 xl:text-3xl">
         Apply & Get{" "}
         <span className="font-semibold text-bl-blue">Loan Approved</span>{" "}
         Instantly
@@ -269,40 +269,37 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
                 </label>
               </div>
 
-              <div className="leading-1">
-                <div className="flex items-start space-x-2">
-                  <input
-                    type="checkbox"
-                    id="user_consent"
-                    checked={formState.userConsentCheck}
-                    onChange={toggleUserConsent}
-                    className="h-5 w-5 rounded-md border-2 border-gray-300 transition-all duration-200 ease-in-out focus:outline-none"
-                  />
-                  <label className="text-sm" htmlFor="user_consent">
-                    By clicking &quot;Next,&quot; I confirm that this is my
-                    registered mobile number and authorize Buddy Loan to use it
-                    for communications related to my loan application, as per
-                    the
-                    <a
-                      href="https://www.buddyloan.com/terms-and-conditions"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ps-1 font-semibold text-bl-blue no-underline"
-                    >
-                      Terms & Conditions
-                    </a>{" "}
-                    and
-                    <a
-                      href="https://www.buddyloan.com/privacy-policy"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ps-1 font-semibold text-bl-blue no-underline"
-                    >
-                      Privacy Policy
-                    </a>
-                    .
-                  </label>
-                </div>
+              <div className="flex items-start space-x-2">
+                <input
+                  type="checkbox"
+                  id="user_consent"
+                  checked={formState.userConsentCheck}
+                  onChange={toggleUserConsent}
+                  className="size-5 rounded-md border-2 border-gray-300 transition-all duration-200 ease-in-out focus:outline-none"
+                />
+                <label className="text-sm" htmlFor="user_consent">
+                  By clicking &quot;Next,&quot; I confirm that this is my
+                  registered mobile number and authorize Buddy Loan to use it
+                  for communications related to my loan application, as per the
+                  <a
+                    href="https://www.buddyloan.com/terms-and-conditions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ps-1 font-semibold text-bl-blue no-underline"
+                  >
+                    Terms & Conditions
+                  </a>{" "}
+                  and
+                  <a
+                    href="https://www.buddyloan.com/privacy-policy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ps-1 font-semibold text-bl-blue no-underline"
+                  >
+                    Privacy Policy
+                  </a>
+                  .
+                </label>
               </div>
 
               {!formState.isValid && (
