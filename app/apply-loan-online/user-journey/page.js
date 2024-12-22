@@ -19,6 +19,7 @@ export default function Page() {
   const router = useRouter();
   const { steps } = useUserContext();
   const [countSteps, setCountSteps] = useState("1"); // Default to string for consistency
+  const [loading, setLoading] = useState(true);
 
   // Update countSteps based on sessionStorage or context steps
   useEffect(() => {
@@ -52,6 +53,17 @@ export default function Page() {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
+  }, []);
+
+  // Checks for token and redirects if not found.
+  useEffect(() => {
+    const saved_token = sessionStorage.getItem("_token");
+    setLoading(true);
+    if (!saved_token) {
+      router.push("/apply-loan-online");
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   // Render the correct step component based on `countSteps`
@@ -88,13 +100,16 @@ export default function Page() {
 
   return (
     <div className="">
-      <div className="flex flex-col items-center">
-        <img src="/images/buddyloan-logo.png" className="w-40" />
-      </div>
-      <div>
-        {renderStep()}
-        {/* <p>My journey - {countSteps}</p> */}
-      </div>
+      {loading ? (
+        <h3>Loading....</h3>
+      ) : (
+        <>
+          <div className="flex flex-col items-center">
+            <img src="/images/buddyloan-logo.png" className="w-40" />
+          </div>
+          <div>{renderStep()}</div>
+        </>
+      )}
     </div>
   );
 }

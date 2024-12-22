@@ -1,21 +1,18 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, memo } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { resendOTP, userSearch, verifyOTP } from "@/api/user";
 import { encryptData, decryptData } from "@/utils/cryptoUtils"; // Import the functions
 import { useUserContext } from "@/utils/UserContext";
-
-// Constants for OTP and timer
-const TOTAL_OTP_DIGITS = 4;
-const RESEND_TIMER_SECONDS = 30;
+import OtpTimer from "./OtpTimer";
 
 const OtpValidation = ({
   totalDigits = 4,
   utmSource,
   utmMedium,
-  utmCampaign,
   platform,
+  verifyOtp,
 }) => {
   const [otpValues, setOtpValues] = useState(Array(totalDigits).fill(""));
   const inputRefs = useRef([]);
@@ -32,32 +29,31 @@ const OtpValidation = ({
     setStartUserNewJourney,
     showOfferPage,
     setShowOfferPage,
+    userSearchData,
+    setUserSearchData,
   } = useUserContext();
+
+  console.log("userSearchData++++++", userSearchData);
+
+  useEffect(() => {
+    setUserId("Okkkkkkkk");
+    // setUserSearchData([{ data: "setting" }]);
+  }, []);
 
   const router = useRouter();
 
-  // Local state for OTP verification and resend timer
+  // Local states
   const [state, setState] = useState({
     loading: false,
     message: "",
     canVerifyOtp: true,
-    timer: RESEND_TIMER_SECONDS,
   });
   const [userData, setUserData] = useState("");
 
+  console.log("userData", userData);
+
   // Get mobile number from session storage
   const mobileNumber = sessionStorage.getItem("mobileNumber");
-
-  // Handle timer countdown for OTP resend
-  useEffect(() => {
-    let interval;
-    if (state.timer > 0 && state.canVerifyOtp) {
-      interval = setInterval(() => {
-        setState((prev) => ({ ...prev, timer: prev.timer - 1 }));
-      }, 1000);
-    }
-    return () => clearInterval(interval); // Clear interval on unmount
-  }, [state.timer, state.canVerifyOtp]);
 
   // Update message state with an icon based on success or failure
   const updateMessage = (text, isSuccess = false) => {
@@ -151,7 +147,6 @@ const OtpValidation = ({
     setState((prev) => ({
       ...prev,
       loading: true,
-      timer: RESEND_TIMER_SECONDS,
     }));
 
     try {
@@ -164,8 +159,14 @@ const OtpValidation = ({
 
       // Make OTP verification API call
       const response = await resendOTP(payload);
+
+      if (response.data === "success") {
+        toast.success("OTP sent successfully.");
+      }
+
       if (response.data === "failure") {
         updateMessage(response.data.message, false);
+        toast.error(response.data.message);
       }
     } catch (error) {
       const errorMessage =
@@ -198,6 +199,9 @@ const OtpValidation = ({
 
       // decrypting the res here
       const response = decryptData(res?.data?.encryptData);
+
+      // Set user data in userData context
+      setUserSearchData(response);
 
       if (response.status === "failure") {
         updateMessage(
@@ -311,20 +315,8 @@ const OtpValidation = ({
                   />
                 </svg>
               </div>
-            ) : state.timer > 0 ? (
-              // Show countdown timer if OTP resend is available
-              <p className="text-md text-gray-500">
-                Resend OTP in {state.timer} seconds
-              </p>
             ) : (
-              // Resend OTP button when timer expires
-              <button
-                type="button"
-                onClick={reSendOtp}
-                className="w-full rounded-lg px-4 text-sm text-blue-500"
-              >
-                Resend OTP
-              </button>
+              <OtpTimer reSendOtp={reSendOtp} verifyOtp={verifyOtp} />
             )}
           </div>
         )}

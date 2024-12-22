@@ -27,7 +27,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
     isValid: true,
     showOtpInput: false,
     isEditable: true,
-    verifyOtp: true,
+    verifyOtp: false,
     errorMessage: "",
     isTransitioning: false,
     showNextBtn: false,
@@ -334,9 +334,9 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
               <OtpValidation
                 utmSource={utmSource}
                 utmMedium={utmMedium}
-                utmCampaign={utmCampaign}
                 platform={platform}
                 mobile={formState?.mobile}
+                verifyOtp={formState.verifyOtp}
               />
             </>
           )}

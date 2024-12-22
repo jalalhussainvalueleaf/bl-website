@@ -34,9 +34,25 @@ const MainPageContent = () => {
 };
 
 const MainPage = () => {
+  const [loading, setLoading] = useState(true);
+
+  // Checks for token and redirects if not found.
+  useEffect(() => {
+    const saved_token = sessionStorage.getItem("_token");
+    setLoading(true);
+    if (saved_token) {
+      // If there is a previous history entry, go back
+      if (window.history.length > 1) {
+        window.history.back(); // Go back to the previous page in history
+      }
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <MainPageContent />
+      {loading ? <h3>Loading....</h3> : <MainPageContent />}
     </Suspense>
   );
 };

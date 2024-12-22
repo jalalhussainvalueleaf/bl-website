@@ -5,6 +5,7 @@ export default function Logout() {
   const router = useRouter();
   const deleteSessions = () => {
     sessionStorage.removeItem("mobileNumber");
+    sessionStorage.removeItem("_token");
     sessionStorage.removeItem("u_stat_bdl");
     router.push("/apply-loan-online");
   };
