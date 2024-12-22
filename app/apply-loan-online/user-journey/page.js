@@ -14,6 +14,7 @@ import Step35 from "../../../components/LoanApply/Journey/IncomeBankDetails";
 import BusinessProof from "../../../components/LoanApply/Journey/BusinessProof";
 import BusinessDetails from "../../../components/LoanApply/Journey/BusinessDetails";
 import ProfessionType from "../../../components/LoanApply/Journey/ProfessionType";
+import Loader from "@/components/Common/Loader";
 
 export default function Page() {
   const router = useRouter();
@@ -99,9 +100,9 @@ export default function Page() {
   };
 
   return (
-    <div className="">
+    <div className="min-h-screen bg-[url('/images/bg1.png')] bg-center">
       {loading ? (
-        <h3>Loading....</h3>
+        <Loader />
       ) : (
         <>
           <div className="flex flex-col items-center">

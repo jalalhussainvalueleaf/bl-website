@@ -242,40 +242,40 @@ const SecondStep = ({ onClick }) => {
   };
 
   return (
-    <div className="bg-white">
-      <div className="mx-auto max-w-md px-5">
-        <h2 className="py-8 text-2xl font-bold">What Is Your Email?</h2>
-        <div className="rounded-lg border p-5">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Input
-              type="text"
-              placeholder="Loan Amount"
-              value={watch("loan_amount") || ""}
-              onChange={handleChange("loan_amount")}
-              error={errors.loan_amount?.message}
-            />
-            <Input
-              type="text"
-              placeholder="Personal Email Address"
-              value={watch("email") || ""}
-              onChange={handleChange("email")}
-              error={errors.email?.message || emailError}
-            />
-            {emailConfidence && (
-              <p className="text-sm text-green-500">
-                Email delivery confidence: {emailConfidence}
-              </p>
-            )}
-            {message && (
-              <p
-                className={`mt-4 text-sm ${message.includes("✅") ? "text-green-500" : "text-red-500"}`}
-              >
-                {message}
-              </p>
-            )}
-            <Button btnName="Proceed" isLoading={isSubmitting} />
-          </form>
-        </div>
+    <div className="mx-auto max-w-md px-5">
+      <h2 className="py-8 text-center text-2xl font-bold">
+        What Is Your Email?
+      </h2>
+      <div className="rounded-lg border bg-white p-5">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Input
+            type="text"
+            placeholder="Loan Amount"
+            value={watch("loan_amount") || ""}
+            onChange={handleChange("loan_amount")}
+            error={errors.loan_amount?.message}
+          />
+          <Input
+            type="text"
+            placeholder="Personal Email Address"
+            value={watch("email") || ""}
+            onChange={handleChange("email")}
+            error={errors.email?.message || emailError}
+          />
+          {emailConfidence && (
+            <p className="text-sm text-green-500">
+              Email delivery confidence: {emailConfidence}
+            </p>
+          )}
+          {message && (
+            <p
+              className={`mt-4 text-sm ${message.includes("✅") ? "text-green-500" : "text-red-500"}`}
+            >
+              {message}
+            </p>
+          )}
+          <Button btnName="Proceed" isLoading={isSubmitting} />
+        </form>
       </div>
     </div>
   );

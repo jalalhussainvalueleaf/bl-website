@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import MobileValidation from "@/components/LoanApply/MobileValidation";
+import Loader from "@/components/Common/Loader";
 
 const MainPageContent = () => {
   const searchParams = useSearchParams();
@@ -52,7 +53,7 @@ const MainPage = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      {loading ? <h3>Loading....</h3> : <MainPageContent />}
+      {loading ? <Loader /> : <MainPageContent />}
     </Suspense>
   );
 };
