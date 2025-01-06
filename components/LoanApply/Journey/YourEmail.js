@@ -175,6 +175,8 @@ const SecondStep = ({ onClick }) => {
 
         setMessage("✅ Data saved successfully.");
         sessionStorage.setItem("welcome", JSON.stringify(data));
+        sessionStorage.setItem("journey", 2);
+        setSteps(2);
       } catch (error) {
         console.error("JSON Parsing Error:", error.message);
         setMessage("❌ Server returned an invalid JSON response.");
