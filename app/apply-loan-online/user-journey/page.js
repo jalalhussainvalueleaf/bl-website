@@ -105,7 +105,7 @@ export default function Page() {
         <Loader />
       ) : (
         <>
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center pt-12">
             <img src="/images/buddyloan-logo.png" className="w-40" />
           </div>
           <div>{renderStep()}</div>

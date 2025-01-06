@@ -84,13 +84,13 @@ const FirstStep = () => {
   }
 
   return (
-    <div className="bg-white">
+    <div className="">
       <div className="mx-auto max-w-md px-5">
-        <h2 className="py-8 text-center text-2xl font-bold">
+        <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">
           Enter Your Personal Details
         </h2>
       </div>
-      <div className="mx-auto max-w-md rounded-lg border px-5">
+      <div className="mx-auto max-w-md px-5">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="py-4">
             <CalendarInput

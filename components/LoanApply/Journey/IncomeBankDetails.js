@@ -121,12 +121,12 @@ const FirstStep = () => {
 I hereby appoint Buddy Loan as my authorized representative to receive my Credit Information from Experian, on an ongoing basis until the purpose of Pulling the Bureau Score to push the lead to the lending partner associated with Buddy Loan ("End Use Purpose") is satisfied or expiry of 6 months from the date the consent collected; whichever is earlier.`;
 
   return (
-    <div className="bg-white">
-      <div className=" bg-white">
+    <div className="">
+      <div className="">
         <div className="mx-auto max-w-md px-5">
-          <h2 className="py-8 text-2xl font-bold">Income & Bank Details</h2>
+          <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">Income & Bank Details</h2>
         </div>
-        <div className="mx-auto max-w-md rounded-lg border px-5">
+        <div className="mx-auto max-w-md px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="relative flex flex-col items-center justify-between">
               <Input
@@ -208,8 +208,8 @@ I hereby appoint Buddy Loan as my authorized representative to receive my Credit
                 error={errors.creditCard?.message}
               />
             </div>
-            <div>
-              <p>
+            <div className="pb-4">
+              <small className="leading-0">
                 I hereby declare that I have read, understood and agree to the
                 Terms and Conditions and the privacy policy .I allow Buddy Loan,
                 its Lending Partners and subsidiaries to contact me via
@@ -229,7 +229,7 @@ I hereby appoint Buddy Loan as my authorized representative to receive my Credit
                   btnName="close"
                   link="more+"
                 />
-              </p>
+              </small>
             </div>
 
             <Button btnName="Submit" />

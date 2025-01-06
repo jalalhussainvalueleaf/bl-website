@@ -113,6 +113,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
   // Handle API response for sending OTP
   const handleSendSmsResponse = (response, mobile) => {
     if (response?.status === "success" && response?.HTTPStatus === 200) {
+      console.log("my response", response.user_type);
       sessionStorage.setItem("mobileNumber", mobile);
       toast.success("OTP sent successfully");
 
@@ -208,7 +209,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
   }, [formState.userConsentCheck]);
 
   return (
-    <div className="mx-auto my-auto flex max-w-[400px] flex-col items-center justify-center xl:max-w-[600px]">
+    <div className="m-auto flex max-w-[400px] flex-col items-center justify-center xl:max-w-[600px]">
       {/* Buddy loan Img  */}
       <Link href="/">
         <Image
@@ -240,8 +241,8 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
         <div
           className={`transition-all duration-300 ease-in-out ${
             formState.isTransitioning
-              ? "-translate-y-4 transform opacity-0"
-              : "translate-y-4 transform opacity-100"
+              ? "-translate-y-4 opacity-0"
+              : "translate-y-4 opacity-100"
           }`}
         >
           {!formState.showOtpInput ? (

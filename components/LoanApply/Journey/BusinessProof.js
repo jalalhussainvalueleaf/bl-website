@@ -60,17 +60,17 @@ const SecondStep = () => {
   };
 
   return (
-    <div className="bg-white">
-      <div className=" bg-white">
+    <div className="">
+      <div className="">
         <div className="mx-auto max-w-md px-5 py-8">
-          <h2 className="text-2xl font-bold">
+          <h2 className="text-center text-2xl font-semibold text-bl-blue">
             Do You Have Any Business Proof?
           </h2>
           <small>
             (Ex - GST, Udyam, Shop & Establishment, Gumasta, FSSAI License.)
           </small>
         </div>
-        <div className="mx-auto max-w-md rounded-lg border px-5">
+        <div className="mx-auto max-w-md px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="py-4">
               <Radio

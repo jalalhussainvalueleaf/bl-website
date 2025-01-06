@@ -8,99 +8,44 @@ import { encryptData, decryptData } from "../../../utils/cryptoUtils"; // Import
 import Logout from "../../../utils/logout";
 import OfferAvailable from "../../../components/LoanApply/LoanStatus/OfferAvailable";
 import NoOfferAvailbale from "../../../components/LoanApply/LoanStatus/NoOffer";
+import { checkOffers } from "@/api/user";
 
 // const checkOffers =
 // "https://prod.utils.buddyloan.in/fetch_user_loan_status.php";
 
-const checkOffers =
-  "https://prod.utils.buddyloan.in/fetch_user_appl_wise_loan_status.php";
+
+
+// const checkOffers =
+//   "https://prod.utils.buddyloan.in/fetch_user_appl_wise_loan_status.php";
 
 export default function OfferPage() {
-  const {
-    userId,
-    startUserNewJourney,
-    showOfferPage,
-    setUserId,
-    setShowOfferPage,
-    setStartUserNewJourney,
-  } = useUserContext();
-  const router = useRouter();
-  // const userId = "oYx2Clg+MJOaBq9v8lookw==";
-
-  const [offerData, setOfferData] = useState(null);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
   const [userName, setUserName] = useState("Buddy");
-  const [status, setStatus] = useState(true);
-  // sessionStorage.getItem("ud_token");
+  const [data, setData] = useState([]);
+  const userId = "9On5Akji0o/fQ3OjPOgnuw==";
 
-  const [curatedOffers, setCuratedOffers] = useState([]);
-  const [preApprovedOffers, setPreApprovedOffers] = useState([]);
-  const [ccOffers, setCCOffers] = useState([]);
-  // const [data, setData] = useState([]);
+  // Check Offer via API
+  const checkForOffers = async (userId) => {
+    try {
+      const payload = new URLSearchParams({
+        userid:userId,
+      });
 
-  // useEffect(() => {
-  //   // Step 1: Check if session data exists on initial render or after refresh
-  //   const storedEncryptedUserName = sessionStorage.getItem("ud_token");
-  //   const storedEncryptedData = sessionStorage.getItem("u_stat_bdl");
-  //   // const storedEncryUserName = sessionStorage.getItem("_token");
+      const response = await checkOffers(payload);
 
-  //   console.log("my data stored", decryptData(storedEncryptedUserName));
+      setData(response.data.approved_offers['lenders-status-array'])
+      console.log(response.data.approved_offers['lenders-status-array']);
+    } catch (error) {
+      console.log("error offer page");
+      // toast.error("Error fetching offers");
+    }
+  };
 
-  //   if (storedEncryptedUserName) {
-  //     const decryptedUserName = decryptData(storedEncryptedUserName);
-  //     setUserName(
-  //       decryptedUserName.user[0].fname + " " + decryptedUserName.user[0].lname,
-  //     );
-  //   } // passed checked
-
-  //   if (storedEncryptedData) {
-  //     const decryptedData = decryptData(storedEncryptedData);
-  //     console.log("check decryption", decryptedData);
-  //     if (decryptedData) {
-  //       // console.log("Decrypted Data for offers: ", decryptedData);
-  //       if (decryptedData.userId) {
-  //         // console.log("userId_inside", decryptedData.userId);
-  //         setUserId(decryptedData.userId);
-  //         // setUserId("oYx2Clg+MJOaBq9v8lookw==");
-  //       } else {
-  //         console.log("userId is empty, redirecting to apply-loan-online");
-  //         router.push("/apply-loan-online");
-  //       }
-  //       setStartUserNewJourney(decryptedData.startUserNewJourney);
-  //       setShowOfferPage(decryptedData.showOfferPage);
-  //     }
-  //   } else {
-  //     // If no session data exists, ensure to redirect to apply-loan page
-  //     if (!userId) {
-  //       router.push("/apply-loan-online");
-  //     }
-  //   }
-  //   // console.log('my second fake id',userId)
-  //   // Encrypt data and store it in sessionStorage if context values are available
-  //   if (
-  //     userId &&
-  //     startUserNewJourney !== undefined &&
-  //     showOfferPage !== undefined
-  //   ) {
-  //     const dataToEncrypt = { userId, startUserNewJourney, showOfferPage };
-  //     // console.log("user_id", userId);
-  //     // console.log("user_journey", startUserNewJourney);
-  //     // console.log("offers", showOfferPage);
-
-  //     const encryptedData = encryptData(dataToEncrypt);
-  //     // sessionStorage.setItem("u_stat_bdl", encryptedData);
-  //     // console.log("Encrypted Data Stored in sessionStorage: ", encryptedData);
-  //   }
-  // }, [
-  //   userId,
-  //   startUserNewJourney,
-  //   showOfferPage,
-  //   setUserId,
-  //   setStartUserNewJourney,
-  //   setShowOfferPage,
-  //   router,
-  // ]);
+  useEffect(() => {
+    if (userId) {
+      console.log("inside user", userId);
+      checkForOffers(userId);
+    }
+  }, [userId]);
 
   // useEffect(() => {
   //   if (userId) {
@@ -144,7 +89,7 @@ export default function OfferPage() {
   return (
     <div className="min-h-screen">
       <h1 className="text-bold text-center"> Offer Page </h1>
-      {/* <OfferAvailable userName={userName} data={data} /> */}
+      <OfferAvailable userName={userName} data={data} />
     </div>
   );
 }

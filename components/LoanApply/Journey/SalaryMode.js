@@ -60,12 +60,12 @@ const SecondStep = () => {
   };
 
   return (
-    <div className="bg-white">
-      <div className="bg-white">
+    <div className="">
+      <div className="">
         <div className="mx-auto max-w-md px-5">
           <h2 className="py-8 text-2xl font-bold">Choose Salary Mode</h2>
         </div>
-        <div className="mx-auto max-w-md rounded-lg border px-5">
+        <div className="mx-auto max-w-md px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="py-4">
               <Radio

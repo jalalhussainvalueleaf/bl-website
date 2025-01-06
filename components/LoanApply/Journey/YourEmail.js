@@ -7,6 +7,7 @@ import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import { useUserContext } from "../../../utils/UserContext";
 import { encryptData, decryptData } from "@/utils/cryptoUtils"; // Import the functions
+import { userSearch,checkEmailDelivery,partialSubmit } from "@/api/user";
 
 const SecondStep = ({ onClick }) => {
   const router = useRouter();
@@ -16,12 +17,9 @@ const SecondStep = ({ onClick }) => {
   const [emailError, setEmailError] = useState("");
   const [userId, setUserId] = useState("");
   const [mobile, setUserMobile] = useState("");
+  const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
-
-  const checkEmailDelivery =
-    "https://prod.utils.buddyloan.in/email_validate.php";
-  const partialSubmit = "https://prod.utils.buddyloan.in/update_user_temp.php";
-  const checkUsers = "https://prod.utils.buddyloan.in/user_search.php";
+  const[userType,setUserType] = useState("");
 
   const fields = ["loan_amount", "email"];
   const {
@@ -35,12 +33,18 @@ const SecondStep = ({ onClick }) => {
   // Load saved user data
   useEffect(() => {
     const saved_token = sessionStorage.getItem("_token");
-    console.log("token", saved_token);
-    verifyUsers(saved_token);
+    const saved_mobile = sessionStorage.getItem("mobileNumber");
+    const amountData = sessionStorage.getItem("welcome");
+    if (amountData) {
+      const amountObject = JSON.parse(amountData);
+      setAmount(amountObject.loan_amount || ""); // Initialize state with loan_amount
+    }
+    // console.log("amount", saved_amount);
+    verifyUsers(saved_token, saved_mobile);
   }, []);
 
   // Verify Users function
-  const verifyUsers = async (userToken) => {
+  const verifyUsers = async (userToken, saved_mobile) => {
     if (!userToken) {
       console.error("User token is undefined.");
       setMessage("❌ User token is not available.");
@@ -50,7 +54,7 @@ const SecondStep = ({ onClick }) => {
 
     // Construct the payload
     const payload = new URLSearchParams({
-      mobile_no: "",
+      mobile_no: saved_mobile ? saved_mobile : "",
       platform: "",
       utm: "",
       utm_source: "",
@@ -61,20 +65,14 @@ const SecondStep = ({ onClick }) => {
     // console.log("Payload being Verification:", payload.toString());
 
     try {
-      const response = await fetch(checkUsers, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        },
-        body: payload.toString(),
-      });
-      // console.log(body);
-      const responseData = await response.json(); // Parse response as JSON
-      console.log("user search", decryptData(responseData.encryptData));
-      const userData = responseData.encryptData
-        ? decryptData(responseData.encryptData)
+    const response = await userSearch(payload);
+     const responseData = decryptData(response.data.encryptData); // Parse response as JSON
+      // console.log("user search", responseData);
+      const userData = responseData
+        ? responseData
         : null;
       if (userData?.HTTPStatus === 200 && userData.status === "success") {
+        setUserType(userData.user_type)
         setUserId(userData.user[0].id);
         setUserMobile(userData.user[0].mobile);
         Object.keys(userData.user[0]).forEach((field) => {
@@ -86,6 +84,8 @@ const SecondStep = ({ onClick }) => {
       setMessage("❌ Error verifying user. Please try again later.");
     }
   };
+
+  
 
   // Handle email input change and validation
   const handleChange = (field) => (e) => {
@@ -102,6 +102,16 @@ const SecondStep = ({ onClick }) => {
     } else {
       trigger(field);
     }
+
+    if (field === "loan_amount") {
+      // Update the amount in state and session storage
+      setAmount(value);
+      const savedData = sessionStorage.getItem("welcome");
+      const updatedData = savedData
+        ? { ...JSON.parse(savedData), loan_amount: value }
+        : { loan_amount: value };
+      sessionStorage.setItem("welcome", JSON.stringify(updatedData));
+    }
   };
 
   // Email verification API call
@@ -110,24 +120,9 @@ const SecondStep = ({ onClick }) => {
     const payload = new URLSearchParams({ email, mobile, user_id: userId });
 
     try {
-      const response = await fetch(checkEmailDelivery, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        },
-        body: payload.toString(),
-      });
-
-      const responseText = await response.text(); // Get raw response
+      const response = await checkEmailDelivery(payload);
+      const responseText = response.data; // Get raw response
       console.log("Raw Response:", responseText);
-
-      // const responseData = await response.json();
-      // if (response.ok) {
-      //   sessionStorage.setItem("email_delivery", JSON.stringify(responseData));
-      //   setEmailConfidence(responseData.confidence || "High");
-      // } else {
-      //   setEmailError("Unable to verify email delivery confidence.");
-      // }
     } catch (error) {
       console.error("Error verifying email:", error);
       setEmailError("❌ Error verifying email. Please try again later.");
@@ -144,114 +139,46 @@ const SecondStep = ({ onClick }) => {
     });
 
     try {
-      const response = await fetch(partialSubmit, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        },
-        body: payload,
-      });
 
-      // Check if the response was successful
-      if (!response.ok) {
-        console.error("HTTP Error:", response.status, response.statusText);
-        setMessage(`❌ HTTP Error: ${response.status}`);
-        return;
-      }
-
-      const responseText = await response.text(); // Get raw response
-      console.log("Raw Response Text:", responseText);
-
-      // Handle empty response bodies
-      if (!responseText) {
-        console.log("Empty response body.");
-        setMessage("✅ Data saved successfully.");
-        return;
-      }
-
-      try {
-        const responseData = JSON.parse(responseText); // Parse JSON
-        console.log("Parsed Response:", responseData);
-
-        setMessage("✅ Data saved successfully.");
-        sessionStorage.setItem("welcome", JSON.stringify(data));
-      } catch (error) {
-        console.error("JSON Parsing Error:", error.message);
-        setMessage("❌ Server returned an invalid JSON response.");
-      }
-    } catch (error) {
+      
+      console.log(userType)
+      if(userType === "0"){  
+        setMessage("✅ Data saved successfully."); 
+        sessionStorage.setItem("journey", 2);
+        setSteps(2);
+        }
+        else{
+          const response = await partialSubmit(payload);
+          console.log(response)
+          console.log(response.data.msg)
+          sessionStorage.setItem("journey", 2);
+          setSteps(2);
+          setMessage("✅ Data saved successfully1.");  
+        }
+      
+         } catch (error) {
       console.error("Form submission error:", error);
       setMessage(`❌ Form submission error: ${error.message}`);
+     }
+
     }
-  };
 
-  // const onSubmit = async (data) => {
-  //   // const payload = new URLSearchParams({
-  //   //   mobile_no: mobile,
-  //   //   coloumn_name: "email",
-  //   //   coloumn_value: data.email,
-  //   // });
-  //   // const response = await fetch(partialSubmit, {
-  //   //   method: "POST",
-  //   //   headers: {
-  //   //     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-  //   //   },
-  //   //   body: payload,
-  //   // });
-  //   // const responseData = await response.json();
-  //   // if (response.ok) {
-  //   //   setMessage("✅ Data saved successfully.");
-  //   //   sessionStorage.setItem("welcome", JSON.stringify(data));
-  //   // } else {
-  //   //   setMessage("❌ Failed to save data. Please try again.");
-  //   // }
-  //   // console.log("Response Data:", responseData);
-  //   // try {
-  //   const payload = new URLSearchParams({
-  //     mobile_no: mobile,
-  //     coloumn_name: "email",
-  //     coloumn_value: data.email,
-  //   });
 
-  //   const response = await fetch(partialSubmit, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-  //     },
-  //     body: payload,
-  //   });
-  //   const responseText = await response.text(); // Get raw response
-  //   // console.log(await response.json());
-  //   //const responseData = await response.json();
-  //   console.log("ok");
-  //   // if (response.ok) {
-  //   //   setMessage("✅ Data saved successfully.");
-  //   //   sessionStorage.setItem("welcome", JSON.stringify(data));
-  //   // } else {
-  //   //   setMessage("❌ Failed to save data. Please try again.");
-  //   // }
-  //   // } catch (error) {
-  //   //   setMessage("❌ Form submission error. Please try again later.");
-  //   //   console.error("Form submission error:", error);
-  //   // }
-  // };
-
-  // Handle loan type radio selection
   const handleRadioChange = (value) => {
     setSelectedLoanType(value);
   };
 
   return (
     <div className="mx-auto max-w-md px-5">
-      <h2 className="py-8 text-center text-2xl font-bold">
+      <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">
         What Is Your Email?
       </h2>
-      <div className="rounded-lg border bg-white p-5">
-        <form onSubmit={handleSubmit(onSubmit)}>
+      <div className=" p-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <Input
             type="text"
             placeholder="Loan Amount"
-            value={watch("loan_amount") || ""}
+            value={watch("loan_amount") || amount}
             onChange={handleChange("loan_amount")}
             error={errors.loan_amount?.message}
           />
@@ -269,7 +196,8 @@ const SecondStep = ({ onClick }) => {
           )}
           {message && (
             <p
-              className={`mt-4 text-sm ${message.includes("✅") ? "text-green-500" : "text-red-500"}`}
+              // className={`mt-4 text-sm ${message.includes("✅") ? "text-green-500" : "text-red-500"}`}
+              className={`text-sm ${message.includes("✅") ? "text-green-500" : "text-red-500"}`}
             >
               {message}
             </p>

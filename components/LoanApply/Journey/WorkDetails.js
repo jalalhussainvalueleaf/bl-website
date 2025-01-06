@@ -5,12 +5,12 @@ import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Dropdown from "@/components/Common/Dropdown";
+import { checkPincodeAPI } from "@/api/user";
 
 const FirstStep = () => {
   const [workDetails, setWorkDetails] = useState("");
   const { setSteps } = useUserContext();
-  const checkPincodeAPI =
-    "https://prod.utils.buddyloan.in/autopopulate_pincode_api.php";
+  
 
   const fields = [
     "companyType",
@@ -62,16 +62,8 @@ const FirstStep = () => {
 
     const payload = new URLSearchParams({ pincode });
     try {
-      const response = await fetch(checkPincodeAPI, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        },
-        body: payload.toString(),
-      });
-
-      const result = await response.json();
-      if (response.ok && result.HTTPStatus === 200) {
+      const response = await checkPincodeAPI(payload)
+      if (response.status === 200 && response.data.HTTPStatus === 200) {
         setIsPincodeValid(true);
         setPincodeError("");
         return true;
@@ -100,12 +92,12 @@ const FirstStep = () => {
   };
 
   return (
-    <div className="bg-white">
-      <div className=" bg-white">
+    <div className="">
+      <div className="">
         <div className="mx-auto max-w-md px-5">
-          <h2 className="py-8 text-2xl font-bold">Enter Your Work Details</h2>
+          <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">Enter Your Work Details</h2>
         </div>
-        <div className="mx-auto max-w-md rounded-lg border px-5">
+        <div className="mx-auto max-w-md px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex items-center justify-between gap-5 py-4">
               <Dropdown

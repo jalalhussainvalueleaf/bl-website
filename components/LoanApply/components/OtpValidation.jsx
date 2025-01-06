@@ -33,15 +33,14 @@ const OtpValidation = ({
     setUserSearchData,
   } = useUserContext();
 
-  console.log("userSearchData++++++", userSearchData);
+  // console.log("userSearchData++++++", userSearchData);
 
   useEffect(() => {
-    setUserId("Okkkkkkkk");
+    // setUserId("Okkkkkkkk");
     // setUserSearchData([{ data: "setting" }]);
   }, []);
 
   const router = useRouter();
-
   // Local states
   const [state, setState] = useState({
     loading: false,
@@ -49,9 +48,7 @@ const OtpValidation = ({
     canVerifyOtp: true,
   });
   const [userData, setUserData] = useState("");
-
-  console.log("userData", userData);
-
+  // console.log("userData", userData);
   // Get mobile number from session storage
   const mobileNumber = sessionStorage.getItem("mobileNumber");
 
@@ -196,10 +193,8 @@ const OtpValidation = ({
 
       // Make OTP verification API call
       const res = await userSearch(payload);
-
       // decrypting the res here
       const response = decryptData(res?.data?.encryptData);
-
       // Set user data in userData context
       setUserSearchData(response);
 
@@ -209,7 +204,6 @@ const OtpValidation = ({
           false,
         );
       }
-
       sessionStorage.setItem("journey", 1);
     } catch (error) {
       const errorMessage =
