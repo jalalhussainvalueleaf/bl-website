@@ -5,6 +5,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { sendSMS } from "@/api/user";
 import OtpValidation from "./OtpValidation";
+import { encryptData } from "@/utils/cryptoUtils64";
 
 const INVALID_NUMBERS = [
   "1111111111",
@@ -92,7 +93,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
   const sendOtp = async (mobile) => {
     try {
       const payload = new URLSearchParams({
-        mobile,
+        mobile: await encryptData(mobile),
         utm: "homepgbanappnowbtn",
         platform: "Nweb",
       });
@@ -112,8 +113,11 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
 
   // Handle API response for sending OTP
   const handleSendSmsResponse = (response, mobile) => {
+    console.log("response-1", response);
+    console.log("response-1", response.msg);
+    
     if (response?.status === "success" && response?.HTTPStatus === 200) {
-      console.log("my response", response.user_type);
+      console.log("my response-2", response.user_type);
       sessionStorage.setItem("mobileNumber", mobile);
       toast.success("OTP sent successfully");
 
@@ -135,6 +139,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
     }
 
     if (response?.status === "failure" && response?.HTTPStatus === 405) {
+      console.log('iam second')
       updateMessage(response.msg); // Display failure message
       setFormState((prev) => ({
         ...prev,
@@ -145,12 +150,16 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
     }
 
     if (response?.status === "failure" && response?.HTTPStatus === 200) {
+      console.log('iam third')
       updateMessage(response.msg); // Display failure message
       setFormState((prev) => ({
         ...prev,
         verifyOtp: false,
         isValid: false,
       }));
+      toast.error(response.msg);
+      console.log("yesss")
+      
       return;
     }
   };
