@@ -50,23 +50,26 @@ export default function BlogContent({ content, title }) {
       table.classList.remove(...table.classList);
       table.classList.add(
         "min-w-full",
-        "table-auto",
-        "border-collapse",
-        "border",
-        "border-gray-200",
-        "odd:bg-gray-100",
-        "even:bg-white",
-        "py-8",
+                "table-auto",
+                "border-collapse",
+                "border",
+                "border-gray-200",
+                "odd:bg-gray-100",
+                "even:bg-white",
+                "py-8",
+                "my-8"
       );
 
       const thElements = table.querySelectorAll("th, td");
       thElements.forEach((th) => {
         th.classList.add(
-          "border-b",
-          "border-gray-200",
-          "px-4",
-          "py-2",
-          "text-center",
+          "break-all",
+                    "border",
+                    "border-gray-200",
+                    "px-4",
+                    "py-2",
+                    "text-center",
+                    
         );
       });
 

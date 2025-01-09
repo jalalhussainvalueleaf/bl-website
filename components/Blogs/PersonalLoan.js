@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function PersonalLoan() {
   return (
-    <div className="mx-auto w-[700px] rounded-lg border bg-white p-4 shadow">
+    <div className="mx-auto my-8 w-[700px] rounded-lg border bg-white p-4 shadow">
       <div className="flex items-center justify-between gap-6">
         <div className="">
           <img src="/images/p-loan-approval.webp" className="w-24" />

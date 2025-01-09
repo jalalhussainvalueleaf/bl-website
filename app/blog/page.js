@@ -7,6 +7,7 @@ export default function Page() {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("");
   return (
+    <>
     <div className="mt-24 flex">
       <LandingPage searchTerm={searchTerm} category={category} />
       <NavigationBar
@@ -16,5 +17,6 @@ export default function Page() {
         setCategory={setCategory}
       />
     </div>
+    </>
   );
 }

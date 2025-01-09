@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function EligibilityCheck() {
   return (
-    <div className="mx-auto flex w-8/12 justify-center gap-4 py-6">
+    <div className="mx-auto my-8 flex w-8/12 justify-center gap-4 py-6">
       <div className="group w-full">
         <Link
           href="/personal-loan-eligibility-calculator?utm_source=seoweb&amp;utm_medium=commonelgbtn&amp;utm_campaign=organic&amp;utm_content=elgcal"
@@ -17,7 +17,7 @@ export default function EligibilityCheck() {
             <img
               src="/images/check-btn.svg"
               alt="Check Eligibility"
-              className="h-20 w-20 group-hover:transform"
+              className="size-20"
             />
           </div>
         </Link>
@@ -36,7 +36,7 @@ export default function EligibilityCheck() {
             <img
               src="/images/cr-scr.svg"
               alt="Credit Score"
-              className="h-20 w-20"
+              className="size-20"
             />
           </div>
         </Link>

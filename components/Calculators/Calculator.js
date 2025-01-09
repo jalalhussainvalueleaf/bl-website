@@ -62,7 +62,7 @@ export default function LoanCalculator() {
   }, [loanAmount, interestRate, months]);
 
   return (
-    <div className="mx-auto grid w-11/12 gap-4 py-12 lg:grid-cols-2">
+    <div className="mx-auto my-8 grid w-11/12 gap-4 py-12 lg:grid-cols-2">
       <div className="rounded-lg border bg-white p-8 shadow-lg">
         <div className="mb-6">
           <label className="mb-2 block text-lg font-semibold text-gray-700">

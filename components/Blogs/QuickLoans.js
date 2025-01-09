@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function QuickLoans({ title }) {
   return (
-    <div className="py-8">
+    <div className="my-8 py-8">
       <Link
         href="/apply-loan-online/?utm_source=seoweb&amp;utm_medium=webalocta&amp;utm_campaign=organic"
         className="block"

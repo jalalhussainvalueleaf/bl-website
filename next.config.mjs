@@ -38,6 +38,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "buddyloan-club-test.s3.ap-south-1.amazonaws.com",
       },
+      {
+        protocol: "https",
+        hostname: "img.youtube.com",
+      },
     ],
   },
 };

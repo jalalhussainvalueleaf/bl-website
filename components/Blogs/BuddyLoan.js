@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function BuddyLoan() {
   return (
-    <div className="mx-auto w-[800px] rounded-lg border p-4 shadow">
+    <div className="mx-auto my-8 w-[800px] rounded-lg border p-4 shadow">
       <div className="flex items-center justify-between gap-6">
         <div className="">
           <img src="/images/buddyloan-logo.png" className="h-20 w-[350px]" />
