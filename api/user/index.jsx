@@ -12,7 +12,7 @@ export const verifyOTP = (payload) => {
 
 // Resend OTP API
 export const resendOTP = (payload) => {
-  return api.post("/Resend_otp.php", payload);
+  return api.post("/v3/Resend_otp.php", payload);
 };
 
 // Check Users API

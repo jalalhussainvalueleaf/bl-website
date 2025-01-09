@@ -6,6 +6,7 @@ import { resendOTP, userSearch, verifyOTP } from "@/api/user";
 import { encryptData, decryptData } from "@/utils/cryptoUtils"; // Import the functions
 import { useUserContext } from "@/utils/UserContext";
 import OtpTimer from "./OtpTimer";
+// import { encryptData } from "@/utils/cryptoUtils64";
 
 const OtpValidation = ({
   totalDigits = 4,
@@ -141,6 +142,7 @@ const OtpValidation = ({
 
   // Resend OTP handler
   const reSendOtp = async () => {
+    console.log('otp clicked')
     setState((prev) => ({
       ...prev,
       loading: true,
@@ -150,6 +152,7 @@ const OtpValidation = ({
       // Prepare payload for OTP verification request
       const payload = new URLSearchParams({
         mobile: mobileNumber,
+        // mobile: await encryptData(mobileNumber),
         utm: "homepgbanappnowbtn",
         platform: "Nweb",
       });
@@ -157,11 +160,13 @@ const OtpValidation = ({
       // Make OTP verification API call
       const response = await resendOTP(payload);
 
-      if (response.data === "success") {
+      console.log('my respoinse',response)
+
+      if (response.data.status === "success") {
         toast.success("OTP sent successfully.");
       }
 
-      if (response.data === "failure") {
+      if (response.data.status === "failure") {
         updateMessage(response.data.message, false);
         toast.error(response.data.message);
       }

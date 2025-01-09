@@ -91,15 +91,16 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
 
   // Send OTP via API
   const sendOtp = async (mobile) => {
+    const mobileNo = await encryptData(mobile);
     try {
       const payload = new URLSearchParams({
-        mobile: await encryptData(mobile),
+        mobile: mobileNo,
         utm: "homepgbanappnowbtn",
         platform: "Nweb",
       });
 
       const response = await sendSMS(payload);
-      handleSendSmsResponse(response?.data, mobile); // Handle OTP response
+      handleSendSmsResponse(response?.data,mobileNo); // Handle OTP response
     } catch (error) {
       setFormState((prev) => ({
         ...prev,
@@ -118,6 +119,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
     
     if (response?.status === "success" && response?.HTTPStatus === 200) {
       console.log("my response-2", response.user_type);
+      console.log('mobile number',mobile)
       sessionStorage.setItem("mobileNumber", mobile);
       toast.success("OTP sent successfully");
 
