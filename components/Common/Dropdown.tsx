@@ -24,7 +24,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full bg-white">
       {/* Label overlapping the border */}
       <span className="pointer-events-none absolute left-3 top-0 -translate-y-1/2 bg-white px-1 text-[#47B6F2]">
         {label}
@@ -56,7 +56,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 
       {/* Dropdown Options */}
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-full rounded-lg border bg-white shadow-lg">
+        <div className="absolute z-10 mt-1 max-h-60 w-full overflow-scroll rounded-lg border bg-white shadow-lg">
           {options.map((option) => (
             <button
               key={option}

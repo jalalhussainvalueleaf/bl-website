@@ -59,8 +59,9 @@ const FaqSection = ({ faqData }) => {
   }
 
   return (
-    <div className="mx-auto max-w-full p-4">
-      <div className="rounded-md border border-gray-200 px-4">
+    <div className="mx-auto w-11/12 mb-8">
+      <h2 className="mt-3 text-2xl font-bold mb-6">Frequently Asked Questions</h2>
+      <div className="rounded-md border border-gray-200 mt-4">
         {faqData.map((item, index) => (
           <div
             key={index}

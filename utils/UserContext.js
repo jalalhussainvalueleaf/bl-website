@@ -14,10 +14,13 @@ export const UserProvider = ({ children }) => {
   const [steps, setSteps] = useState("");
   const [startUserNewJourney, setStartUserNewJourney] = useState(false);
   const [showOfferPage, setShowOfferPage] = useState(false);
+  const [userSearchData, setUserSearchData] = useState("");
 
   return (
     <AppContext.Provider
       value={{
+        userSearchData,
+        setUserSearchData,
         userId,
         setUserId,
         steps,

@@ -14,11 +14,13 @@ import Step35 from "../../../components/LoanApply/Journey/IncomeBankDetails";
 import BusinessProof from "../../../components/LoanApply/Journey/BusinessProof";
 import BusinessDetails from "../../../components/LoanApply/Journey/BusinessDetails";
 import ProfessionType from "../../../components/LoanApply/Journey/ProfessionType";
+import Loader from "@/components/Common/Loader";
 
 export default function Page() {
   const router = useRouter();
   const { steps } = useUserContext();
   const [countSteps, setCountSteps] = useState("1"); // Default to string for consistency
+  const [loading, setLoading] = useState(true);
 
   // Update countSteps based on sessionStorage or context steps
   useEffect(() => {
@@ -54,6 +56,17 @@ export default function Page() {
     };
   }, []);
 
+  // Checks for token and redirects if not found.
+  useEffect(() => {
+    const saved_token = sessionStorage.getItem("_token");
+    setLoading(true);
+    if (!saved_token) {
+      router.push("/apply-loan-online");
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
   // Render the correct step component based on `countSteps`
   const renderStep = () => {
     switch (countSteps) {
@@ -87,14 +100,17 @@ export default function Page() {
   };
 
   return (
-    <div className="">
-      <div className="flex flex-col items-center">
-        <img src="/images/buddyloan-logo.png" className="w-40" />
-      </div>
-      <div>
-        {renderStep()}
-        {/* <p>My journey - {countSteps}</p> */}
-      </div>
+    <div className="min-h-screen bg-[url('/images/bg1.png')] bg-center">
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <div className="flex flex-col items-center pt-12">
+            <img src="/images/buddyloan-logo.png" className="w-40" />
+          </div>
+          <div>{renderStep()}</div>
+        </>
+      )}
     </div>
   );
 }

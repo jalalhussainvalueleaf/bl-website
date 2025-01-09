@@ -1,21 +1,18 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
-import { resendOTP, userSearch, verifyOTP } from "../../api/user";
+import React, { useState, useRef, useEffect, memo } from "react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { resendOTP, userSearch, verifyOTP } from "@/api/user";
 import { encryptData, decryptData } from "@/utils/cryptoUtils"; // Import the functions
 import { useUserContext } from "@/utils/UserContext";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-
-// Constants for OTP and timer
-const TOTAL_OTP_DIGITS = 4;
-const RESEND_TIMER_SECONDS = 30;
+import OtpTimer from "./OtpTimer";
 
 const OtpValidation = ({
   totalDigits = 4,
   utmSource,
   utmMedium,
-  utmCampaign,
   platform,
+  verifyOtp,
 }) => {
   const [otpValues, setOtpValues] = useState(Array(totalDigits).fill(""));
   const inputRefs = useRef([]);
@@ -32,32 +29,28 @@ const OtpValidation = ({
     setStartUserNewJourney,
     showOfferPage,
     setShowOfferPage,
+    userSearchData,
+    setUserSearchData,
   } = useUserContext();
 
-  const router = useRouter();
+  // console.log("userSearchData++++++", userSearchData);
 
-  // Local state for OTP verification and resend timer
+  useEffect(() => {
+    // setUserId("Okkkkkkkk");
+    // setUserSearchData([{ data: "setting" }]);
+  }, []);
+
+  const router = useRouter();
+  // Local states
   const [state, setState] = useState({
     loading: false,
     message: "",
     canVerifyOtp: true,
-    timer: RESEND_TIMER_SECONDS,
   });
   const [userData, setUserData] = useState("");
-
+  // console.log("userData", userData);
   // Get mobile number from session storage
   const mobileNumber = sessionStorage.getItem("mobileNumber");
-
-  // Handle timer countdown for OTP resend
-  useEffect(() => {
-    let interval;
-    if (state.timer > 0 && state.canVerifyOtp) {
-      interval = setInterval(() => {
-        setState((prev) => ({ ...prev, timer: prev.timer - 1 }));
-      }, 1000);
-    }
-    return () => clearInterval(interval); // Clear interval on unmount
-  }, [state.timer, state.canVerifyOtp]);
 
   // Update message state with an icon based on success or failure
   const updateMessage = (text, isSuccess = false) => {
@@ -151,7 +144,6 @@ const OtpValidation = ({
     setState((prev) => ({
       ...prev,
       loading: true,
-      timer: RESEND_TIMER_SECONDS,
     }));
 
     try {
@@ -164,8 +156,14 @@ const OtpValidation = ({
 
       // Make OTP verification API call
       const response = await resendOTP(payload);
+
+      if (response.data === "success") {
+        toast.success("OTP sent successfully.");
+      }
+
       if (response.data === "failure") {
         updateMessage(response.data.message, false);
+        toast.error(response.data.message);
       }
     } catch (error) {
       const errorMessage =
@@ -195,9 +193,10 @@ const OtpValidation = ({
 
       // Make OTP verification API call
       const res = await userSearch(payload);
-
       // decrypting the res here
       const response = decryptData(res?.data?.encryptData);
+      // Set user data in userData context
+      setUserSearchData(response);
 
       if (response.status === "failure") {
         updateMessage(
@@ -205,7 +204,6 @@ const OtpValidation = ({
           false,
         );
       }
-
       sessionStorage.setItem("journey", 1);
     } catch (error) {
       const errorMessage =
@@ -255,7 +253,7 @@ const OtpValidation = ({
   }, [userData]);
 
   return (
-    <div className="mx-auto my-4 max-w-sm text-center">
+    <div className="mx-auto max-w-sm text-center">
       <form>
         {/* Instructions for user */}
         <p className="text-md py-3 text-center text-gray-500">
@@ -311,20 +309,8 @@ const OtpValidation = ({
                   />
                 </svg>
               </div>
-            ) : state.timer > 0 ? (
-              // Show countdown timer if OTP resend is available
-              <p className="text-md text-gray-500">
-                Resend OTP in {state.timer} seconds
-              </p>
             ) : (
-              // Resend OTP button when timer expires
-              <button
-                type="button"
-                onClick={reSendOtp}
-                className="w-full rounded-lg px-4 text-sm text-blue-500"
-              >
-                Resend OTP
-              </button>
+              <OtpTimer reSendOtp={reSendOtp} verifyOtp={verifyOtp} />
             )}
           </div>
         )}

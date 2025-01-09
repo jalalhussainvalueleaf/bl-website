@@ -54,20 +54,30 @@ const SecondStep = () => {
 
   const handleRadioChange = (value) => {
     setEmploymentType(value);
+    // Retrieve the existing session data
+    const existingData = sessionStorage.getItem("welcome"); 
+    let sessionData = existingData ? JSON.parse(existingData) : {};
+
+    // Update the session data with the selected loan type
+    sessionData.selectedEmploymentType = value;
+
+    // Save the updated session data back to session storage
+    sessionStorage.setItem("welcome", JSON.stringify(sessionData));
+
     sessionStorage.setItem("selectedEmploymentType", value); // Save the selection
     setError(""); // Clear the error when a selection is made
     console.log(value);
   };
 
   return (
-    <div className="bg-white">
-      <div className=" bg-white">
+    <div className="">
+      <div className="">
         <div className="mx-auto max-w-md px-5">
-          <h2 className="py-8 text-2xl font-bold">
+          <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">
             What Is Your Employment Type
           </h2>
         </div>
-        <div className="mx-auto max-w-md rounded-lg border px-5">
+        <div className="mx-auto max-w-md px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="py-4">
               <Radio
