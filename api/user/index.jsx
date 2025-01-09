@@ -2,7 +2,7 @@ import api from "../index";
 
 // Check Users API
 export const sendSMS = (payload) => {
-  return api.post("/v2/sendsms_v2.php", payload);
+  return api.post("/v3/send_sms.php", payload);
 };
 
 // Verify OTP API
