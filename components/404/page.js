@@ -7,9 +7,9 @@ return (
         
     >
         <div className='absolute flex flex-col min-h-[580px] justify-between'>
-            <p className='text-[200px] font-bold text-bl-blue '>404</p>
+            <p className='text-[200px] font-bold text-bl-blue'>404</p>
             <div className='text-center'>
-            <p className='text-3xl font-semibold'>Look like you're lost</p>
+            <p className='text-3xl font-semibold'>Look like you&lsquo;re lost</p>
             <p className='text-xl'>the page you are looking for not avaible!</p>
             </div>
             </div>
