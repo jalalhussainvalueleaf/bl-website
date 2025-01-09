@@ -12,13 +12,10 @@ export const metadata = {
 
 export default function App({ children }) {
   return (
-    <html lang="en">
-      <head></head>
-      <body>
+    <>
         <Header />
         {children}
         <Footer />
-      </body>
-    </html>
+        </>
   );
 }
