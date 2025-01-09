@@ -8,13 +8,13 @@ export default function Banner() {
     <div className="h-screen">
       <div className="grid grid-cols-2 bg-slate-200">
         <div className="flex flex-col items-center justify-end space-y-4">
-          <h1 className="text-5xl font-bold text-black">
+          <h1 className="text-4xl font-bold text-black">
             Want A Personal Loan?
           </h1>
-          <h3 className="text-4xl font-bold text-bl-blue">80% Approval Rate</h3>
+          <h3 className="text-3xl font-bold text-bl-blue">80% Approval Rate</h3>
           <Link
             href="/apply-loan-online/?utm_source=seo&utm_medium=homepgbanappnowbtn&utm_campaign=organic"
-            className="text-whitex` w-[150px] rounded-full bg-bl-blue p-4 text-center"
+            className="w-[150px] rounded-full bg-bl-blue p-4 text-center text-white text-xl"
           >
             Apply Now
           </Link>
