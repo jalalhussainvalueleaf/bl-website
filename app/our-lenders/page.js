@@ -92,7 +92,7 @@ export default function Page() {
               <p>data not available</p>
             )}
           </div>
-          <h1>{post.title.rendered}</h1>
+          {/* <h1>{post.title.rendered}</h1> */}
           <div dangerouslySetInnerHTML={{ __html: post.content.rendered }} />
         </div>
       ) : (

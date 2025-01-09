@@ -1,17 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Breadcrum from "@/components/Breadcrum/page";
 import LottieAni from "@/public/lottie/business.json";
 import Lottie from "@/utils/Lottie";
-import QuickLoans from "@/components/Blogs/QuickLoans";
-import EligibilityCheck from "@/components/Blogs/EligibilityCheck";
-import FaqSection from "@/components/Common/FaqSection";
-import { loanSections, accordionData, blogContent } from "@/utils/data";
-import ConfigData from "@/config";
 import SEOPage from "@/components/SEOPages/Seo";
 import BlogContent from "@/components/Blogs/BlogContent";
-import LoopType from "@/components/Common/LoopType"
+import LoopType from "@/components/Common/LoopType";
+import FaqSection from "@/components/Common/FaqSection";
+import ConfigData from "@/config";
+import NoFound from "@/components/404/page";
 
 // Fetch data from the API
 async function fetchData(slug) {
@@ -51,9 +49,9 @@ export default function Page({ params }) {
     fetchPost();
   }, [slug]);
 
-  const toggleSection = (sectionId) => {
+  const toggleSection = useCallback((sectionId) => {
     setExpandedSection((prev) => (prev === sectionId ? null : sectionId));
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -65,9 +63,7 @@ export default function Page({ params }) {
 
   if (error || !post) {
     return (
-      <div className="mt-28 h-screen text-center">
-        <h1>Post not found</h1>
-      </div>
+      <NoFound/>
     );
   }
 
@@ -84,9 +80,7 @@ export default function Page({ params }) {
         <BlogContent content={post.acf.after_banner_paragraph} title={title} />
       </div>
       <LoopType data={loanType} />
-      
       <div className="mx-auto w-11/12">
-        {/* <h2 className="mt-3 text-2xl font-bold">FAQs on Business Loan</h2> */}
         <FaqSection faqData={faqData} />
       </div>
     </div>

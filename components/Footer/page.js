@@ -59,7 +59,7 @@ export default function Footer() {
 
   return (
     <div
-      className={`z-50 ${isVisible ? "min-h-[85vh]" : "min-h-[50vh]"} border-t-2 bg-[#E3F2FD] pt-4`}
+      className={`z-50 ${isVisible ? "min-h-[100vh]" : "min-h-[50vh]"} border-t-2 bg-[#E3F2FD] pt-4`}
     >
       <div className="grid lg:grid-cols-5">
         <div className="p-2">
