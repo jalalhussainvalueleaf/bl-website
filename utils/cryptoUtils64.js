@@ -1,11 +1,4 @@
-// utils/cryptoUtils.js
-
-import CryptoJS from "crypto-js";
-
-// Secret key and IV for AES encryption/decryption
-const secretKeyHex =
-  "3c06413b2f13ed3edd4afddbeacb08b93b5da8ae4c5ba73e8683ce3c73ae1c59"; // Hexadecimal key
-const secretIvAscii = "1a2b3c4d5e6f7g8h"; // ASCII IV
+import CONSTANTS from "./constants";
 
 // Utility functions
 const hexToUint8Array = (hex) => {
@@ -21,15 +14,11 @@ const base64Decode = (base64) => {
 };
 
 // Convert secret key and IV to appropriate formats
-const keyData = hexToUint8Array(secretKeyHex);
-const iv = new TextEncoder().encode(secretIvAscii);
+const keyData = hexToUint8Array(CONSTANTS.SECRETKEYHEX);
+const iv = new TextEncoder().encode(CONSTANTS.SECRETIVASCII);
 
-/**
- * Encrypt data using AES encryption
- * @param {string} data - Data to encrypt (string format)
- * @returns {Promise<string>} - Encrypted string in Base64 format
- */
-export async function encryptData(data) {
+// Encrypt data using AES decryption
+export async function encryptData64(data) {
   try {
     // Import the encryption key
     const cryptoKey = await crypto.subtle.importKey(
@@ -61,11 +50,7 @@ export async function encryptData(data) {
   }
 }
 
-/**
- * Decrypt data using AES decryption
- * @param {string} encryptedData - The encrypted string in Base64 format
- * @returns {Promise<string>} - Decrypted string
- */
+// Decrypt data using AES decryption
 export async function decryptData64(encryptedData) {
   try {
     // Decode Base64 to get combined data

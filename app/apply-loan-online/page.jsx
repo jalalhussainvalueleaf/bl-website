@@ -45,7 +45,6 @@ const MainPage = () => {
     if (saved_token) {
       // If there is a previous history entry, go back
       if (window.history.length > 1) {
-        // window.history.back(); // Go back to the previous page in history
         router.push("/apply-loan-online/user-journey");
       }
     } else {
@@ -54,7 +53,7 @@ const MainPage = () => {
   }, []);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loader />}>
       {loading ? <Loader /> : <MainPageContent />}
     </Suspense>
   );
