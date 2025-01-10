@@ -3,12 +3,13 @@
 import CryptoJS from "crypto-js";
 
 // Secret key and IV for AES encryption/decryption
-const secretKeyHex = "3c06413b2f13ed3edd4afddbeacb08b93b5da8ae4c5ba73e8683ce3c73ae1c59"; // Hexadecimal key
+const secretKeyHex =
+  "3c06413b2f13ed3edd4afddbeacb08b93b5da8ae4c5ba73e8683ce3c73ae1c59"; // Hexadecimal key
 const secretIvAscii = "1a2b3c4d5e6f7g8h"; // ASCII IV
 
 // Utility functions
 const hexToUint8Array = (hex) => {
-  return new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+  return new Uint8Array(hex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
 };
 
 const base64Encode = (buffer) => {
@@ -16,7 +17,7 @@ const base64Encode = (buffer) => {
 };
 
 const base64Decode = (base64) => {
-  return Uint8Array.from(atob(base64), char => char.charCodeAt(0));
+  return Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
 };
 
 // Convert secret key and IV to appropriate formats
@@ -36,7 +37,7 @@ export async function encryptData(data) {
       keyData,
       { name: "AES-CBC" },
       false,
-      ["encrypt"]
+      ["encrypt"],
     );
 
     // Encrypt the data
@@ -44,7 +45,7 @@ export async function encryptData(data) {
     const encryptedBuffer = await crypto.subtle.encrypt(
       { name: "AES-CBC", iv },
       cryptoKey,
-      dataBuffer
+      dataBuffer,
     );
 
     // Combine IV and encrypted data
@@ -65,7 +66,7 @@ export async function encryptData(data) {
  * @param {string} encryptedData - The encrypted string in Base64 format
  * @returns {Promise<string>} - Decrypted string
  */
-export async function decryptData(encryptedData) {
+export async function decryptData64(encryptedData) {
   try {
     // Decode Base64 to get combined data
     const combinedData = base64Decode(encryptedData);
@@ -80,14 +81,14 @@ export async function decryptData(encryptedData) {
       keyData,
       { name: "AES-CBC" },
       false,
-      ["decrypt"]
+      ["decrypt"],
     );
 
     // Decrypt the data
     const decryptedBuffer = await crypto.subtle.decrypt(
       { name: "AES-CBC", iv: extractedIv },
       cryptoKey,
-      encryptedBuffer
+      encryptedBuffer,
     );
 
     // Decode to string

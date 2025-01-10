@@ -3,10 +3,11 @@ import React, { useState, useRef, useEffect, memo } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { resendOTP, userSearch, verifyOTP } from "@/api/user";
-import { encryptData, decryptData } from "@/utils/cryptoUtils"; // Import the functions
+import { encryptData } from "@/utils/cryptoUtils"; // Import the functions
 import { useUserContext } from "@/utils/UserContext";
 import OtpTimer from "./OtpTimer";
-// import { encryptData } from "@/utils/cryptoUtils64";
+import { decryptData64 } from "@/utils/cryptoUtils64";
+import { decryptData } from "@/utils/cryptoUtils";
 
 const OtpValidation = ({
   totalDigits = 4,
@@ -34,13 +35,6 @@ const OtpValidation = ({
     setUserSearchData,
   } = useUserContext();
 
-  // console.log("userSearchData++++++", userSearchData);
-
-  useEffect(() => {
-    // setUserId("Okkkkkkkk");
-    // setUserSearchData([{ data: "setting" }]);
-  }, []);
-
   const router = useRouter();
   // Local states
   const [state, setState] = useState({
@@ -49,9 +43,24 @@ const OtpValidation = ({
     canVerifyOtp: true,
   });
   const [userData, setUserData] = useState("");
-  // console.log("userData", userData);
+  const [mobileNumber, setMobileNumber] = useState("");
+
   // Get mobile number from session storage
-  const mobileNumber = sessionStorage.getItem("mobileNumber");
+  useEffect(() => {
+    const fetchAndDecryptMobile = async () => {
+      try {
+        const savedMobile = sessionStorage.getItem("mobileNumber");
+        if (savedMobile) {
+          const decryptedMobile = await decryptData64(savedMobile);
+          setMobileNumber(decryptedMobile);
+        }
+      } catch (error) {
+        console.error("Error decrypting mobile number:", error);
+      }
+    };
+
+    fetchAndDecryptMobile(); // Call the async function
+  }, []);
 
   // Update message state with an icon based on success or failure
   const updateMessage = (text, isSuccess = false) => {
@@ -142,7 +151,6 @@ const OtpValidation = ({
 
   // Resend OTP handler
   const reSendOtp = async () => {
-    console.log('otp clicked')
     setState((prev) => ({
       ...prev,
       loading: true,
@@ -151,16 +159,13 @@ const OtpValidation = ({
     try {
       // Prepare payload for OTP verification request
       const payload = new URLSearchParams({
-        mobile: mobileNumber,
-        // mobile: await encryptData(mobileNumber),
+        mobile: encryptedMobile,
         utm: "homepgbanappnowbtn",
         platform: "Nweb",
       });
 
       // Make OTP verification API call
       const response = await resendOTP(payload);
-
-      console.log('my respoinse',response)
 
       if (response.data.status === "success") {
         toast.success("OTP sent successfully.");
@@ -202,6 +207,7 @@ const OtpValidation = ({
       const response = decryptData(res?.data?.encryptData);
       // Set user data in userData context
       setUserSearchData(response);
+      console.log("otp user search", response);
 
       if (response.status === "failure") {
         updateMessage(
