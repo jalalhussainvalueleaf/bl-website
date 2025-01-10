@@ -18,6 +18,7 @@ const FirstStep = () => {
   } = useFormValidation(fields);
 
   const formData = watch();
+  const { setSteps } = useUserContext();
 
   const handleChange = (field) => (e) => {
     setValue(field, e.target.value);
@@ -45,7 +46,8 @@ const FirstStep = () => {
     try {
       console.log("Step 35 submitted:", data);
       sessionStorage.setItem("finalData", JSON.stringify(data));
-      sessionStorage.setItem("journey", "finish");
+      sessionStorage.setItem("journey", "journeyCompleted");
+      setSteps("journeyCompleted");
     } catch (error) {
       console.error("Form submission error:", error);
     }
@@ -124,7 +126,9 @@ I hereby appoint Buddy Loan as my authorized representative to receive my Credit
     <div className="">
       <div className="">
         <div className="mx-auto max-w-md px-5">
-          <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">Income & Bank Details</h2>
+          <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">
+            Income & Bank Details
+          </h2>
         </div>
         <div className="mx-auto max-w-md px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
