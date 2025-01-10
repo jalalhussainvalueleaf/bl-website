@@ -15,7 +15,7 @@ export default function Footer() {
   const hideBar = () => {
     sessionStorage.setItem("footerBar", true);
     setIsVisible(false); // Hide immediately when the bar is clicked
-    console.log("applied");
+    // console.log("applied");
   };
 
   useEffect(() => {
@@ -23,13 +23,13 @@ export default function Footer() {
     if (footerCheck) {
       setIsVisible(false);
       // Reset visibility after 30 seconds
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-        console.log("removed");
-        sessionStorage.removeItem("footerBar");
-      }, 30000); // 30 seconds in milliseconds
+      // const timer = setTimeout(() => {
+      //   setIsVisible(true);
+      //   console.log("removed");
+      //   sessionStorage.removeItem("footerBar");
+      // }, 30000); // 30 seconds in milliseconds
 
-      return () => clearTimeout(timer); // Cleanup timer on unmount or effect re-run
+      // return () => clearTimeout(timer); // Cleanup timer on unmount or effect re-run
     }
     const handleScroll = () => {
       const currentScroll = window.scrollY;

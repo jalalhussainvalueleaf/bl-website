@@ -5,7 +5,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { sendSMS } from "@/api/user";
 import OtpValidation from "./OtpValidation";
-import { encryptData } from "@/utils/cryptoUtils64";
+import { encryptData, decryptData64 } from "@/utils/cryptoUtils64";
 
 const INVALID_NUMBERS = [
   "1111111111",
@@ -39,15 +39,24 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
 
   // Restore saved mobile number on initial load
   useEffect(() => {
-    const savedMobile = sessionStorage.getItem("mobileNumber");
-    if (savedMobile) {
-      setFormState((prev) => ({
-        ...prev,
-        mobile: savedMobile,
-        isEditable: false,
-        showOtpInput: true,
-      }));
-    }
+    const fetchAndDecryptMobile = async () => {
+      try {
+        const savedMobile = sessionStorage.getItem("mobileNumber");
+        if (savedMobile) {
+          const decryptedMobile = await decryptData64(savedMobile);
+          setFormState((prev) => ({
+            ...prev,
+            mobile: decryptedMobile,
+            isEditable: false,
+            showOtpInput: true,
+          }));
+        }
+      } catch (error) {
+        console.error("Error decrypting mobile number:", error);
+      }
+    };
+
+    fetchAndDecryptMobile(); // Call the async function
   }, []);
 
   // Validate mobile number
@@ -91,16 +100,16 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
 
   // Send OTP via API
   const sendOtp = async (mobile) => {
-    const mobileNo = await encryptData(mobile);
+    const encryptedMobile = await encryptData(mobile);
     try {
       const payload = new URLSearchParams({
-        mobile: mobileNo,
+        mobile: encryptedMobile,
         utm: "homepgbanappnowbtn",
         platform: "Nweb",
       });
 
       const response = await sendSMS(payload);
-      handleSendSmsResponse(response?.data,mobileNo); // Handle OTP response
+      handleSendSmsResponse(response?.data, encryptedMobile); // Handle OTP response
     } catch (error) {
       setFormState((prev) => ({
         ...prev,
@@ -114,12 +123,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
 
   // Handle API response for sending OTP
   const handleSendSmsResponse = (response, mobile) => {
-    console.log("response-1", response);
-    console.log("response-1", response.msg);
-    
     if (response?.status === "success" && response?.HTTPStatus === 200) {
-      console.log("my response-2", response.user_type);
-      console.log('mobile number',mobile)
       sessionStorage.setItem("mobileNumber", mobile);
       toast.success("OTP sent successfully");
 
@@ -141,7 +145,6 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
     }
 
     if (response?.status === "failure" && response?.HTTPStatus === 405) {
-      console.log('iam second')
       updateMessage(response.msg); // Display failure message
       setFormState((prev) => ({
         ...prev,
@@ -152,7 +155,6 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
     }
 
     if (response?.status === "failure" && response?.HTTPStatus === 200) {
-      console.log('iam third')
       updateMessage(response.msg); // Display failure message
       setFormState((prev) => ({
         ...prev,
@@ -160,8 +162,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
         isValid: false,
       }));
       toast.error(response.msg);
-      console.log("yesss")
-      
+
       return;
     }
   };
@@ -199,7 +200,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
-      const length = formState.mobile.length;
+      const length = formState?.mobile?.length;
       inputRef.current.setSelectionRange(length, length);
     }
   }, [inputRef, formState.showOtpInput]);
@@ -347,7 +348,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
                 utmSource={utmSource}
                 utmMedium={utmMedium}
                 platform={platform}
-                mobile={formState?.mobile}
+                mobileNumber={formState?.mobile}
                 verifyOtp={formState.verifyOtp}
               />
             </>
