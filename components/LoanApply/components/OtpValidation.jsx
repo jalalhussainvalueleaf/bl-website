@@ -14,6 +14,7 @@ const OtpValidation = ({
   utmMedium,
   platform,
   verifyOtp,
+  mobileNumber,
 }) => {
   const [otpValues, setOtpValues] = useState(Array(totalDigits).fill(""));
   const inputRefs = useRef([]);
@@ -51,7 +52,7 @@ const OtpValidation = ({
   const [userData, setUserData] = useState("");
   // console.log("userData", userData);
   // Get mobile number from session storage
-  const mobileNumber = sessionStorage.getItem("mobileNumber");
+  // const mobileNumber = sessionStorage.getItem("mobileNumber");
 
   // Update message state with an icon based on success or failure
   const updateMessage = (text, isSuccess = false) => {
@@ -142,7 +143,7 @@ const OtpValidation = ({
 
   // Resend OTP handler
   const reSendOtp = async () => {
-    console.log('otp clicked')
+    console.log("otp clicked");
     setState((prev) => ({
       ...prev,
       loading: true,
@@ -160,7 +161,7 @@ const OtpValidation = ({
       // Make OTP verification API call
       const response = await resendOTP(payload);
 
-      console.log('my respoinse',response)
+      console.log("my respoinse", response);
 
       if (response.data.status === "success") {
         toast.success("OTP sent successfully.");

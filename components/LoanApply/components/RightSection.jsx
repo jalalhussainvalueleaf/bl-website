@@ -348,7 +348,7 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
                 utmSource={utmSource}
                 utmMedium={utmMedium}
                 platform={platform}
-                mobile={formState?.mobile}
+                mobileNumber={formState?.mobile}
                 verifyOtp={formState.verifyOtp}
               />
             </>
