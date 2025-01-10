@@ -792,3 +792,113 @@ export const blogContent = [
     icon: "/images/twoWheele_icon3.webp",
   },
 ];
+
+
+export const financialData = [
+  {
+    name: "Financial Pandora",
+    url: "https://thefinancialpandora.com/buddy-loan-never-a-loner-to-gain-loans/",
+    description: "Loan At Your Fingertips",
+  },
+  {
+    name: "ANI",
+    url: "https://www.aninews.in/news/business/fintech-startup-buddy-loan-generates-7-million-loan-applications-amounting-to-rs-6640-crs-in-just-15-months20201222154547/",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "ET BFSI",
+    url: "https://bfsi.economictimes.indiatimes.com/news/fintech/fintech-startup-buddy-loan-generates-7-million-loan-applications-worth-rs-6k-cr/79912980",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "Business Standard",
+    url: "https://www.business-standard.com/content/press-releases-ani/fintech-startup-buddy-loan-generates-7-million-loan-applications-amounting-to-rs-6640-crs-in-just-15-months-120122200886_1.html#:~:text=Digital%20Editor-,Fintech%20startup%20Buddy%20Loan%20generates%207%20million%20loan%20applications%20amounting,Crs%20in%20just%2015%20months&text=any%20financial%20needs.-,Personal%20loan%20application%20through%20Buddy%20Loan%20is%20easy%2C%20instant%20and,15%20lakh%20on%20this%20platform",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "Business World",
+    url: "http://www.businessworld.in/article/Fintech-startup-Buddy-Loan-generates-7-million-loan-applications-amounting-to-Rs-6640-Crs-in-just-15-months/22-12-2020-356802/",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "Devdiscourse",
+    url: "https://www.devdiscourse.com/article/business/1379860-fintech-startup-buddy-loan-generates-7-million-loan-applications-amounting-to-rs-6640-crs-in-just-15-months",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "Dailyhunt – BW",
+    url: "https://m.dailyhunt.in/news/india/english/business+world-epaper-bizworld/fintech+startup+buddy+loan+generates+7+million+loan+applications+amounting+to+rs+6640+crs+in+just+15+months-newsid-n238435336?s=a&uu=0xc79809253424b26b&ss=pd",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "Dailyhunt – Lokmat",
+    url: "https://m.dailyhunt.in/news/india/english/lokmat+english-epaper-lokmaten/fintech+startup+buddy+loan+generates+7+million+loan+applications+amounting+to+rs+6640+crs+in+just+15+months-newsid-n238434424?s=a&uu=0xc79809253424b26b&ss=wsp",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "Lokmat",
+    url: "https://english.lokmat.com/business/fintech-startup-buddy-loan-generates-7-million-loan-applications-amounting-to-rs-6640-crs-in-just-15/",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "News Kerala",
+    url: "https://www.newkerala.com/news/2020/220656.htm",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "UNI",
+    url: "http://www.uniindia.com/fintech-startup-buddy-loan-generates-7-million-loan-applications-worth-rs-6640-cr-in-just-15-months/business-economy/news/2272587.html",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "Aseanbreakingnews",
+    url: "https://www.aseanbreakingnews.com/2020/12/fintech-startup-buddy-loan-generates-7-million-loan-applications-worth-rs-6k-cr/",
+    description: "7mn Applications In 15 Months",
+  },
+  {
+    name: "Business Standard",
+    url: "https://www.business-standard.com/content/press-releases-ani/srikanth-bureddy-satish-saraf-s-fintech-startup-buddy-loan-offers-higher-disbursal-rate-on-personal-loan-application-through-ai-121031100929_1.html",
+    description: "Higher Disbursal Rate",
+  },
+  {
+    name: "ANI",
+    url: "https://www.aninews.in/news/business/business/srikanth-bureddy-amp-satish-sarafs-fintech-startup-buddy-loan-offers-higher-disbursal-rate-on-personal-loan-application-through-ai20210311173156/",
+    description: "Higher Disbursal Rate",
+  },
+  {
+    name: "Devdiscourse",
+    url: "https://www.devdiscourse.com/article/business/1491585-srikanth-bureddy-satish-sarafs-fintech-startup–buddy-loan-offers-higher-disbursal-rate-on-personal-loan-application-throu",
+    description: "Higher Disbursal Rate",
+  },
+  {
+    name: "Latestly",
+    url: "https://www.latestly.com/agency-news/business-news-srikanth-bureddy-satish-sarafs-fintech-startup-buddy-loan-offers-higher-disbursal-rate-on-personal-loan-application-through-ai-2-2365399.html",
+    description: "Higher Disbursal Rate",
+  },
+  {
+    name: "Big news network",
+    url: "https://www.bignewsnetwork.com/news/268076735/buddy-loan-offers-higher-disbursal-rate-on-personal-loan",
+    description: "Higher Disbursal Rate",
+  },
+  {
+    name: "Jio news network",
+    url: "https://jionews.com/home/article/10/18604934/Srikanth-Bureddy-Satish-Sarafs-fintech-startup-Buddy-Loan-offers-higher-disbursal-rate-on-personal-loan-application-through-AI",
+    description: "Higher Disbursal Rate",
+  },
+  {
+    name: "Word news network",
+    url: "https://www.worldnewsnetwork.net/news/srikanth-bureddy-satish-sarafs-fintech-startup-buddy-loan-offers-higher-disbursal-rate-on-personal-loan-application-through-ai20210311174740/",
+    description: "Higher Disbursal Rate",
+  },
+  {
+    name: "East Asia All News Network",
+    url: "https://www.eastasiaallnewsportal.com/news/srikanth-bureddy-satish-sarafs-fintech-startup-buddy-loan-offers-higher-disbursal-rate-on-personal-loan-application-through-ai20210311174740/",
+    description: "Higher Disbursal Rate",
+  },
+  {
+    name: "IBS Intelligence",
+    url: "https://ibsintelligence.com/ibsi-news/fintech-buddy-loan-offers-2x-higher-disbursal-rate-on-personal-loan-app/",
+    description: "Higher Disbursal Rate",
+  },
+];
+
