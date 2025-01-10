@@ -8,9 +8,6 @@ export default function Page() {
 
   return (
     <>
-
-
-
     <div className="bg-gray-50 p-6 sm:p-8 lg:p-12 mt-20">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Financial Sources</h1>
 
