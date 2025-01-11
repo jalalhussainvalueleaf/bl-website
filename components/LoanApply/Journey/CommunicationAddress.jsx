@@ -8,7 +8,7 @@ import Button from "@/components/Common/Button";
 import Dropdown from "@/components/Common/Dropdown";
 import { checkPincodeAPI } from "@/api/user";
 
-const FirstStep = () => {
+const Step34 = () => {
   const { setSteps } = useUserContext();
   const fields = ["residenceType", "currentAddress", "pincode"];
 
@@ -43,7 +43,7 @@ const FirstStep = () => {
 
     const payload = new URLSearchParams({ pincode });
     try {
-      const response = await checkPincodeAPI(payload)
+      const response = await checkPincodeAPI(payload);
       if (response.status === 200 && response.data.HTTPStatus === 200) {
         setIsPincodeValid(true);
         setPincodeError("");
@@ -154,4 +154,4 @@ const FirstStep = () => {
   );
 };
 
-export default FirstStep;
+export default Step34;

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { UserProvider } from "@/utils/UserContext"; // Adjust the path as needed
 

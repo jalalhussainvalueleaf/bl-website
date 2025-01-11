@@ -1,31 +1,33 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "../../../utils/UserContext";
 import { userSearch } from "@/api/user";
-import { decryptData, encryptData } from "@/utils/cryptoUtils";
+import { decryptData } from "@/utils/cryptoUtils";
 import { decryptData64 } from "@/utils/cryptoUtils64";
 import Loader from "@/components/Common/Loader";
-import Step1 from "../../../components/LoanApply/Journey/YourEmail";
-import Step2 from "../../../components/LoanApply/Journey/LoanType";
-import Step3 from "../../../components/LoanApply/Journey/EmploymentType";
-import Step31 from "../../../components/LoanApply/Journey/SalaryMode";
-import Step32 from "../../../components/LoanApply/Journey/WorkDetails";
-import Step33 from "../../../components/LoanApply/Journey/PersonalDetails";
-import Step34 from "../../../components/LoanApply/Journey/CommunicationAddress";
-import Step35 from "../../../components/LoanApply/Journey/IncomeBankDetails";
-import BusinessProof from "../../../components/LoanApply/Journey/BusinessProof";
-import BusinessDetails from "../../../components/LoanApply/Journey/BusinessDetails";
-import ProfessionType from "../../../components/LoanApply/Journey/ProfessionType";
+import {
+  Step1,
+  Step2,
+  Step3,
+  Step31,
+  Step32,
+  Step33,
+  Step34,
+  Step35,
+  BusinessProof,
+  BusinessDetails,
+  ProfessionType,
+} from "@/components/LoanApply/index";
 
-export default function Page() {
+const UserJounery = () => {
   const router = useRouter();
-  const { steps } = useUserContext();
+  const { steps, userSearchData, setUserSearchData, setMobileNumber } =
+    useUserContext();
   const [countSteps, setCountSteps] = useState("1"); // Default to string
   const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState(null);
-  const [mobileNumber, setMobileNumber] = useState("");
+
+  console.log("userSearchData", userSearchData);
 
   // UseEffect to handle initial state setup and sessionStorage
   useEffect(() => {
@@ -58,26 +60,10 @@ export default function Page() {
     };
   }, []);
 
-  // Fetch user data when mobile is available and decrypt it
-  useEffect(() => {
-    const fetchAndDecryptMobile = async () => {
-      try {
-        const savedMobile = sessionStorage.getItem("mobileNumber");
-        if (savedMobile) {
-          const decryptedMobile = await decryptData64(savedMobile);
-          setMobileNumber(decryptedMobile);
-          await verifyUser(decryptedMobile); // Verify the user
-        }
-      } catch (error) {
-        console.error("Error decrypting mobile number:", error);
-      }
-    };
+  // Memoize verifyUser function
+  const verifyUser = useCallback(async (decryptedMobile) => {
+    console.log("verify user");
 
-    fetchAndDecryptMobile();
-  }, []);
-
-  // Verify the user using the decrypted mobile number and token
-  const verifyUser = async (decryptedMobile) => {
     const savedToken = sessionStorage.getItem("_token");
     if (!savedToken) {
       router.push("/apply-loan-online/");
@@ -85,12 +71,12 @@ export default function Page() {
     }
 
     try {
-      const response = await userSearch(
-        new URLSearchParams({
-          mobile_no: decryptedMobile,
-          user_token: savedToken,
-        }),
-      );
+      const params = new URLSearchParams({
+        mobile_no: decryptedMobile,
+        user_token: savedToken,
+      });
+
+      const response = await userSearch(params);
       const decryptedData = decryptData(response.data.encryptData);
       const user = decryptedData?.user[0];
 
@@ -98,12 +84,41 @@ export default function Page() {
         decryptedData?.HTTPStatus === 200 &&
         decryptedData.status === "success"
       ) {
-        setUserData(user);
+        setUserSearchData(user);
       }
     } catch (error) {
       console.error("Error verifying user:", error);
     }
-  };
+  }, []);
+
+  // Memoize decryptData64 function if it's defined in the component
+  const decryptMobile = useCallback(async (savedMobile) => {
+    try {
+      return await decryptData64(savedMobile);
+    } catch (error) {
+      console.error("Error decrypting mobile:", error);
+      return null;
+    }
+  }, []);
+
+  // Use useCallback for the main fetch function
+  const fetchAndDecryptMobile = useCallback(async () => {
+    const savedMobile = sessionStorage.getItem("mobileNumber");
+    if (!savedMobile) return;
+
+    console.log("fetch dec");
+
+    const decryptedMobile = await decryptMobile(savedMobile);
+    if (decryptedMobile) {
+      setMobileNumber(decryptedMobile);
+      await verifyUser(decryptedMobile);
+    }
+  }, [decryptMobile, verifyUser]);
+
+  // Optimize useEffect
+  useEffect(() => {
+    fetchAndDecryptMobile();
+  }, []);
 
   // Verify if the user is logged in and has a token
   useEffect(() => {
@@ -118,8 +133,8 @@ export default function Page() {
   // Helper function to render different steps based on `countSteps`
   const renderStep = () => {
     switch (countSteps) {
-      case "2":
-        return <Step2 />;
+      case "loanType":
+        return <Step2 userSearchData={userSearchData} />;
       case "personalLoan":
         return <Step3 />;
       case "businessLoan":
@@ -143,38 +158,23 @@ export default function Page() {
       case "finish":
         return <Step35 />;
       default:
-        return <Step1 userData={userData} mobileNumber={mobileNumber} />;
+        return <Step1 userSearchData={userSearchData} />;
     }
   };
 
-  useEffect(() => {
-    setLoading(true);
-    // Encrypted userId
-    if (userData) {
-      let encryptedUserId = encryptData(userData?.id);
-      // let decryptedUserId = decryptData("oYx2Clg+MJOaBq9v8lookw==");
-      if (countSteps === "journeyCompleted") {
-        window.location.href = `https://www.prod.buddyloan.com/thank-you/?userId=${encryptedUserId}`;
-      }
-      setLoading(false);
-    }
-  }, [countSteps, userData]);
-
-  console.log("countSteps", countSteps);
+  if (loading) {
+    return <Loader />;
+  }
 
   // Render Loader or the steps UI based on loading state
   return (
     <div className="min-h-screen bg-[url('/images/bg1.png')] bg-center">
-      {loading ? (
-        <Loader />
-      ) : (
-        <>
-          <div className="flex flex-col items-center pt-12">
-            <img src="/images/buddyloan-logo.png" className="w-40" />
-          </div>
-          <div>{renderStep()}</div>
-        </>
-      )}
+      <div className="flex flex-col items-center pt-12">
+        <img src="/images/buddyloan-logo.png" className="w-40" />
+      </div>
+      <div>{renderStep()}</div>
     </div>
   );
-}
+};
+
+export default UserJounery;
