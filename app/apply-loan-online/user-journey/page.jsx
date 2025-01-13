@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "../../../utils/UserContext";
 import { userSearch } from "@/api/user";
-import { decryptData } from "@/utils/cryptoUtils";
+import { decryptData, encryptData } from "@/utils/cryptoUtils";
 import { decryptData64 } from "@/utils/cryptoUtils64";
 import Loader from "@/components/Common/Loader";
 import {
@@ -129,6 +129,20 @@ const UserJounery = () => {
       setLoading(false); // Set loading to false once token is verified
     }
   }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    // Encrypted userId
+    if (userSearchData) {
+      let encryptedUserId = encryptData(userSearchData?.id);
+      // let decryptedUserId = decryptData("oYx2Clg+MJOaBq9v8lookw==");
+      if (countSteps === "journeyCompleted") {
+        window.location.href = `https://www.prod.buddyloan.com/thank-you/?userId=${encryptedUserId}`;
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [countSteps, userSearchData]);
 
   // Helper function to render different steps based on `countSteps`
   const renderStep = () => {
