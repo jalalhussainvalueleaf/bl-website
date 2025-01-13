@@ -42,7 +42,7 @@ export default function Page() {
   </ul>
 
   <p class="text-gray-700">
-    These terms of use (hereinafter the "Terms") establish an agreement between Buddy Loan, having its principal place of business at 21st Cross, 7th Sector, HSR Layout, Bangalore – 560102, and you and shall govern your use of the Buddy Loan proprietary risk evaluation and measurement software system (“Buddy Loan System”) and the services set out in these Terms (“Service”) rendered by Buddy Loan.
+    These terms of use (hereinafter the &ldquo;Terms&ldquo;) establish an agreement between Buddy Loan, having its principal place of business at 21st Cross, 7th Sector, HSR Layout, Bangalore – 560102, and you and shall govern your use of the Buddy Loan proprietary risk evaluation and measurement software system (“Buddy Loan System”) and the services set out in these Terms (“Service”) rendered by Buddy Loan.
   </p>
 
   
