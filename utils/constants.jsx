@@ -18,6 +18,8 @@ const CONSTANTS = {
     USER_STAT: "u_stat_bdl",
     MOBILE: "mobileNumber",
     HASERROR: "hasError",
+    LOAN_AMMOUNT: "loan_ammount",
+    STORED_USER_DATA: "storedUserData",
   },
   TRANSITION_DELAY: 300,
   OTP_REGEX: /^[0-9]?$/,

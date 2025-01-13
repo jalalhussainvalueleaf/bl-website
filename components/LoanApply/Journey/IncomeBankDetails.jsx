@@ -7,7 +7,7 @@ import Button from "@/components/Common/Button";
 import Dropdown from "@/components/Common/Dropdown";
 import Modal from "@/components/Common/Modal";
 
-const FirstStep = () => {
+const Step35 = () => {
   const fields = ["creditCard", "bankName", "montlyIncome"];
   const {
     handleSubmit,
@@ -244,4 +244,4 @@ I hereby appoint Buddy Loan as my authorized representative to receive my Credit
   );
 };
 
-export default FirstStep;
+export default Step35;

@@ -1,16 +1,18 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { useUserContext } from "../../../utils/UserContext";
-import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Radio from "@/components/Common/Radio";
 
-const SecondStep = () => {
-  const [employmentType, setEmploymentType] = useState("");
+const Step2 = () => {
+  const [selectedLoanType, setSelectedLoanType] = useState("");
   const [error, setError] = useState("");
   const { setSteps } = useUserContext();
-  const fields = ["Salaried", "Self-Employed", "Student"];
+
+  const fields = ["personalLoan", "businessLoan"];
 
   const {
     handleSubmit,
@@ -22,30 +24,27 @@ const SecondStep = () => {
 
   const formData = watch();
 
-  const handleChange = (field) => (e) => {
-    setValue(field, e.target.value);
-    trigger(field);
-  };
-
   // Load saved data and selected loan type on mount
   useEffect(() => {
-    const savedEmploymenType = sessionStorage.getItem("selectedEmploymentType");
-    if (savedEmploymenType) {
-      setEmploymentType(savedEmploymenType);
+    const savedLoanType = sessionStorage.getItem("selectedLoanType");
+
+    if (savedLoanType) {
+      setSelectedLoanType(savedLoanType);
     }
   }, [setValue]);
 
   const onSubmit = async (data) => {
-    if (!employmentType) {
-      setError("Please select a employment type.");
+    if (!selectedLoanType) {
+      setError("Please select a loan type.");
       return; // Prevent form submission
     } else {
       setError(""); // Clear error if selection is valid
       try {
-        const finalData = { ...data, employmentType: employmentType };
-        console.log("Step 3 submitted:", finalData);
-        sessionStorage.setItem("journey", employmentType);
-        setSteps(employmentType);
+        const finalData = { ...data, loanType: selectedLoanType };
+        console.log("Step 2 submitted:", finalData);
+        sessionStorage.setItem("journey", selectedLoanType);
+        setSteps(selectedLoanType);
+        // Navigate to the next step or handle redirection
       } catch (error) {
         console.error("Form submission error:", error);
       }
@@ -53,20 +52,20 @@ const SecondStep = () => {
   };
 
   const handleRadioChange = (value) => {
-    setEmploymentType(value);
+    setSelectedLoanType(value);
     // Retrieve the existing session data
-    const existingData = sessionStorage.getItem("welcome"); 
+    const existingData = sessionStorage.getItem("welcome");
     let sessionData = existingData ? JSON.parse(existingData) : {};
 
     // Update the session data with the selected loan type
-    sessionData.selectedEmploymentType = value;
+    sessionData.selectedLoanType = value;
 
     // Save the updated session data back to session storage
     sessionStorage.setItem("welcome", JSON.stringify(sessionData));
 
-    sessionStorage.setItem("selectedEmploymentType", value); // Save the selection
+    sessionStorage.setItem("selectedLoanType", value); // Save the selection
     setError(""); // Clear the error when a selection is made
-    console.log(value);
+    console.log("Selected Loan Type:", value);
   };
 
   return (
@@ -74,36 +73,28 @@ const SecondStep = () => {
       <div className="">
         <div className="mx-auto max-w-md px-5">
           <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">
-            What Is Your Employment Type
+            What Type Of Loan?
           </h2>
         </div>
         <div className="mx-auto max-w-md px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="py-4">
               <Radio
-                name="Salaried"
-                value="Salaried"
-                isSelected={employmentType === "Salaried"}
+                name="personalLoan"
+                value="personalLoan"
+                isSelected={selectedLoanType === "personalLoan"}
                 onChange={handleRadioChange}
-                label="Salaried"
+                label="Personal Loan"
               />
               <Radio
-                name="Self-Employed"
-                value="Self-Employed"
-                isSelected={employmentType === "Self-Employed"}
+                name="businessLoan"
+                value="businessLoan"
+                isSelected={selectedLoanType === "businessLoan"}
                 onChange={handleRadioChange}
-                label="Self-Employed"
+                label="Business Loan"
               />
-              <Radio
-                name="Student"
-                value="Student"
-                isSelected={employmentType === "Student"}
-                onChange={handleRadioChange}
-                label="Student"
-              />
-              {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             </div>
-
+            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             <Button btnName="Proceed" isLoading={isSubmitting} />
           </form>
         </div>
@@ -112,4 +103,4 @@ const SecondStep = () => {
   );
 };
 
-export default SecondStep;
+export default Step2;

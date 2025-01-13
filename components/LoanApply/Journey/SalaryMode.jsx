@@ -6,7 +6,7 @@ import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Radio from "@/components/Common/Radio";
 
-const SecondStep = () => {
+const Step31 = () => {
   const [salaryMode, setSalaryMode] = useState("");
   const [error, setError] = useState("");
   const { setSteps } = useUserContext();
@@ -94,4 +94,4 @@ const SecondStep = () => {
   );
 };
 
-export default SecondStep;
+export default Step31;

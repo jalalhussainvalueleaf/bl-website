@@ -7,10 +7,17 @@ import Button from "@/components/Common/Button";
 import Dropdown from "@/components/Common/Dropdown";
 import { checkPincodeAPI } from "@/api/user";
 
-const FirstStep = () => {
+const Step32 = () => {
   const [workDetails, setWorkDetails] = useState("");
   const { setSteps } = useUserContext();
-  const fields = ["companyType", "companyName", "pincode", "years", "business"];
+
+  const fields = [
+    "companyType",
+    "companyName",
+    "pincode",
+    "years",
+    "designation",
+  ];
 
   const {
     handleSubmit,
@@ -39,8 +46,7 @@ const FirstStep = () => {
 
   // Load saved data on mount
   useEffect(() => {
-    const savedData =
-      JSON.parse(sessionStorage.getItem("businessDetails")) || {};
+    const savedData = JSON.parse(sessionStorage.getItem("workDetails")) || {};
     Object.keys(savedData).forEach((field) => {
       setValue(field, savedData[field]);
     });
@@ -55,8 +61,7 @@ const FirstStep = () => {
 
     const payload = new URLSearchParams({ pincode });
     try {
-      const response = await checkPincodeAPI(payload)
-      // console.log(response.data.data);
+      const response = await checkPincodeAPI(payload);
       if (response.status === 200 && response.data.HTTPStatus === 200) {
         setIsPincodeValid(true);
         setPincodeError("");
@@ -77,7 +82,7 @@ const FirstStep = () => {
   const onSubmit = async (data) => {
     try {
       const finalData = { ...data, workDetails: workDetails };
-      sessionStorage.setItem("businessDetails", JSON.stringify(formData));
+      sessionStorage.setItem("workDetails", JSON.stringify(formData));
       sessionStorage.setItem("journey", "personalDetails");
       setSteps("personalDetails");
     } catch (error) {
@@ -90,7 +95,7 @@ const FirstStep = () => {
       <div className="">
         <div className="mx-auto max-w-md px-5">
           <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">
-            Enter Your Business Details
+            Enter Your Work Details
           </h2>
         </div>
         <div className="mx-auto max-w-md px-5">
@@ -122,7 +127,7 @@ const FirstStep = () => {
             <div className="flex items-center justify-between gap-5 ">
               <Input
                 type="text"
-                placeholder="Pincode"
+                placeholder="Current Address Pincode"
                 value={watch("pincode") || ""}
                 onChange={handleChange("pincode")}
                 error={errors.pincode?.message || pincodeError}
@@ -130,33 +135,20 @@ const FirstStep = () => {
             </div>
             <div className="flex items-center justify-between gap-5 py-4">
               <Dropdown
-                label="No. Of Years In Business"
-                options={[
-                  "Select Option",
-                  "0 - 3 Months",
-                  "3 - 6 Months",
-                  "6 Months - 1 Year",
-                  "1 - 2 Years",
-                  "2 + Years",
-                ]}
+                label="No. Of Years In Current Company"
+                options={["0-2 Years", "2-5 Years", "5-10 Years", "10+ Years"]}
                 selected={watch("years") || ""}
                 onChange={(value) => handleDropdownChange("years", value)}
                 error={errors.currentCompany?.message}
               />
             </div>
             <div className="flex items-center justify-between gap-5 py-4">
-              <Dropdown
-                label="Nature Of Business"
-                options={[
-                  "Select Option",
-                  "Trader/Wholeseller",
-                  "Manufacturer",
-                  "Retailer",
-                  "Service Provider & Others",
-                ]}
-                selected={watch("business") || ""}
-                onChange={(value) => handleDropdownChange("business", value)}
-                error={errors.currentCompany?.message}
+              <Input
+                type="text"
+                placeholder="Current Designation"
+                value={watch("designation") || ""}
+                onChange={handleChange("designation")}
+                error={errors.designation?.message}
               />
             </div>
             <Button btnName="Proceed" />
@@ -167,4 +159,4 @@ const FirstStep = () => {
   );
 };
 
-export default FirstStep;
+export default Step32;

@@ -5,7 +5,7 @@ import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Dropdown from "@/components/Common/Dropdown";
 
-const FirstStep = () => {
+const ProfessionType = () => {
   const { setSteps } = useUserContext();
 
   const fields = ["professionType"];
@@ -95,4 +95,4 @@ const FirstStep = () => {
   );
 };
 
-export default FirstStep;
+export default ProfessionType;
