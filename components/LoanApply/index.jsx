@@ -1,0 +1,11 @@
+export { default as Step1 } from "./Journey/YourEmail";
+export { default as Step2 } from "./Journey/LoanType";
+export { default as Step3 } from "./Journey/EmploymentType";
+export { default as Step31 } from "./Journey/SalaryMode";
+export { default as Step32 } from "./Journey/WorkDetails";
+export { default as Step33 } from "./Journey/PersonalDetails";
+export { default as Step34 } from "./Journey/CommunicationAddress";
+export { default as Step35 } from "./Journey/IncomeBankDetails";
+export { default as BusinessProof } from "./Journey/BusinessProof";
+export { default as BusinessDetails } from "./Journey/BusinessDetails";
+export { default as ProfessionType } from "./Journey/ProfessionType";

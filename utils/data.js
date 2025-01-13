@@ -902,3 +902,90 @@ export const financialData = [
   },
 ];
 
+export const CustomerFAQ = [
+  {
+    question: "How can I contact Buddy Loan?",
+    answer:
+      "You can contact Buddy Loan through Email: info@buddyloan.com",
+  },
+  {
+    question: "In how many days will my query be resolved?",
+    answer:
+      "The resolution time may vary based on the nature of the query. We aim to address and resolve queries as soon as possible. For lender-specific matters, the resolution timeline is subject to the policies of the respective lender.",
+  },
+  {
+    question: "How to contact the loan lender for a loan with Buddy Loan?",
+    answer:
+      "For lender-specific queries or concerns, please refer to the contact information provided by the respective lender.",
+  },
+  {
+    question: "Does Buddy Loan provides loan?",
+    answer:
+      "No, Buddy Loan is not a loan lender. Buddy Loan is a Digital Fintech Marketplace, and it connects you to appropriate verified lenders as per your eligibility and creditworthiness.",
+  },
+  {
+    question: "Disclaimer:",
+    answer:
+      "Display of trademarks, trade names, logos, and other subject matters of Intellectual Property displayed on this website belongs to their respective intellectual property owners & is not owned by Bvalue Services Pvt. Ltd. Display of such Intellectual Property and related product information does not imply Bvalue Services Pvt. Ltd company’s partnership with the owner of the Intellectual Property or proprietor of such products.Please read the Terms & Conditions carefully as deemed & proceed at your own discretion.",
+  },
+]
+
+export const QuizFAQ = [
+  {
+    question: "What is Buddy Quiz?",
+    answer:
+      "Buddy Quiz is an engaging initiative by Buddy Loan, designed to offer users a fun and informative way to interact with our brand. It's a series of quizzes covering various topics, providing an opportunity to learn, have fun, and win exciting prizes.",
+  },
+  {
+    question: "How can I participate in Buddy Quiz?",
+    answer:
+      "To join Buddy Quiz, simply log in to your Buddy Loan account or explore our website. Look for the Buddy Quiz section, choose a quiz that interests you, and start answering questions.",
+  },
+  {
+    question: "Are there different categories of quizzes available?",
+    answer:
+      "Yes! We offer a diverse range of quizzes covering topics from general knowledge to finance. There's something for everyone, ensuring an enjoyable experience for all participants.",
+  },
+  {
+    question: "What do I gain from participating in Buddy Quiz?",
+    answer:
+      "Participating in Buddy Quiz offers several benefits. It reinforces your connection with Buddy Loan, provides an opportunity to learn interesting facts, and gives you a chance to win exciting rewards and prizes.",
+  },
+  {
+    question: "How are the winners determined?",
+    answer:
+      "Winners are determined based on the number of correct answers. The more correct answers you provide, the higher your chances of winning. In case of tiebreakers, we may use additional criteria.",
+  },
+{
+    question: "Can I participate in Buddy Quiz if I'm not a Buddy Loan customer?",
+    answer:
+      "Absolutely! Buddy Quiz is open to everyone, whether you are a Buddy Loan customer or not. Feel free to explore the quizzes, have fun, and win rewards.",
+  },
+  {
+    question: "Are the quizzes time-bound?",
+    answer:
+      "While some quizzes may have time limits for each question, others may not. Specific details about time constraints will be mentioned for each quiz, ensuring a clear understanding of the rules.",
+  },
+  {
+    question: "How often are new quizzes added to Buddy Quiz?",
+    answer:
+      "We regularly update Buddy Quiz with fresh and exciting quizzes. Keep an eye on our website or notifications for announcements on new quiz releases.",
+  },
+  {
+    question: "Are there any fees associated with participating in Buddy Quiz?",
+    answer:
+      "No, participating in Buddy Quiz is completely free. It's our way of adding a touch of entertainment and learning to your experience with Buddy Loan.",
+  },
+  {
+    question: "Where can I find information on quiz results and winners?",
+    answer:
+      "Quiz results and information about winners will be shared on the Buddy Loan website and may also be communicated through email or other communication channels",
+  },
+
+  {
+    question: "Disclaimer:",
+    answer:
+      "Display of trademarks, tradenames, logos, and other subject matters of Intellectual Property displayed on this website belongs to their respective intellectual property owners & is not owned by Bvalue Services Pvt. Ltd. Display of such Intellectual Property and related product information does not imply, Bvalue Services Pvt. Ltd company’s partnership with the owner of the Intellectual Property or proprietor of such products. Please read the Terms & Conditions carefully as deemed & proceed at your discretion.",
+  },
+]
+

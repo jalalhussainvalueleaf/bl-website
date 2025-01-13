@@ -52,9 +52,13 @@ const MainPage = () => {
     }
   }, []);
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <Suspense fallback={<Loader />}>
-      {loading ? <Loader /> : <MainPageContent />}
+      <MainPageContent />
     </Suspense>
   );
 };

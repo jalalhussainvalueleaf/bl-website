@@ -9,7 +9,7 @@ import CalendarInput from "@/components/Common/CalendarInput";
 import { FaRegEye } from "react-icons/fa6";
 import { FaRegEyeSlash } from "react-icons/fa6";
 
-const FirstStep = () => {
+const Step33 = () => {
   const { setSteps } = useUserContext();
   const [isPanVisible, setIsPanVisible] = useState(false); // State to toggle visibility
   const handlePanVisibilityToggle = () => {
@@ -189,4 +189,4 @@ const FirstStep = () => {
   );
 };
 
-export default FirstStep;
+export default Step33;
