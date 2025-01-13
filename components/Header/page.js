@@ -75,7 +75,7 @@ export default function Header() {
                 >
                   {item.type === "dropdown" ? (
                     <>
-                      <button className="flex w-full items-center justify-between px-3 py-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 md:w-auto md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-700">
+                      <button className="flex w-full items-center justify-between px-3 py-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 md:w-auto md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-bl-blue">
                         {item.label}
                         <svg
                           className="ms-2.5 size-2.5"
@@ -105,7 +105,7 @@ export default function Header() {
                                 className="relative"
                               >
                                 <Link href={loan.href || "#"}>
-                                  <button className="flex w-full items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                  <button className="flex w-full items-center justify-between px-4 py-2 hover:bg-bl-blue hover:text-white dark:hover:bg-gray-600">
                                     {loan.label}
 
                                     {loan.subMenu && (
@@ -134,7 +134,7 @@ export default function Header() {
                                         <li key={subIdx}>
                                           <Link
                                             href={subItem.href}
-                                            className="block px-4 py-2 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600"
+                                            className="block px-4 py-2 hover:bg-bl-blue hover:text-white dark:text-gray-200 dark:hover:bg-gray-600"
                                           >
                                             {subItem.label}
                                           </Link>
@@ -152,7 +152,7 @@ export default function Header() {
                   ) : (
                     <Link
                       href={item.href}
-                      className="block rounded px-3 py-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-700"
+                      className="block rounded px-3 py-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-bl-blue"
                     >
                       {item.label}
                       {item.badge && item.badge}

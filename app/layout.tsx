@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   title: "Apply For Loan Online Up to 15 Lakhs | Instant Approval | Buddy Loan",
   description:
     "Instant Personal Loan up to 15 Lakhs - Quick cash loan approval & minimum documentation. Easy online application, competitive interest rates, apply on Buddy Loan app now!",
+  robots: {
+    index: false, 
+    follow: false, 
+  },
 };
 
 export default function RootLayout({
