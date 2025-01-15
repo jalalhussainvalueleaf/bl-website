@@ -44,9 +44,7 @@ const MainPage = () => {
     setLoading(true);
     if (saved_token) {
       // If there is a previous history entry, go back
-      if (window.history.length > 1) {
-        router.push("/apply-loan-online/user-journey");
-      }
+      router.push("/apply-loan-online/user-journey");
     } else {
       setLoading(false);
     }

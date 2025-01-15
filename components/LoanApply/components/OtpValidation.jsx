@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, memo } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { resendOTP, userSearch, verifyOTP } from "@/api/user";
-import { encryptData, decryptData } from "@/utils/cryptoUtils";
+import { encryptData } from "@/utils/cryptoUtils";
 import { useUserContext } from "@/utils/UserContext";
 import CONSTANTS from "@/utils/constants";
 import OtpTimer from "./OtpTimer";
@@ -112,21 +112,32 @@ const OtpValidation = ({
 
     try {
       const payload = new URLSearchParams({
-        mobile_no: mobileNumber,
         platform,
         utm: utmMedium,
         utm_source: utmSource,
         user_token: userToken,
       });
 
-      const res = await userSearch(payload);
-      const response = decryptData(res?.data?.encryptData);
-      setUserSearchData(response);
-
-      if (response.status === "failure") {
-        showMessage(response.message ?? CONSTANTS.MESSAGES.USER_SEARCH_ERROR);
+      const response = await userSearch(payload);
+      setUserSearchData(response?.data);
+      // Check the user type condition and redirect
+      if (
+        response?.data?.status === "success" &&
+        response?.data?.HTTPStatus === 200
+      ) {
+        if (response?.data?.user_type === 0) {
+          router.push("/apply-loan-online/user-journey");
+          sessionStorage.setItem(CONSTANTS.STORAGE_KEYS.JOURNEY, "start");
+        } else {
+          router.push("/apply-loan-online/user-status");
+        }
       }
-      sessionStorage.setItem(CONSTANTS.STORAGE_KEYS.JOURNEY, "1");
+
+      if (response.data.status === "failure") {
+        showMessage(
+          response.data.message ?? CONSTANTS.MESSAGES.USER_SEARCH_ERROR,
+        );
+      }
     } catch (error) {
       showMessage(
         error?.response?.data?.message || CONSTANTS.MESSAGES.USER_SEARCH_ERROR,
@@ -226,10 +237,10 @@ const OtpValidation = ({
     }
   }, []);
 
-  useEffect(() => {
-    if (!userData || userData === "") return;
-    handleUserJourney(userData.loan_status_30 === 0);
-  }, [userData]);
+  // useEffect(() => {
+  //   if (!userData || userData === "") return;
+  //   handleUserJourney(userData.loan_status_30 === 0);
+  // }, [userData]);
 
   // UI Components
   const renderOtpInputs = () => (
