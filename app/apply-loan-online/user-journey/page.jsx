@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "../../../utils/UserContext";
 import { userSearch } from "@/api/user";
@@ -22,8 +22,13 @@ import toast from "react-hot-toast";
 
 const UserJounery = () => {
   const router = useRouter();
-  const { steps, userSearchData, setUserSearchData, setMobileNumber } =
-    useUserContext();
+  const {
+    steps,
+    userSearchData,
+    setUserSearchData,
+    mobileNumber,
+    setMobileNumber,
+  } = useUserContext();
   const [countSteps, setCountSteps] = useState("start"); // Default to string
   const [loading, setLoading] = useState(true);
 
@@ -56,9 +61,40 @@ const UserJounery = () => {
     };
   }, []);
 
+  // Memoize decryptData64 function if it's defined in the component
+  const decryptMobile = useCallback(async (savedMobile) => {
+    try {
+      return await decryptData64(savedMobile);
+    } catch (error) {
+      console.error("Error decrypting mobile:", error);
+      return null;
+    }
+  }, []);
+
+  // Use useCallback for the main fetch function
+  const fetchAndDecryptMobile = useCallback(async () => {
+    setLoading(true);
+    const savedMobile = sessionStorage.getItem("mobileNumber");
+    if (!savedMobile) return;
+
+    const decryptedMobile = await decryptMobile(savedMobile);
+    if (decryptedMobile) {
+      setMobileNumber(decryptedMobile);
+      await verifyUser();
+      setLoading(false);
+    }
+  }, [decryptMobile]);
+
+  // Optimize useEffect
+  useEffect(() => {
+    fetchAndDecryptMobile();
+  }, []);
+
   // Memoize verifyUser function
   const verifyUser = useCallback(async () => {
     const savedToken = sessionStorage.getItem("_token");
+    const loan_status_30 = sessionStorage.getItem("loan_status_30");
+
     if (!savedToken) {
       router.push("/apply-loan-online/");
       return;
@@ -74,7 +110,15 @@ const UserJounery = () => {
         response?.data?.HTTPStatus === 200 &&
         response?.data?.status === "success"
       ) {
-        setUserSearchData(response?.data?.user?.at(0));
+        const userData = response?.data?.user?.at(0);
+        setUserSearchData(userData);
+
+        // Check loan status and redirect user to journey or status page
+        if (loan_status_30 === "0") {
+          router.push("/apply-loan-online/user-journey");
+        } else {
+          router.push("/apply-loan-online/user-status");
+        }
       }
 
       if (response.data.status === "failure") {
@@ -87,48 +131,11 @@ const UserJounery = () => {
     }
   }, []);
 
-  // Memoize decryptData64 function if it's defined in the component
-  const decryptMobile = useCallback(async (savedMobile) => {
-    try {
-      return await decryptData64(savedMobile);
-    } catch (error) {
-      console.error("Error decrypting mobile:", error);
-      return null;
-    }
-  }, []);
-
-  // Use useCallback for the main fetch function
-  const fetchAndDecryptMobile = useCallback(async () => {
-    const savedMobile = sessionStorage.getItem("mobileNumber");
-    if (!savedMobile) return;
-
-    const decryptedMobile = await decryptMobile(savedMobile);
-    if (decryptedMobile) {
-      setMobileNumber(decryptedMobile);
-      await verifyUser();
-    }
-  }, [decryptMobile, verifyUser]);
-
-  // Optimize useEffect
-  useEffect(() => {
-    fetchAndDecryptMobile();
-  }, []);
-
-  // Verify if the user is logged in and has a token
-  useEffect(() => {
-    const savedToken = sessionStorage.getItem("_token");
-    if (!savedToken) {
-      router.push("/apply-loan-online");
-    } else {
-      setLoading(false); // Set loading to false once token is verified
-    }
-  }, []);
-
   // Helper function to render different steps based on `countSteps`
   const renderStep = () => {
     switch (countSteps) {
       case "loanType":
-        return <Step2 userSearchData={userSearchData} />;
+        return <Step2 />;
       case "personalLoan":
         return <Step3 />;
       case "businessLoan":
@@ -152,7 +159,7 @@ const UserJounery = () => {
       case "finish":
         return <Step35 />;
       default:
-        return <Step1 userSearchData={userSearchData} />;
+        return <Step1 />;
     }
   };
 
