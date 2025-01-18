@@ -39,9 +39,6 @@ const UserJounery = () => {
     // Set the current step if saved in sessionStorage
     if (savedStep) {
       setCountSteps(savedStep);
-    } else {
-      // Redirect to home if no step is found
-      router.push("/apply-loan-online/");
     }
   }, [steps]);
 
@@ -82,7 +79,6 @@ const UserJounery = () => {
     if (decryptedMobile) {
       setMobileNumber(decryptedMobile);
       await verifyUser();
-      setLoading(false);
     }
   }, [decryptMobile]);
 
@@ -101,6 +97,11 @@ const UserJounery = () => {
       return;
     }
 
+    if (loan_status_30 === "1") {
+      router.push("/apply-loan-online/user-status");
+      return;
+    }
+
     try {
       const params = new URLSearchParams({
         user_token: token,
@@ -113,13 +114,7 @@ const UserJounery = () => {
       ) {
         const userData = response?.data?.user?.at(0);
         setUserSearchData(userData);
-
-        // Check loan status and redirect user to journey or status page
-        if (loan_status_30 === "0") {
-          router.push("/apply-loan-online/user-journey");
-        } else {
-          router.push("/apply-loan-online/user-status");
-        }
+        setLoading(false);
       }
 
       if (response.data.status === "failure") {

@@ -82,7 +82,6 @@ const OtpValidation = ({
 
       setToken(response?.user_token);
       if (response?.loan_status_30 === 0) {
-        console.log("yess");
         sessionStorage.setItem("loan_status_30", 0);
         sessionStorage.setItem(CONSTANTS.STORAGE_KEYS.JOURNEY, "start");
         router.push("/apply-loan-online/user-journey");

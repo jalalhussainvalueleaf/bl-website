@@ -1,6 +1,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { IoIosLogOut } from "react-icons/io";
+import { removeToken } from "./cookies";
 
 export default function Logout() {
   const router = useRouter();
@@ -8,6 +9,7 @@ export default function Logout() {
     sessionStorage.removeItem("mobileNumber");
     sessionStorage.removeItem("_token");
     sessionStorage.removeItem("u_stat_bdl");
+    removeToken();
     router.push("/apply-loan-online");
   };
 

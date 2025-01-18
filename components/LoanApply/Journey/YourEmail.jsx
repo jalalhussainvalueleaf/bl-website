@@ -1,11 +1,12 @@
 "use client";
-import React, { useEffect, useCallback, memo, useState } from "react";
+import React, { useEffect, useCallback, memo, useState, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { useFormValidation } from "@/hooks/useValidation";
 import { useUserContext } from "../../../utils/UserContext";
 import Input from "@/components/Common/Input";
 import Button from "@/components/Common/Button";
 import { checkEmailDelivery, partialSubmit } from "@/api/user";
+import { debounce } from "lodash";
 
 const Step1 = () => {
   const { setSteps, userSearchData, mobileNumber } = useUserContext();
@@ -19,6 +20,90 @@ const Step1 = () => {
       await proceedWithSubmission(emailData); // Proceed with submission after modal confirmation
     }
   };
+
+  const {
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+    trigger,
+  } = useFormValidation(["loan_amount", "email"]);
+
+  const validateEmail = useCallback(async (email) => {
+    if (!email) return;
+
+    try {
+      const params = new URLSearchParams({
+        email,
+        mobile: "99999999999", //optional number not necessary
+        user_id: "5294", // testing number -> (9999999999) user_id
+      });
+      const emailResponse = await checkEmailDelivery(params);
+      if (
+        emailResponse?.data?.result === "valid" ||
+        emailResponse?.data?.result === "neutral"
+      ) {
+        setIsValidEmail(true);
+      } else {
+        setIsValidEmail(false);
+      }
+    } catch (error) {
+      console.error("Email validation error:", error);
+      toast.error("Unable to verify email. Please try again.");
+    }
+  }, []);
+
+  const debouncedValidateRef = useRef(
+    debounce((email) => {
+      validateEmail(email); // validate email function
+    }, 1000),
+  ).current;
+
+  const handleInputChange = useCallback(
+    (field) => (event) => {
+      const { value } = event.target;
+      setValue(field, value);
+      trigger(field);
+
+      if (field === "email") {
+        debouncedValidateRef(value);
+      }
+    },
+    [setValue, trigger, validateEmail, userSearchData],
+  );
+
+  const proceedWithSubmission = async (data) => {
+    const payload = new URLSearchParams({
+      mobile_no: mobileNumber,
+      coloumn_name: "email",
+      coloumn_value: data.email,
+    });
+
+    try {
+      await partialSubmit(payload);
+      sessionStorage.setItem("journey", "loanType");
+      setSteps(2);
+    } catch (error) {
+      toast.error("❌ Error submitting the form.");
+    }
+  };
+
+  const onSubmit = async (data) => {
+    if (isValidEmail) {
+      await proceedWithSubmission(data);
+    } else {
+      setEmailData(data);
+      setIsModalOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (userSearchData) {
+      Object.entries(userSearchData).forEach(([field, value]) => {
+        setValue(field, value);
+      });
+    }
+  }, [userSearchData, setValue]);
 
   const EmailConfirmationModal = () => {
     const [animate, setAnimate] = useState(false);
@@ -63,106 +148,29 @@ const Step1 = () => {
     );
   };
 
-  const {
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-    watch,
-    trigger,
-  } = useFormValidation(["loan_amount", "email"]);
-
-  const validateEmail = useCallback(
-    async (email, userId) => {
-      if (!email) return;
-
-      try {
-        const params = new URLSearchParams({
-          email,
-          mobile: mobileNumber,
-          user_id: userId,
-        });
-        const emailResponse = await checkEmailDelivery(params);
-        if (emailResponse?.data?.result === "valid") {
-          setIsValidEmail(true);
-        } else {
-          setIsValidEmail(false);
-        }
-      } catch (error) {
-        console.error("Email validation error:", error);
-        toast.error("Unable to verify email. Please try again.");
-      }
-    },
-    [mobileNumber],
-  );
-
-  const handleInputChange = useCallback(
-    (field) => (event) => {
-      const { value } = event.target;
-      setValue(field, value);
-      trigger(field);
-
-      if (field === "email") {
-        validateEmail(value, userSearchData?.id);
-      }
-    },
-    [setValue, trigger, validateEmail, userSearchData],
-  );
-
-  const proceedWithSubmission = async (data) => {
-    const payload = new URLSearchParams({
-      mobile_no: mobileNumber,
-      coloumn_name: "email",
-      coloumn_value: data.email,
-    });
-
-    try {
-      await partialSubmit(payload);
-      sessionStorage.setItem("journey", "loanType");
-      setSteps(2);
-    } catch (error) {
-      toast.error("❌ Error submitting the form.");
-    }
-  };
-
-  const onSubmit = async (data) => {
-    if (isValidEmail) {
-      await proceedWithSubmission(data);
-    } else {
-      setEmailData(data);
-      setIsModalOpen(true);
-    }
-  };
-
-  useEffect(() => {
-    if (userSearchData) {
-      Object.entries(userSearchData).forEach(([field, value]) => {
-        setValue(field, value);
-      });
-    }
-  }, [userSearchData, setValue]);
-
   return (
     <div className="mx-auto max-w-md px-5">
       <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">
         What Is Your Email?
       </h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* Loan Ammount */}
         <Input
           type="text"
           placeholder="Loan Amount"
           value={watch("loan_amount") || ""}
           onChange={handleInputChange("loan_amount")}
           error={errors.loan_amount?.message}
-          aria-label="Loan Amount"
         />
 
+        {/* Email */}
         <Input
           type="email"
           placeholder="Personal Email Address"
           value={watch("email") || ""}
           onChange={handleInputChange("email")}
           error={errors.email?.message}
-          aria-label="Email Address"
+          isValidEmail={isValidEmail}
         />
 
         <Button
@@ -172,6 +180,7 @@ const Step1 = () => {
         />
       </form>
 
+      {/* Email Confirmation Modal */}
       {isModalOpen && <EmailConfirmationModal />}
     </div>
   );
