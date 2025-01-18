@@ -19,6 +19,7 @@ import {
   ProfessionType,
 } from "@/components/LoanApply/index";
 import toast from "react-hot-toast";
+import { getToken } from "@/utils/cookies";
 
 const UserJounery = () => {
   const router = useRouter();
@@ -92,17 +93,17 @@ const UserJounery = () => {
 
   // Memoize verifyUser function
   const verifyUser = useCallback(async () => {
-    const savedToken = sessionStorage.getItem("_token");
+    const token = getToken();
     const loan_status_30 = sessionStorage.getItem("loan_status_30");
 
-    if (!savedToken) {
+    if (!token) {
       router.push("/apply-loan-online/");
       return;
     }
 
     try {
       const params = new URLSearchParams({
-        user_token: savedToken,
+        user_token: token,
       });
 
       const response = await userSearch(params);

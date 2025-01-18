@@ -8,6 +8,7 @@ import { useUserContext } from "@/utils/UserContext";
 import CONSTANTS from "@/utils/constants";
 import OtpTimer from "./OtpTimer";
 import { encryptData64 } from "@/utils/cryptoUtils64";
+import { setToken } from "@/utils/cookies";
 
 const OtpValidation = ({
   totalDigits = 4,
@@ -77,13 +78,17 @@ const OtpValidation = ({
 
     if (isSuccess) {
       showMessage(response.message, true);
+      console.log("response", response);
+
+      setToken(response?.user_token);
       if (response?.loan_status_30 === 0) {
-        sessionStorage.setItem("_token", response?.user_token);
+        console.log("yess");
         sessionStorage.setItem("loan_status_30", 0);
         sessionStorage.setItem(CONSTANTS.STORAGE_KEYS.JOURNEY, "start");
         router.push("/apply-loan-online/user-journey");
       } else {
         router.push("/apply-loan-online/user-status");
+        sessionStorage.setItem("loan_status_30", 1);
       }
 
       return;

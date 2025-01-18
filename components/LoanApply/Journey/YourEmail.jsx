@@ -82,8 +82,6 @@ const Step1 = () => {
           user_id: userId,
         });
         const emailResponse = await checkEmailDelivery(params);
-        console.log("emailResponse", emailResponse);
-
         if (emailResponse?.data?.result === "valid") {
           setIsValidEmail(true);
         } else {

@@ -10,6 +10,7 @@ import OfferAvailable from "../../../components/LoanApply/LoanStatus/OfferAvaila
 import NoOfferAvailbale from "../../../components/LoanApply/LoanStatus/NoOffer";
 import { checkOffers } from "@/api/user";
 import Loader from "@/components/Common/Loader";
+import { getToken } from "@/utils/cookies";
 
 // const checkOffers =
 // "https://prod.utils.buddyloan.in/fetch_user_loan_status.php";
@@ -90,10 +91,10 @@ export default function OfferPage() {
 
   useEffect(() => {
     setLoading(true);
-    const savedToken = sessionStorage.getItem("_token");
+    const token = getToken();
     const loan_status_30 = sessionStorage.getItem("loan_status_30");
 
-    if (savedToken) {
+    if (token) {
       // Check loan status and redirect user to journey or status page
       if (loan_status_30 === "0") {
         router.push("/apply-loan-online/user-journey");

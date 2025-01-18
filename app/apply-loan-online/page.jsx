@@ -1,8 +1,9 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense, useCallback } from "react";
+import { useEffect, useState, Suspense } from "react";
 import MobileValidation from "@/components/LoanApply/MobileValidation";
 import Loader from "@/components/Common/Loader";
+import { getToken } from "@/utils/cookies";
 
 const MainPageContent = () => {
   const searchParams = useSearchParams();
@@ -39,12 +40,11 @@ const MainPage = () => {
   const router = useRouter();
   // Checks for token and redirects if not found.
   useEffect(() => {
-    const saved_token = sessionStorage.getItem("_token");
-    const loan_status_30 = sessionStorage.getItem("loan_status_30");
-
     setLoading(true);
-    if (saved_token) {
-      if (loan_status_30 === "0") {
+    const token = getToken();
+    const loan_status_30 = sessionStorage.getItem("loan_status_30");
+    if (token) {
+      if (loan_status_30 && loan_status_30 === "0") {
         router.push("/apply-loan-online/user-journey");
       } else {
         router.push("/apply-loan-online/user-status");
