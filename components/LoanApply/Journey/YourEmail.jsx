@@ -9,9 +9,10 @@ import { checkEmailDelivery, partialSubmit } from "@/api/user";
 import { debounce } from "lodash";
 
 const Step1 = () => {
-  const { setSteps, userSearchData, mobileNumber } = useUserContext();
+  const { setSteps, userSearchData, mobileNumber, setUserSearchData } =
+    useUserContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [isValidEmail, setIsValidEmail] = useState(undefined);
   const [emailData, setEmailData] = useState(null); // To store form data for modal confirmation
 
   const handleConfirmEmail = async () => {
@@ -54,8 +55,11 @@ const Step1 = () => {
   }, []);
 
   const debouncedValidateRef = useRef(
-    debounce((email) => {
-      validateEmail(email); // validate email function
+    debounce((field, value) => {
+      setUserSearchData({ ...userSearchData, [field]: value });
+      if (field === "email") {
+        validateEmail(value); // validate email function
+      }
     }, 1000),
   ).current;
 
@@ -64,10 +68,7 @@ const Step1 = () => {
       const { value } = event.target;
       setValue(field, value);
       trigger(field);
-
-      if (field === "email") {
-        debouncedValidateRef(value);
-      }
+      debouncedValidateRef(field, value);
     },
     [setValue, trigger, validateEmail, userSearchData],
   );
@@ -97,13 +98,15 @@ const Step1 = () => {
     }
   };
 
+  // on initial load set input fields value here
   useEffect(() => {
     if (userSearchData) {
-      Object.entries(userSearchData).forEach(([field, value]) => {
-        setValue(field, value);
-      });
+      const { email } = userSearchData;
+      setValue("email", email);
+      // Check the email validation upon component mounts
+      debouncedValidateRef(email);
     }
-  }, [userSearchData, setValue]);
+  }, []);
 
   const EmailConfirmationModal = () => {
     const [animate, setAnimate] = useState(false);

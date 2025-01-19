@@ -1,15 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useUserContext } from "../../../utils/UserContext";
-import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Radio from "@/components/Common/Radio";
+import toast from "react-hot-toast";
+import BackButton from "@/components/Common/BackButton";
 
 const Step3 = () => {
   const [employmentType, setEmploymentType] = useState("");
   const [error, setError] = useState("");
-  const { setSteps } = useUserContext();
+  const { setSteps, userSearchData } = useUserContext();
   const fields = ["Salaried", "Self-Employed", "Student"];
 
   const {
@@ -35,38 +36,44 @@ const Step3 = () => {
     }
   }, [setValue]);
 
-  const onSubmit = async (data) => {
-    if (!employmentType) {
-      setError("Please select a employment type.");
-      return; // Prevent form submission
-    } else {
-      setError(""); // Clear error if selection is valid
-      try {
-        const finalData = { ...data, employmentType: employmentType };
-        console.log("Step 3 submitted:", finalData);
-        sessionStorage.setItem("journey", employmentType);
-        setSteps(employmentType);
-      } catch (error) {
-        console.error("Form submission error:", error);
-      }
-    }
+  const handleRadioChange = (value) => {
+    console.log("value", value);
+
+    setEmploymentType(value);
+    // Retrieve and update session data
+    const sessionData = {
+      ...(JSON.parse(sessionStorage.getItem("welcome")) || {}),
+      selectedEmploymentType: value,
+    };
+
+    // Save the updated session data back to sessionStorage
+    sessionStorage.setItem("welcome", JSON.stringify(sessionData));
+    sessionStorage.setItem("selectedEmploymentType", value);
   };
 
-  const handleRadioChange = (value) => {
-    setEmploymentType(value);
-    // Retrieve the existing session data
-    const existingData = sessionStorage.getItem("welcome");
-    let sessionData = existingData ? JSON.parse(existingData) : {};
+  useEffect(() => {
+    if (userSearchData) {
+      const { emplyoment_type } = userSearchData;
 
-    // Update the session data with the selected loan type
-    sessionData.selectedEmploymentType = value;
+      if (emplyoment_type === "Salaried") {
+        setEmploymentType("Salaried");
+      } else if (emplyoment_type === "Non Salaried") {
+        setEmploymentType("Self-Employed");
+      } else if (emplyoment_type === "Student") {
+        setEmploymentType("Student");
+      }
+    }
+  }, [userSearchData]);
 
-    // Save the updated session data back to session storage
-    sessionStorage.setItem("welcome", JSON.stringify(sessionData));
-
-    sessionStorage.setItem("selectedEmploymentType", value); // Save the selection
-    setError(""); // Clear the error when a selection is made
-    console.log(value);
+  const onSubmit = async (data) => {
+    if (!employmentType) {
+      toast.error("Please select a employment type.");
+      return; // Prevent form submission
+    } else {
+      console.log("employmentType", employmentType);
+      sessionStorage.setItem("journey", employmentType);
+      setSteps("Salaried");
+    }
   };
 
   return (
@@ -104,7 +111,10 @@ const Step3 = () => {
               {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             </div>
 
-            <Button btnName="Proceed" isLoading={isSubmitting} />
+            <div className="my-4 mb-6 flex items-center justify-center gap-5">
+              <BackButton backTo={"loanType"} />
+              <Button btnName="Proceed" />
+            </div>
           </form>
         </div>
       </div>

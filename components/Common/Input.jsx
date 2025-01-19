@@ -5,9 +5,9 @@ import done from "@/lottie/done.json";
 import { memo } from "react";
 
 const Input = memo(
-  ({ placeholder, value, onChange, type, error, maxLength, isValidEmail }) => {
+  ({ placeholder, value, onChange, type, error, maxLength, isValid }) => {
     // Only show validation icons if valid prop is explicitly passed (not undefined)
-    const showValidationIcon = isValidEmail !== undefined;
+    const showValidationIcon = isValid !== undefined;
 
     const handleInputChange = (e) => {
       const inputValue = e.target.value;
@@ -54,7 +54,7 @@ const Input = memo(
         {/* Only render validation lottie icon if showValidationIcon is true */}
         {showValidationIcon && (
           <div className="absolute right-[-15px] top-[-15px]">
-            {isValidEmail ? (
+            {isValid ? (
               <div className="flex h-[80px] w-[80px] items-center justify-center">
                 <LottieAnimation
                   animationData={done}

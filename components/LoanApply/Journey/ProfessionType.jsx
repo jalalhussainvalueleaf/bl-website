@@ -4,6 +4,7 @@ import { useUserContext } from "../../../utils/UserContext";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Dropdown from "@/components/Common/Dropdown";
+import BackButton from "@/components/Common/BackButton";
 
 const ProfessionType = () => {
   const { setSteps } = useUserContext();
@@ -87,7 +88,11 @@ const ProfessionType = () => {
                 error={errors.professionType?.message}
               />
             </div>
-            <Button btnName="Proceed" />
+
+            <div className="my-4 mb-6 flex items-center justify-center gap-5">
+              <BackButton backTo={"personalLoan"} />
+              <Button btnName="Proceed" />
+            </div>
           </form>
         </div>
       </div>

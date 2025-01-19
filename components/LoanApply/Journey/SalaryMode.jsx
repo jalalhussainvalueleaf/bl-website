@@ -5,11 +5,12 @@ import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Radio from "@/components/Common/Radio";
+import BackButton from "@/components/Common/BackButton";
 
 const Step31 = () => {
   const [salaryMode, setSalaryMode] = useState("");
   const [error, setError] = useState("");
-  const { setSteps } = useUserContext();
+  const { setSteps, userSearchData, setUserSearchData } = useUserContext();
   const fields = ["SalaryInBank", "SalaryInCash"];
 
   const {
@@ -28,12 +29,12 @@ const Step31 = () => {
   };
 
   // Load saved data and selected loan type on mount
-  useEffect(() => {
-    const savedSalaryMode = sessionStorage.getItem("salaryMode");
-    if (savedSalaryMode) {
-      setSalaryMode(savedSalaryMode);
-    }
-  }, [setValue]);
+  // useEffect(() => {
+  //   const savedSalaryMode = sessionStorage.getItem("salaryMode");
+  //   if (savedSalaryMode) {
+  //     setSalaryMode(savedSalaryMode);
+  //   }
+  // }, [setValue]);
 
   const onSubmit = async (data) => {
     if (!salaryMode) {
@@ -54,16 +55,42 @@ const Step31 = () => {
 
   const handleRadioChange = (value) => {
     setSalaryMode(value);
+    if (value === "SalaryInBank") {
+      setUserSearchData({
+        ...userSearchData,
+        salary_mode: "Direct Transfer to Bank Account",
+      });
+    } else {
+      setUserSearchData({ ...userSearchData, salary_mode: "Cash" });
+    }
     sessionStorage.setItem("salaryMode", value); // Save the selection
     setError(""); // Clear the error when a selection is made
-    console.log(value);
   };
+
+  function handleBack() {
+    sessionStorage.setItem("journey", "personalLoan");
+    setSteps("personalLoan");
+  }
+
+  useEffect(() => {
+    if (userSearchData) {
+      const { salary_mode } = userSearchData;
+
+      if (salary_mode === "Direct Transfer to Bank Account") {
+        setSalaryMode("SalaryInBank");
+      } else {
+        setSalaryMode("SalaryInCash");
+      }
+    }
+  }, [userSearchData]);
 
   return (
     <div className="">
       <div className="">
         <div className="mx-auto max-w-md px-5">
-          <h2 className="py-8 text-2xl font-bold">Choose Salary Mode</h2>
+          <h2 className="py-8 text-center text-2xl font-semibold text-bl-blue">
+            Choose Salary Mode
+          </h2>
         </div>
         <div className="mx-auto max-w-md px-5">
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -86,7 +113,10 @@ const Step31 = () => {
               {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             </div>
 
-            <Button btnName="Proceed" isLoading={isSubmitting} />
+            <div className="my-4 mb-6 flex items-center justify-center gap-5">
+              <BackButton backTo={"personalLoan"} />
+              <Button btnName="Proceed" isLoading={isSubmitting} />
+            </div>
           </form>
         </div>
       </div>

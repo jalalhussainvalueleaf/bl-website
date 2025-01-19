@@ -63,6 +63,11 @@ const fieldSchemas = {
     .length(6, "Pincode must be exactly 6 digits")
     .regex(/^[0-9]+$/, "Pincode should only contain numbers"),
 
+  office_pincode: z
+    .string()
+    .length(6, "Pincode must be exactly 6 digits")
+    .regex(/^[0-9]+$/, "Pincode should only contain numbers"),
+
   state: z
     .string()
     .min(2, "State name is required")
@@ -98,7 +103,16 @@ const fieldSchemas = {
       "Company name should only contain letters and spaces",
     ),
 
-  monthlyIncome: z
+  company_name: z
+    .string()
+    .min(2, "Company name must be at least 2 characters")
+    .max(50, "Company name must not exceed 50 characters")
+    .regex(
+      /^[a-zA-Z\s]*$/,
+      "Company name should only contain letters and spaces",
+    ),
+
+  monthly_income: z
     .string()
     .regex(/^\d+$/, "Monthly income must be a valid numeric value")
     .min(1, "Monthly income is required")
@@ -179,6 +193,8 @@ const fieldSchemas = {
 
   companyType: z.string().min(1, "Please select your company type"),
 
+  company_type: z.string().min(1, "Please select your company type"),
+
   loan_amount: z
     .string()
     .regex(/^\d+$/, "Loan amount must be a numeric value")
@@ -206,18 +222,23 @@ const fieldSchemas = {
     ),
 
   years: z.string().min(1, "Year is required"),
+  emp_exp_month: z.string().min(1, "Year is required"),
   designation: z.string().min(1, "Designation is required"),
-  qualification: z.string().min(1, "Qualification is required"),
+  qualifications: z.string().min(1, "Qualification is required"),
   panCard: z
     .string()
     .min(1, "PAN card is required")
     .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format"),
-
-  fname: z.string().min(4, "First name is required"),
+  pan: z
+    .string()
+    .min(1, "PAN card is required")
+    .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format"),
+  fname: z.string().min(2, "First name is required"),
   lname: z.string().min(2, "Last name is required"),
   residenceType: z.string().min(1, "Please select a your residence type"),
   currentAddress: z.string().min(4, "Current address is required"),
-  bankName: z.string().min(1, "Bank name is required"),
+  current_addr_month: z.string().min(4, "Current address is required"),
+  saving_account_bank: z.string().min(1, "Bank name is required"),
   creditCard: z.string().min(1, "Credit Card is required"),
   professionType: z.string().min(1, "profession is required"),
   // salaryBank: z.string().min(1, "Please select a your company type"),

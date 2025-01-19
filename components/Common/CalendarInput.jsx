@@ -7,6 +7,8 @@ const CalendarInput = ({
   onDateChange,
   error,
   selectedDates,
+  placeholder,
+  value,
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialSelectedDate);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -41,12 +43,12 @@ const CalendarInput = ({
 
   // Set initial date if selectedDates is passed as a prop
   useEffect(() => {
-    if (selectedDates) {
-      setSelectedDate(new Date(selectedDates));
-      setCurrentMonth(selectedDates.getMonth());
-      setCurrentYear(selectedDates.getFullYear());
+    if (value) {
+      setSelectedDate(new Date(value));
+      setCurrentMonth(value.getMonth());
+      setCurrentYear(value.getFullYear());
     }
-  }, [selectedDates]);
+  }, [value]);
 
   const handleClickOutside = (event) => {
     if (calendarRef.current && !calendarRef.current.contains(event.target)) {
@@ -76,6 +78,7 @@ const CalendarInput = ({
   const handleDateSelect = (day) => {
     if (day) {
       const newDate = new Date(currentYear, currentMonth, day);
+
       setSelectedDate(newDate);
       if (onDateChange) onDateChange(newDate);
       setIsOpen(false);
@@ -113,17 +116,6 @@ const CalendarInput = ({
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="text-gray-700">{formatDate(selectedDate)}</span>
-        <button
-          type="button"
-          className="ml-auto flex items-center justify-center"
-        >
-          <Image
-            src="/images/calendar.png"
-            alt="calendar-img"
-            width={22}
-            height={22}
-          />
-        </button>
       </div>
 
       {isOpen && (
@@ -144,7 +136,7 @@ const CalendarInput = ({
             <select
               value={currentYear}
               onChange={handleYearChange}
-              className="rounded border p-1 text-gray-700"
+              className="rounded border bg-white p-1 text-gray-700"
             >
               {years.map((year) => (
                 <option key={year} value={year}>

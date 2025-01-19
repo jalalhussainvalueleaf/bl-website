@@ -4,11 +4,12 @@ import { useUserContext } from "../../../utils/UserContext";
 import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
+import BackButton from "@/components/Common/BackButton";
 import Dropdown from "@/components/Common/Dropdown";
 import Modal from "@/components/Common/Modal";
 
 const Step35 = () => {
-  const fields = ["creditCard", "bankName", "montlyIncome"];
+  const fields = ["creditCard", "saving_account_bank", "monthly_income"];
   const {
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -18,33 +19,47 @@ const Step35 = () => {
   } = useFormValidation(fields);
 
   const formData = watch();
-  const { setSteps } = useUserContext();
+  const { setSteps, userSearchData, setUserSearchData } = useUserContext();
 
   const handleChange = (field) => (e) => {
     setValue(field, e.target.value);
     trigger(field);
   };
+
   const handleDropdownChange = (field, value) => {
     setValue(field, value);
     trigger(field);
   };
-  const handleDateChange = (field, date) => {
-    setValue(field, date);
-    trigger(field);
-    console.log("date", date);
-  };
 
-  // Load saved data on mount
   useEffect(() => {
-    const savedData = JSON.parse(sessionStorage.getItem("finalData")) || {};
-    Object.keys(savedData).forEach((field) => {
-      setValue(field, savedData[field]);
+    const { interest_credit_cards } = userSearchData;
+
+    if (interest_credit_cards == "1") {
+      setValue("creditCard", "Yes");
+    } else if (interest_credit_cards == "2") {
+      setValue("creditCard", "No");
+    } else {
+      setValue("creditCard", interest_credit_cards);
+    }
+
+    // Iterate through the fields and set their values
+    ["monthly_income", "saving_account_bank"].forEach((field) => {
+      setValue(field, userSearchData[field]);
     });
-  }, [setValue]);
+  }, []);
 
   const onSubmit = async (data) => {
     try {
-      console.log("Step 35 submitted:", data);
+      // // Update only the fields that are present in `data`
+      const updatedUserSearchData = { ...userSearchData };
+      Object.keys(data).forEach((key) => {
+        if (key in updatedUserSearchData) {
+          updatedUserSearchData[key] = data[key];
+        }
+      });
+
+      // Set the updated data to state
+      setUserSearchData(updatedUserSearchData);
       sessionStorage.setItem("finalData", JSON.stringify(data));
       sessionStorage.setItem("journey", "journeyCompleted");
       setSteps("journeyCompleted");
@@ -136,9 +151,9 @@ I hereby appoint Buddy Loan as my authorized representative to receive my Credit
               <Input
                 type="text"
                 placeholder="Monthly Income"
-                value={watch("montlyIncome") || ""}
-                onChange={handleChange("montlyIncome")}
-                error={errors.montlyIncome?.message}
+                value={watch("monthly_income") || ""}
+                onChange={handleChange("monthly_income")}
+                error={errors.monthly_income?.message}
               />
               <small className="absolute top-[71%]">
                 (Income mentioned Should be Verifiable as per your bank)
@@ -198,9 +213,11 @@ I hereby appoint Buddy Loan as my authorized representative to receive my Credit
                   "Yes Bank Ltd",
                   "Others",
                 ]}
-                selected={watch("bankName") || ""}
-                onChange={(value) => handleDropdownChange("bankName", value)}
-                error={errors.bankName?.message}
+                selected={watch("saving_account_bank") || ""}
+                onChange={(value) =>
+                  handleDropdownChange("saving_account_bank", value)
+                }
+                error={errors.saving_account_bank?.message}
               />
             </div>
             <div className="flex items-center justify-between gap-5 py-4">
@@ -236,7 +253,10 @@ I hereby appoint Buddy Loan as my authorized representative to receive my Credit
               </small>
             </div>
 
-            <Button btnName="Submit" />
+            <div className="my-4 mb-6 flex items-center justify-center gap-5">
+              <BackButton backTo={"communicationAddress"} />
+              <Button btnName="Submit" />
+            </div>
           </form>
         </div>
       </div>

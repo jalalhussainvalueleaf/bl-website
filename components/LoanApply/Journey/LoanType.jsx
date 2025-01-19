@@ -6,42 +6,61 @@ import { useUserContext } from "../../../utils/UserContext";
 import { useFormValidation } from "@/hooks/useValidation";
 import Button from "@/components/Common/Button";
 import Radio from "@/components/Common/Radio";
+import BackButton from "@/components/Common/BackButton";
 
 const Step2 = () => {
+  const { setSteps, userSearchData, setUserSearchData } = useUserContext();
   const [selectedLoanType, setSelectedLoanType] = useState("");
-  const [error, setError] = useState("");
-  const { setSteps } = useUserContext();
 
   const fields = ["personalLoan", "businessLoan"];
 
   const {
     handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-    watch,
-    trigger,
+    formState: { isSubmitting },
   } = useFormValidation(fields);
 
-  const formData = watch();
+  const handleRadioChange = (value) => {
+    // Update the selected loan type state
+    setSelectedLoanType(value);
 
-  // Load saved data and selected loan type on mount
-  useEffect(() => {
-    const savedLoanType = sessionStorage.getItem("selectedLoanType");
-
-    if (savedLoanType) {
-      setSelectedLoanType(savedLoanType);
+    if (value === "personalLoan") {
+      setUserSearchData({ ...userSearchData, emplyoment_type: "Salaried" });
+    } else {
+      setUserSearchData({ ...userSearchData, emplyoment_type: "Business" });
     }
-  }, [setValue]);
+
+    // Retrieve and update session data
+    const sessionData = {
+      ...(JSON.parse(sessionStorage.getItem("welcome")) || {}),
+      selectedLoanType: value,
+    };
+
+    // Save the updated session data back to sessionStorage
+    sessionStorage.setItem("welcome", JSON.stringify(sessionData));
+    sessionStorage.setItem("selectedLoanType", value);
+  };
+
+  useEffect(() => {
+    if (userSearchData) {
+      const { emplyoment_type, self_employement_type } = userSearchData;
+
+      if (emplyoment_type === "Salaried") {
+        setSelectedLoanType("personalLoan");
+      } else if (
+        self_employement_type === "Business" ||
+        self_employement_type === "Self-Employed-Business"
+      ) {
+        setSelectedLoanType("businessLoan");
+      }
+    }
+  }, [userSearchData]);
 
   const onSubmit = async (data) => {
     if (!selectedLoanType) {
-      setError("Please select a loan type.");
+      toast.error("Please select a loan type.");
       return; // Prevent form submission
     } else {
-      setError(""); // Clear error if selection is valid
       try {
-        const finalData = { ...data, loanType: selectedLoanType };
-        console.log("Step 2 submitted:", finalData);
         sessionStorage.setItem("journey", selectedLoanType);
         setSteps(selectedLoanType);
         // Navigate to the next step or handle redirection
@@ -49,23 +68,6 @@ const Step2 = () => {
         console.error("Form submission error:", error);
       }
     }
-  };
-
-  const handleRadioChange = (value) => {
-    setSelectedLoanType(value);
-    // Retrieve the existing session data
-    const existingData = sessionStorage.getItem("welcome");
-    let sessionData = existingData ? JSON.parse(existingData) : {};
-
-    // Update the session data with the selected loan type
-    sessionData.selectedLoanType = value;
-
-    // Save the updated session data back to session storage
-    sessionStorage.setItem("welcome", JSON.stringify(sessionData));
-
-    sessionStorage.setItem("selectedLoanType", value); // Save the selection
-    setError(""); // Clear the error when a selection is made
-    console.log("Selected Loan Type:", value);
   };
 
   return (
@@ -80,22 +82,25 @@ const Step2 = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="py-4">
               <Radio
-                name="personalLoan"
-                value="personalLoan"
+                name="loanType"
+                value={"personalLoan"}
                 isSelected={selectedLoanType === "personalLoan"}
                 onChange={handleRadioChange}
                 label="Personal Loan"
               />
               <Radio
-                name="businessLoan"
-                value="businessLoan"
+                name="loanType"
+                value={"businessLoan"}
                 isSelected={selectedLoanType === "businessLoan"}
                 onChange={handleRadioChange}
                 label="Business Loan"
               />
             </div>
-            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
-            <Button btnName="Proceed" isLoading={isSubmitting} />
+
+            <div className="my-4 mb-6 flex items-center justify-center gap-5">
+              <BackButton backTo={"start"} />
+              <Button btnName="Proceed" isLoading={isSubmitting} />
+            </div>
           </form>
         </div>
       </div>
