@@ -30,6 +30,7 @@ const Input = memo(
       // Prevent scrolling from changing the number value
       e.target.blur();
     };
+
     return (
       <div className="relative mb-4 w-full">
         <input
@@ -80,5 +81,8 @@ const Input = memo(
     );
   },
 );
+
+// Assigning a display name to the memoized component
+Input.displayName = "Input";
 
 export default Input;
