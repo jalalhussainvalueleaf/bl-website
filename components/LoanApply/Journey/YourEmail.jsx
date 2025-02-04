@@ -104,7 +104,7 @@ const Step1 = () => {
       const { email } = userSearchData;
       setValue("email", email);
       // Check the email validation upon component mounts
-      debouncedValidateRef(email);
+      debouncedValidateRef("email", email);
     }
   }, []);
 
@@ -173,7 +173,7 @@ const Step1 = () => {
           value={watch("email") || ""}
           onChange={handleInputChange("email")}
           error={errors.email?.message}
-          isValidEmail={isValidEmail}
+          isValid={isValidEmail}
         />
 
         <Button
