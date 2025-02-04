@@ -1,30 +1,29 @@
 "use-client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-interface DropdownProps {
-  label: string;
-  options: string[];
-  selected: string | null;
-  onChange: (value: string) => void;
-  error?: any;
-}
-
-const Dropdown: React.FC<DropdownProps> = ({
-  label,
-  options,
-  selected,
-  onChange,
-  error,
-}) => {
+const Dropdown = ({ label, options, selected, onChange, error }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelect = (option: string) => {
+  const selectRef = useRef();
+
+  const handleSelect = (option) => {
     onChange(option); // Propagate the selected value back to the parent
     setIsOpen(false);
   };
 
+  const handleClickOutside = (event) => {
+    if (selectRef.current && !selectRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="relative w-full bg-white">
+    <div className="relative w-full bg-white" ref={selectRef}>
       {/* Label overlapping the border */}
       <span className="pointer-events-none absolute left-3 top-0 -translate-y-1/2 bg-white px-1 text-[#47B6F2]">
         {label}
@@ -38,17 +37,21 @@ const Dropdown: React.FC<DropdownProps> = ({
         } focus:outline-none focus:ring-2 focus:ring-[#47B6F2]`}
       >
         {/* Display the selected value if there is one */}
-        <span className="grow text-[#47B6F2]">{selected}</span>
+        <span className="grow text-black">{selected}</span>
 
         <button
           type="button"
-          className="ml-auto flex size-7 items-center justify-center rounded-full bg-[#47B6F2] text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-[#47B6F2]"
+          className="ml-auto flex size-7 items-center justify-center text-white"
         >
-          <svg className="size-4" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 16 7"
+          >
             <path
-              fillRule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-              clipRule="evenodd"
+              fill="#000"
+              d="M8 6.5a.47.47 0 0 1-.35-.15l-4.5-4.5c-.2-.2-.2-.51 0-.71c.2-.2.51-.2.71 0l4.15 4.15l4.14-4.14c.2-.2.51-.2.71 0c.2.2.2.51 0 .71l-4.5 4.5c-.1.1-.23.15-.35.15Z"
             />
           </svg>
         </button>

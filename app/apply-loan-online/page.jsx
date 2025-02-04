@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import MobileValidation from "@/components/LoanApply/MobileValidation";
 import Loader from "@/components/Common/Loader";
+import { getToken } from "@/utils/cookies";
 
 const MainPageContent = () => {
   const searchParams = useSearchParams();
@@ -37,15 +38,16 @@ const MainPageContent = () => {
 const MainPage = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-
   // Checks for token and redirects if not found.
   useEffect(() => {
-    const saved_token = sessionStorage.getItem("_token");
     setLoading(true);
-    if (saved_token) {
-      // If there is a previous history entry, go back
-      if (window.history.length > 1) {
+    const token = getToken();
+    const loan_status_30 = sessionStorage.getItem("loan_status_30");
+    if (token) {
+      if (loan_status_30 && loan_status_30 === "0") {
         router.push("/apply-loan-online/user-journey");
+      } else {
+        router.push("/apply-loan-online/user-status");
       }
     } else {
       setLoading(false);

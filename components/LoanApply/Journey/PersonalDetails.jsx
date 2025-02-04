@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useUserContext } from "../../../utils/UserContext";
 import Input from "@/components/Common/Input";
 import { useFormValidation } from "@/hooks/useValidation";
@@ -8,22 +8,17 @@ import Dropdown from "@/components/Common/Dropdown";
 import CalendarInput from "@/components/Common/CalendarInput";
 import { FaRegEye } from "react-icons/fa6";
 import { FaRegEyeSlash } from "react-icons/fa6";
+import { debounce } from "lodash";
+import BackButton from "@/components/Common/BackButton";
 
 const Step33 = () => {
-  const { setSteps } = useUserContext();
+  const { setSteps, userSearchData, setUserSearchData } = useUserContext();
   const [isPanVisible, setIsPanVisible] = useState(false); // State to toggle visibility
   const handlePanVisibilityToggle = () => {
     setIsPanVisible((prevState) => !prevState); // Toggle the state
   };
 
-  const fields = [
-    "dob",
-    "gender",
-    "qualification",
-    "panCard",
-    "fname",
-    "lname",
-  ];
+  const fields = ["dob", "gender", "qualifications", "pan", "fname", "lname"];
   const {
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -34,37 +29,37 @@ const Step33 = () => {
 
   const formData = watch();
 
-  // Load saved data on mount
-  useEffect(() => {
-    const savedData =
-      JSON.parse(sessionStorage.getItem("personalDetails")) || {};
-    console.log("Saved data from sessionStorage:", savedData);
-
-    Object.keys(savedData).forEach((field) => {
-      let value = savedData[field];
-      if (field === "dob" && value) {
-        const parsedDate = new Date(value);
-        // console.log("Parsed date:", parsedDate);
-
-        if (!isNaN(parsedDate.getTime())) {
-          setValue(field, parsedDate);
-        } else {
-          console.error("Invalid date format in session storage");
-        }
-      } else {
-        setValue(field, value);
-      }
-    });
-  }, [setValue]);
-
-  const handleFieldChange = (field, value) => {
+  const handleDateChange = (field, value) => {
     setValue(field, value);
-    trigger(field); // Validate the field on change
+    trigger(field);
+  };
+
+  const handleInputChange = useCallback(
+    (field) => (event) => {
+      const { value } = event.target;
+      setValue(field, value);
+      trigger(field);
+    },
+    [setValue, userSearchData],
+  );
+
+  const handleDropdownChange = (field, value) => {
+    setValue(field, value);
+    trigger(field);
   };
 
   const onSubmit = async (data) => {
     try {
-      console.log("Form data before saving to sessionStorage:", data);
+      // Update only the fields that are present in `data`
+      const updatedUserSearchData = { ...userSearchData };
+      Object.keys(data).forEach((key) => {
+        if (key in updatedUserSearchData) {
+          updatedUserSearchData[key] = data[key];
+        }
+      });
+
+      // Set the updated data to state
+      setUserSearchData(updatedUserSearchData);
       sessionStorage.setItem("personalDetails", JSON.stringify(data));
       sessionStorage.setItem("journey", "communicationAddress");
       setSteps("communicationAddress"); // Navigate to the next step
@@ -73,15 +68,47 @@ const Step33 = () => {
     }
   };
 
-  // Check if the date is valid and log it
-  let dobDate = null;
-  if (formData.dob) {
-    if (formData.dob instanceof Date) {
-      dobDate = formData.dob;
-    } else if (typeof formData.dob === "string") {
-      dobDate = new Date(formData.dob);
-    }
+  function handleBack() {
+    sessionStorage.setItem("journey", "SalaryInBank");
+    setSteps("SalaryInBank");
   }
+
+  useEffect(() => {
+    if (userSearchData) {
+      // Destructure fields from userSearchData
+      const { gender, qualifications, dob } = userSearchData;
+
+      if (dob) {
+        const parsedDate = new Date(dob);
+        setValue("dob", parsedDate);
+      }
+
+      if (gender == "MALE") {
+        setValue("gender", "Male");
+      } else if (gender == "FEMALE") {
+        setValue("gender", "Female");
+      } else if (gender == "OTHERS") {
+        setValue("gender", "Others");
+      } else {
+        setValue("gender", gender);
+      }
+
+      if (qualifications == "1") {
+        setValue("qualifications", "Under Graduate");
+      } else if (qualifications == "2") {
+        setValue("qualifications", "Graduate");
+      } else if (qualifications == "3") {
+        setValue("qualifications", "Post Graduate");
+      } else {
+        setValue("qualifications", qualifications);
+      }
+
+      // Iterate through the fields and set their values
+      ["pan", "fname", "lname"].forEach((field) => {
+        setValue(field, userSearchData[field]);
+      });
+    }
+  }, []);
 
   return (
     <div className="">
@@ -94,11 +121,10 @@ const Step33 = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="py-4">
             <CalendarInput
-              label="Date Of Birth"
-              selectedDates={dobDate || ""}
+              label="Date of Birth"
+              value={watch("dob")}
               onDateChange={(date) => {
-                console.log("Date picked in CalendarInput:", date);
-                handleFieldChange("dob", date);
+                handleDateChange("dob", date);
               }}
               error={errors.dob?.message}
             />
@@ -107,35 +133,30 @@ const Step33 = () => {
             <Dropdown
               label="Gender"
               options={["Male", "Female", "Others"]}
-              selected={formData.gender || ""}
-              onChange={(value) => handleFieldChange("gender", value)}
+              selected={watch("gender") || ""}
+              onChange={(value) => handleDropdownChange("gender", value)}
               error={errors.gender?.message}
             />
           </div>
           <div className="py-4">
             <Dropdown
               label="Highest Qualification"
-              options={[
-                "Under Graduate",
-                "Graduate",
-                "Post Graduate",
-                "Others",
-              ]}
-              selected={formData.qualification || ""}
-              onChange={(value) => handleFieldChange("qualification", value)}
-              error={errors.qualification?.message}
+              options={["Under Graduate", "Graduate", "Post Graduate"]}
+              selected={watch("qualifications") || ""}
+              onChange={(value) =>
+                handleDropdownChange("qualifications", value)
+              }
+              error={errors.qualifications?.message}
             />
           </div>
           <div className="relative py-4">
             <Input
               type={isPanVisible ? "text" : "password"}
               placeholder="Pan Card"
-              value={formData.panCard || ""}
-              onChange={(e) => {
-                const uppercasedValue = e.target.value.toUpperCase(); // Auto-capitalize
-                handleFieldChange("panCard", uppercasedValue);
-              }}
-              error={errors.panCard?.message}
+              value={watch("pan") || ""}
+              onChange={handleInputChange("pan")}
+              error={errors.pan?.message}
+              maxLength={10}
             />
             <button
               type="button"
@@ -164,8 +185,8 @@ const Step33 = () => {
             <Input
               type="text"
               placeholder="First Name"
-              value={formData.fname || ""}
-              onChange={(e) => handleFieldChange("fname", e.target.value)}
+              value={watch("fname") || ""}
+              onChange={handleInputChange("fname")}
               error={errors.fname?.message}
             />
           </div>
@@ -173,16 +194,20 @@ const Step33 = () => {
             <Input
               type="text"
               placeholder="Last Name"
-              value={formData.lname || ""}
-              onChange={(e) => handleFieldChange("lname", e.target.value)}
+              value={watch("lname") || ""}
+              onChange={handleInputChange("lname")}
               error={errors.lname?.message}
             />
           </div>
-          <Button
-            btnName="Proceed"
-            isLoading={isSubmitting}
-            isDisabled={isSubmitting} // Disable button when submitting
-          />
+
+          <div className="my-4 mb-6 flex items-center justify-center gap-5">
+            <BackButton backTo={"SalaryInBank"} />
+            <Button
+              btnName="Proceed"
+              isLoading={isSubmitting}
+              isDisabled={isSubmitting} // Disable button when submitting
+            />
+          </div>
         </form>
       </div>
     </div>

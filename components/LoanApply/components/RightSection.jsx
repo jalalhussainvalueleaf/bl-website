@@ -176,7 +176,6 @@ const RightSection = ({ utmSource, utmMedium, utmCampaign, platform }) => {
             showOtpInput: false,
           });
         } else {
-          console.log("else part");
           updateFormState({
             mobile: decryptedMobile,
             isEditable: false,

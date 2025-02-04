@@ -1,9 +1,8 @@
 "use client";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "../../../utils/UserContext";
 import { userSearch } from "@/api/user";
-import { decryptData, encryptData } from "@/utils/cryptoUtils";
 import { decryptData64 } from "@/utils/cryptoUtils64";
 import Loader from "@/components/Common/Loader";
 import {
@@ -19,27 +18,27 @@ import {
   BusinessDetails,
   ProfessionType,
 } from "@/components/LoanApply/index";
+import toast from "react-hot-toast";
+import { getToken } from "@/utils/cookies";
 
 const UserJounery = () => {
   const router = useRouter();
-  const { steps, userSearchData, setUserSearchData, setMobileNumber } =
-    useUserContext();
-  const [countSteps, setCountSteps] = useState("1"); // Default to string
+  const {
+    steps,
+    userSearchData,
+    setUserSearchData,
+    mobileNumber,
+    setMobileNumber,
+  } = useUserContext();
+  const [countSteps, setCountSteps] = useState("start"); // Default to string
   const [loading, setLoading] = useState(true);
-
-  console.log("userSearchData", userSearchData);
 
   // UseEffect to handle initial state setup and sessionStorage
   useEffect(() => {
     const savedStep = sessionStorage.getItem("journey");
-    const savedMobile = sessionStorage.getItem("mobileNumber");
-
     // Set the current step if saved in sessionStorage
     if (savedStep) {
       setCountSteps(savedStep);
-    } else {
-      // Redirect to home if no step is found
-      router.push("/apply-loan-online/");
     }
   }, [steps]);
 
@@ -60,37 +59,6 @@ const UserJounery = () => {
     };
   }, []);
 
-  // Memoize verifyUser function
-  const verifyUser = useCallback(async (decryptedMobile) => {
-    console.log("verify user");
-
-    const savedToken = sessionStorage.getItem("_token");
-    if (!savedToken) {
-      router.push("/apply-loan-online/");
-      return;
-    }
-
-    try {
-      const params = new URLSearchParams({
-        mobile_no: decryptedMobile,
-        user_token: savedToken,
-      });
-
-      const response = await userSearch(params);
-      const decryptedData = decryptData(response.data.encryptData);
-      const user = decryptedData?.user[0];
-
-      if (
-        decryptedData?.HTTPStatus === 200 &&
-        decryptedData.status === "success"
-      ) {
-        setUserSearchData(user);
-      }
-    } catch (error) {
-      console.error("Error verifying user:", error);
-    }
-  }, []);
-
   // Memoize decryptData64 function if it's defined in the component
   const decryptMobile = useCallback(async (savedMobile) => {
     try {
@@ -103,52 +71,67 @@ const UserJounery = () => {
 
   // Use useCallback for the main fetch function
   const fetchAndDecryptMobile = useCallback(async () => {
+    setLoading(true);
     const savedMobile = sessionStorage.getItem("mobileNumber");
     if (!savedMobile) return;
-
-    console.log("fetch dec");
 
     const decryptedMobile = await decryptMobile(savedMobile);
     if (decryptedMobile) {
       setMobileNumber(decryptedMobile);
-      await verifyUser(decryptedMobile);
+      await verifyUser();
     }
-  }, [decryptMobile, verifyUser]);
+  }, [decryptMobile]);
 
   // Optimize useEffect
   useEffect(() => {
     fetchAndDecryptMobile();
   }, []);
 
-  // Verify if the user is logged in and has a token
-  useEffect(() => {
-    const savedToken = sessionStorage.getItem("_token");
-    if (!savedToken) {
-      router.push("/apply-loan-online");
-    } else {
-      setLoading(false); // Set loading to false once token is verified
-    }
-  }, []);
+  // Memoize verifyUser function
+  const verifyUser = useCallback(async () => {
+    const token = getToken();
+    const loan_status_30 = sessionStorage.getItem("loan_status_30");
 
-  useEffect(() => {
-    setLoading(true);
-    // Encrypted userId
-    if (userSearchData) {
-      let encryptedUserId = encryptData(userSearchData?.id);
-      // let decryptedUserId = decryptData("oYx2Clg+MJOaBq9v8lookw==");
-      if (countSteps === "journeyCompleted") {
-        window.location.href = `https://www.prod.buddyloan.com/thank-you/?userId=${encryptedUserId}`;
-      } else {
+    if (!token) {
+      router.push("/apply-loan-online/");
+      return;
+    }
+
+    if (loan_status_30 === "1") {
+      router.push("/apply-loan-online/user-status");
+      return;
+    }
+
+    try {
+      const params = new URLSearchParams({
+        user_token: token,
+      });
+
+      const response = await userSearch(params);
+      if (
+        response?.data?.HTTPStatus === 200 &&
+        response?.data?.status === "success"
+      ) {
+        const userData = response?.data?.user?.at(0);
+        setUserSearchData(userData);
         setLoading(false);
       }
+
+      if (response.data.status === "failure") {
+        toast.error(
+          response.data.message ?? CONSTANTS.MESSAGES.USER_SEARCH_ERROR,
+        );
+      }
+    } catch (error) {
+      console.error("Error verifying user:", error);
     }
-  }, [countSteps, userSearchData]);
+  }, []);
 
   // Helper function to render different steps based on `countSteps`
   const renderStep = () => {
     switch (countSteps) {
       case "loanType":
-        return <Step2 userSearchData={userSearchData} />;
+        return <Step2 />;
       case "personalLoan":
         return <Step3 />;
       case "businessLoan":
@@ -172,7 +155,7 @@ const UserJounery = () => {
       case "finish":
         return <Step35 />;
       default:
-        return <Step1 userSearchData={userSearchData} />;
+        return <Step1 />;
     }
   };
 

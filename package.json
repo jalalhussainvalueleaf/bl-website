@@ -17,6 +17,8 @@
     "crypto-js": "^4.2.0",
     "flowbite": "^2.5.2",
     "flowbite-react": "^0.8.0",
+    "js-cookie": "^3.0.5",
+    "lodash": "^4.17.21",
     "lottie-react": "^2.4.0",
     "lottie-web": "^5.12.2",
     "next": "^14.2.21",

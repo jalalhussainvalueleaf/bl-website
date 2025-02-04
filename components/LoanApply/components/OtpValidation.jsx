@@ -2,12 +2,13 @@
 import React, { useState, useRef, useEffect, memo } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { resendOTP, userSearch, verifyOTP } from "@/api/user";
-import { encryptData, decryptData } from "@/utils/cryptoUtils";
+import { resendOTP, verifyOTP } from "@/api/user";
+import { encryptData } from "@/utils/cryptoUtils";
 import { useUserContext } from "@/utils/UserContext";
 import CONSTANTS from "@/utils/constants";
 import OtpTimer from "./OtpTimer";
 import { encryptData64 } from "@/utils/cryptoUtils64";
+import { setToken } from "@/utils/cookies";
 
 const OtpValidation = ({
   totalDigits = 4,
@@ -24,20 +25,12 @@ const OtpValidation = ({
     message: "",
     canVerifyOtp: true,
   });
-  const [userData, setUserData] = useState("");
   const inputRefs = useRef([]);
   const router = useRouter();
 
   // Context
-  const {
-    userId,
-    setUserId,
-    startUserNewJourney,
-    setStartUserNewJourney,
-    showOfferPage,
-    setShowOfferPage,
-    setUserSearchData,
-  } = useUserContext();
+  const { setUserId, setStartUserNewJourney, setShowOfferPage } =
+    useUserContext();
 
   // Utility Functions
   const updateState = (updates) => {
@@ -76,6 +69,7 @@ const OtpValidation = ({
     }
   };
 
+  // Handle verification response
   const handleVerificationResponse = (response) => {
     const isSuccess =
       response?.status === "success" && response?.message === "OTP Match";
@@ -84,14 +78,18 @@ const OtpValidation = ({
 
     if (isSuccess) {
       showMessage(response.message, true);
-      verifyUsers(response?.user_token);
-      setTimeout(() => {
-        sessionStorage.setItem(
-          CONSTANTS.STORAGE_KEYS.TOKEN,
-          response.user_token,
-        );
-        setUserData(response);
-      }, CONSTANTS.DELAY);
+      console.log("response", response);
+
+      setToken(response?.user_token);
+      if (response?.loan_status_30 === 0) {
+        sessionStorage.setItem("loan_status_30", 0);
+        sessionStorage.setItem(CONSTANTS.STORAGE_KEYS.JOURNEY, "start");
+        router.push("/apply-loan-online/user-journey");
+      } else {
+        router.push("/apply-loan-online/user-status");
+        sessionStorage.setItem("loan_status_30", 1);
+      }
+
       return;
     }
 
@@ -102,38 +100,6 @@ const OtpValidation = ({
     }
 
     showMessage(response?.message);
-  };
-
-  const verifyUsers = async (userToken) => {
-    if (!userToken) {
-      showMessage(CONSTANTS.MESSAGES.USER_TOKEN_MISSING);
-      return;
-    }
-
-    try {
-      const payload = new URLSearchParams({
-        mobile_no: mobileNumber,
-        platform,
-        utm: utmMedium,
-        utm_source: utmSource,
-        user_token: userToken,
-      });
-
-      const res = await userSearch(payload);
-      const response = decryptData(res?.data?.encryptData);
-      setUserSearchData(response);
-
-      if (response.status === "failure") {
-        showMessage(response.message ?? CONSTANTS.MESSAGES.USER_SEARCH_ERROR);
-      }
-      sessionStorage.setItem(CONSTANTS.STORAGE_KEYS.JOURNEY, "1");
-    } catch (error) {
-      showMessage(
-        error?.response?.data?.message || CONSTANTS.MESSAGES.USER_SEARCH_ERROR,
-      );
-    } finally {
-      updateState({ loading: false });
-    }
   };
 
   // Encrypt mobiile number
@@ -194,42 +160,12 @@ const OtpValidation = ({
     }
   };
 
-  // User Journey Management
-  const handleUserJourney = (isNewJourney) => {
-    const journeyData = {
-      userId: userData.id,
-      StartUserNewJourney: isNewJourney,
-      ShowOfferPage: !isNewJourney,
-    };
-
-    setUserId(userData.id);
-    setStartUserNewJourney(isNewJourney);
-    setShowOfferPage(!isNewJourney);
-
-    const encryptedData = isNewJourney
-      ? JSON.stringify(journeyData)
-      : encryptData(journeyData);
-
-    sessionStorage.setItem(CONSTANTS.STORAGE_KEYS.USER_STAT, encryptedData);
-
-    router.push(
-      isNewJourney
-        ? "/apply-loan-online/user-journey"
-        : "/apply-loan-online/user-status",
-    );
-  };
-
-  // Effects
+  // Effect for focus input
   useEffect(() => {
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
   }, []);
-
-  useEffect(() => {
-    if (!userData || userData === "") return;
-    handleUserJourney(userData.loan_status_30 === 0);
-  }, [userData]);
 
   // UI Components
   const renderOtpInputs = () => (
