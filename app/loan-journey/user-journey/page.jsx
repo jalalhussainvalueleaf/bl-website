@@ -3,7 +3,7 @@ import { useUserContext } from "@/utils/UserContext";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
-const page = () => {
+const Page = () => {
   const { steps, userSearchData, setUserSearchData, setMobileNumber } =
     useUserContext();
   const router = useRouter();
@@ -19,4 +19,4 @@ const page = () => {
   return <div>Loan journey</div>;
 };
 
-export default page;
+export default Page;

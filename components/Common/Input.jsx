@@ -38,6 +38,7 @@ const Input = memo(
             error ? "border-red-500" : "border-[#47B6F2]"
           } text-black outline-none focus:border-[#47B6F2] focus:ring-0`}
           placeholder=""
+          name=""
           value={value}
           onChange={handleInputChange}
           onWheel={handleWheel}
