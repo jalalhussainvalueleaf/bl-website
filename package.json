@@ -30,7 +30,7 @@
     "react-icons": "^5.3.0",
     "react-modal": "^3.16.3",
     "react-multi-carousel": "^2.8.5",
-    "react-router-dom": "^7.1.0",
+    "react-router-dom": "^7.5.2",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1",
     "zod": "^3.23.8"
