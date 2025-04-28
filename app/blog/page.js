@@ -8,15 +8,15 @@ export default function Page() {
   const [category, setCategory] = useState("");
   return (
     <>
-    <div className="mt-24 flex">
-      <LandingPage searchTerm={searchTerm} category={category} />
-      <NavigationBar
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        category={category}
-        setCategory={setCategory}
-      />
-    </div>
+      <div className="mt-24 flex">
+        <LandingPage searchTerm={searchTerm} category={category} />
+        <NavigationBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          category={category}
+          setCategory={setCategory}
+        />
+      </div>
     </>
   );
 }
